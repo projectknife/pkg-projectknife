@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<extension type="package" version="3.5" method="install">
+    <name>Projectknife</name>
+    <packagename>projectknife</packagename>
+    <version>5.0.0.alpha.1</version>
+    <url>http://projectknife.net</url>
+    <creationDate>July 2016</creationDate>
+    <copyright>(C) 2015 - 2016 Tobias Kuhn. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later.</license>
+    <authorEmail>support@projectknife.net</authorEmail>
+    <authorUrl>http://projectknife.net</authorUrl>
+    <author>Tobias Kuhn</author>
+    <packager>Projectknife</packager>
+    <packagerurl>http://projectknife.net</packagerurl>
+    <description>Projectknife Package. Uninstalling this package will remove all Projectknife extensions.</description>
+
+    <!-- Install script -->
+    <scriptfile>setup.php</scriptfile>
+
+    <files>
+        <!-- Install library -->
+        <file type="library" id="projectknife">libraries/projectknife</file>
+
+        <!-- Install components -->
+        <file type="component" id="com_pkdashboard">components/com_pkdashboard</file>
+        <file type="component" id="com_pkprojects">components/com_pkprojects</file>
+        <file type="component" id="com_pkmilestones">components/com_pkmilestones</file>
+        <file type="component" id="com_pktasks">components/com_pktasks</file>
+
+        <!-- Install plugins -->
+        <file type="plugin" id="projectknife" group="system">plugins/plg_system_projectknife</file>
+        <file type="plugin" id="projectknife" group="content">plugins/plg_content_projectknife</file>
+        <file type="plugin" id="projects" group="projectknife">plugins/plg_projectknife_projects</file>
+        <file type="plugin" id="milestones" group="projectknife">plugins/plg_projectknife_milestones</file>
+        <file type="plugin" id="tasks" group="projectknife">plugins/plg_projectknife_tasks</file>
+
+        <!-- Install modules -->
+        <file type="module" id="mod_pkfilters" client="site">modules/site/mod_pkfilters</file>
+    </files>
+</extension>

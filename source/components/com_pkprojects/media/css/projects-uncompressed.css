@@ -1,0 +1,28 @@
+div.popover-project-date
+{
+    position: relative !important;
+    display: block !important;
+    box-shadow: none !important;
+}
+
+div.popover-project-date .arrow-right
+{
+    left: 90% !important;
+}
+div.popover-project-date .popover-title
+{
+    padding: 3px 0px !important;
+    text-align: center;
+}
+div.popover-project-date .popover-content
+{
+    text-align: center;
+}
+.projectItem
+{
+    margin-bottom:30px;
+}
+th.actions
+{
+    width:35%;
+}

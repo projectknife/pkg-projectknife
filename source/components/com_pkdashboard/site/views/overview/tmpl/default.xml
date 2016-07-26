@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+    <layout title="COM_PKDASHBOARD_PROJECT_VIEW_OVERVIEW_DEFAULT_TITLE">
+        <message><![CDATA[COM_PKDASHBOARD_PROJECT_VIEW_OVERVIEW_DEFAULT_DESC]]></message>
+    </layout>
+    <fields name="request">
+		<fieldset name="request">
+			<field name="id" type="pkproject" label="PLG_PROJECTKNIFE_PPROJECTS_FIELD_PROJECT_LABEL">
+                <option value="">COM_PKDASHBOARD_OPTION_DYNAMIC</option>
+            </field>
+
+		</fieldset>
+	</fields>
+    <fields name="params">
+        <fieldset name="advanced" label="PKGLOBAL_LIST_LAYOUT_OPTIONS">
+            <field name="show_toolbar" type="list" label="PKGLOBAL_TOOLBAR_LABEL" default="1">
+                <option value="0">JHIDE</option>
+				<option value="1">JSHOW</option>
+			</field>
+            <field name="date_format" type="text" description="PKGLOBAL_DATE_FORMAT_LC4_DESCRIPTION" label="JGLOBAL_DATE_FORMAT_LABEL" size="15"/>
+            <field name="show_description" type="list" label="JGLOBAL_DESCRIPTION" default="1">
+                <option value="0">JHIDE</option>
+				<option value="1">JSHOW</option>
+			</field>
+        </fieldset>
+    </fields>
+</metadata>

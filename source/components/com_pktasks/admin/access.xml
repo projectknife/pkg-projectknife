@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<access component="com_pktasks">
+	<section name="component">
+		<action name="core.admin" title="JACTION_ADMIN" description="JACTION_ADMIN_COMPONENT_DESC" />
+		<action name="core.options" title="JACTION_OPTIONS" description="JACTION_OPTIONS_COMPONENT_DESC" />
+		<action name="core.manage" title="JACTION_MANAGE" description="JACTION_MANAGE_COMPONENT_DESC" />
+	</section>
+	<section name="project">
+		<action name="core.create.task" title="JACTION_CREATE" description="COM_PKTASKS_ACTION_CREATE_TASKS_DESC" />
+		<action name="core.delete.task" title="JACTION_DELETE" description="COM_PKTASKS_ACTION_DELETE_TASKS_DESC" />
+		<action name="core.edit.task" title="JACTION_EDIT" description="COM_PKTASKS_ACTION_EDIT_TASKS_DESC" />
+		<action name="core.edit.state.task" title="JACTION_EDITSTATE" description="COM_PKTASKS_ACTION_EDITSTATE_TASKS_DESC" />
+		<action name="core.edit.own.task" title="JACTION_EDITOWN" description="COM_PKTASKS_ACTION_EDITOWN_TASKS_DESC" />
+	</section>
+</access>

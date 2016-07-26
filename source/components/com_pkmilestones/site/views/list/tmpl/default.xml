@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+    <layout title="COM_PKMILESTONES_MILESTONES_VIEW_LIST_DEFAULT_TITLE">
+        <message><![CDATA[COM_PKMILESTONES_MILESTONES_VIEW_LIST_DEFAULT_DESC]]></message>
+    </layout>
+    <fields name="params">
+        <fieldset name="advanced" label="PKGLOBAL_LIST_LAYOUT_OPTIONS">
+            <field name="show_toolbar" type="list" label="COM_PKPROJECTS_TOOLBAR_LABEL" default="1">
+                <option value="0">JHIDE</option>
+				<option value="1">JSHOW</option>
+			</field>
+            <field name="date_dynamic" type="list" label="PKGLOBAL_DYNAMIC_DATE" description="PKGLOBAL_DYNAMIC_DATE_DESC" default="1">
+				<option value="1">JYES</option>
+                <option value="0">JNO</option>
+			</field>
+            <field name="date_default" type="list" label="PKGLOBAL_DEFAULT_DATE" description="PKGLOBAL_DEFAULT_DATE_DESC" default="due_date">
+                <option value="created">JDATE</option>
+				<option value="due_date">PKGLOBAL_DUE_DATE</option>
+				<option value="start_date">PKGLOBAL_START_DATE</option>
+			</field>
+            <field name="date_format" type="text" description="PKGLOBAL_DATE_FORMAT_LC4_DESCRIPTION" label="JGLOBAL_DATE_FORMAT_LABEL" size="15"/>
+            <field name="sort_by" type="list" default="a.due_date" label="PKGLOBAL_PRIMARY_SORT">
+    			<option value="access_level">JGRID_HEADING_ACCESS</option>
+                <option value="author_name">JAUTHOR</option>
+                <option value="category_title">JCATEGORY</option>
+                <option value="a.created">JDATE</option>
+                <option value="a.due_date">PKGLOBAL_DUE_DATE</option>
+                <option value="a.id">JGRID_HEADING_ID</option>
+                <option value="a.ordering">JGRID_HEADING_ORDERING</option>
+                <option value="a.progress">PKGLOBAL_PROGRESS</option>
+                <option value="a.published">PKGLOBAL_PUBLISHING_STATE</option>
+                <option value="a.start_date">PKGLOBAL_START_DATE</option>
+    			<option value="a.title">JGLOBAL_TITLE</option>
+    		</field>
+            <field name="order_by" type="list" default="asc" label="PKGLOBAL_PRIMARY_ORDER">
+                <option value="asc">PKGLOBAL_ORDER_BY_AZ</option>
+    			<option value="desc">PKGLOBAL_ORDER_BY_ZA</option>
+            </field>
+            <field name="sort_by_sec" type="list" default="a.progress" label="PKGLOBAL_SECONDARY_SORT">
+    			<option value="access_level">JGRID_HEADING_ACCESS</option>
+                <option value="author_name">JAUTHOR</option>
+                <option value="category_title">JCATEGORY</option>
+                <option value="a.created">JDATE</option>
+                <option value="a.due_date">PKGLOBAL_DUE_DATE</option>
+                <option value="a.id">JGRID_HEADING_ID</option>
+                <option value="a.ordering">JGRID_HEADING_ORDERING</option>
+                <option value="a.progress">PKGLOBAL_PROGRESS</option>
+                <option value="a.published">PKGLOBAL_PUBLISHING_STATE</option>
+                <option value="a.start_date">PKGLOBAL_START_DATE</option>
+    			<option value="a.title">JGLOBAL_TITLE</option>
+    		</field>
+            <field name="order_by_sec" type="list" default="asc" label="PKGLOBAL_SECONDARY_ORDER">
+                <option value="asc">PKGLOBAL_ORDER_BY_AZ</option>
+    			<option value="desc">PKGLOBAL_ORDER_BY_ZA</option>
+            </field>
+            <field name="filter_published" type="list" label="PKGLOBAL_FILTER_PUBLISHED_LABEL" description="PKGLOBAL_FILTER_PUBLISHED_DESC">
+                <option value="">PKGLOBAL_DEFAULT_FILTER</option>
+                <option value="1">JPUBLISHED</option>
+                <option value="0">JUNPUBLISHED</option>
+                <option value="2">JARCHIVED</option>
+                <option value="-2">JTRASHED</option>
+            </field>
+            <field name="filter_author_id" type="list" label="PKGLOBAL_FILTER_AUTHOR_LABEL" description="PKGLOBAL_FILTER_AUTHOR_DESC">
+                <option value="">PKGLOBAL_NO_FILTER</option>
+                <option value="me">PKGLOBAL_CREATED_BY_ME</option>
+                <option value="notme">PKGLOBAL_NOT_CREATED_BY_ME</option>
+            </field>
+            <field name="filter_access" type="accesslevel" label="PKGLOBAL_FILTER_ACCESS_LABEL" description="PKGLOBAL_FILTER_ACCESS_DESC">
+                <option value="">PKGLOBAL_DEFAULT_FILTER</option>
+            </field>
+            <field name="display_num" type="list" default="20" description="PKGLOBAL_NUMBER_ITEMS_LIST_DESC" label="PKGLOBAL_NUMBER_ITEMS_LIST_LABEL">
+				<option value="5">J5</option>
+				<option value="10">J10</option>
+				<option value="15">J15</option>
+				<option value="20">J20</option>
+				<option value="25">J25</option>
+				<option value="30">J30</option>
+				<option value="50">J50</option>
+				<option value="100">J100</option>
+				<option value="0">JALL</option>
+            </field>
+        </fieldset>
+    </fields>
+</metadata>

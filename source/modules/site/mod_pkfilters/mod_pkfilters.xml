@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="module" version="3.5" client="site" method="install">
+	<!-- Extension info -->
+    <name>mod_pkfilters</name>
+	<author>Tobias Kuhn</author>
+	<creationDate>July 2016</creationDate>
+	<copyright>Copyright (C) 2015-2016 Tobias Kuhn. All rights reserved.</copyright>
+	<license>GNU General Public License version 2 or later.</license>
+	<authorEmail>support@projectknife.net</authorEmail>
+	<authorUrl>http://projectknife.net</authorUrl>
+	<version>5.0.0.alpha.1</version>
+	<description>MOD_PKFILTERS_XML_DESCRIPTION</description>
+
+    <!-- Files -->
+    <files>
+		<filename module="mod_pkfilters">mod_pkfilters.php</filename>
+		<folder>tmpl</folder>
+		<filename>helper.php</filename>
+	</files>
+
+    <!-- Media files -->
+    <media folder="media" destination="mod_pkfilters">
+        <folder>js</folder>
+    </media>
+
+    <!-- Config -->
+	<config>
+		<fields name="params">
+			<fieldset name="advanced">
+				<field
+					name="layout"
+					type="modulelayout"
+					label="JFIELD_ALT_LAYOUT_LABEL"
+					description="JFIELD_ALT_MODULE_LAYOUT_DESC" />
+
+				<field
+					name="moduleclass_sfx"
+					type="textarea" rows="3"
+					label="COM_MODULES_FIELD_MODULECLASS_SFX_LABEL"
+					description="COM_MODULES_FIELD_MODULECLASS_SFX_DESC" />
+
+				<field
+					name="cache"
+					type="list"
+					default="1"
+					label="COM_MODULES_FIELD_CACHING_LABEL"
+					description="COM_MODULES_FIELD_CACHING_DESC"
+				>
+					<option value="1">JGLOBAL_USE_GLOBAL</option>
+					<option value="0">COM_MODULES_FIELD_VALUE_NOCACHING</option>
+				</field>
+
+				<field
+					name="cache_time"
+					type="text"
+					default="900"
+					label="COM_MODULES_FIELD_CACHE_TIME_LABEL"
+					description="COM_MODULES_FIELD_CACHE_TIME_DESC" />
+
+				<field
+					name="cachemode"
+					type="hidden"
+					default="itemid"
+				>
+					<option value="itemid"></option>
+				</field>
+			</fieldset>
+		</fields>
+	</config>
+</extension>

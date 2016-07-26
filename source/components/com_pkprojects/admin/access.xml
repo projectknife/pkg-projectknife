@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<access component="com_pkprojects">
+	<section name="component">
+		<action name="core.admin" title="JACTION_ADMIN" description="JACTION_ADMIN_COMPONENT_DESC" />
+		<action name="core.options" title="JACTION_OPTIONS" description="JACTION_OPTIONS_COMPONENT_DESC" />
+		<action name="core.manage" title="JACTION_MANAGE" description="JACTION_MANAGE_COMPONENT_DESC" />
+
+		<action name="core.create" title="COM_PKPROJECTS_ACTION_CREATE_ANY" description="JACTION_CREATE_COMPONENT_DESC" />
+		<action name="core.delete" title="COM_PKPROJECTS_ACTION_DELETE_ANY" description="JACTION_DELETE_COMPONENT_DESC" />
+		<action name="core.edit" title="COM_PKPROJECTS_ACTION_EDIT_ANY" description="JACTION_EDIT_COMPONENT_DESC" />
+		<action name="core.edit.state" title="COM_PKPROJECTS_ACTION_EDITSTATE_ANY" description="JACTION_EDITSTATE_COMPONENT_DESC" />
+		<action name="core.edit.own" title="COM_PKPROJECTS_ACTION_EDITOWN_ANY" description="JACTION_EDITOWN_COMPONENT_DESC" />
+
+        <action name="core.create.project" title="COM_PKPROJECTS_ACTION_CREATE_PROJECTS" description="COM_PKPROJECTS_ACTION_CREATE_PROJECTS_DESC" />
+		<action name="core.delete.project" title="COM_PKPROJECTS_ACTION_DELETE_PROJECTS" description="COM_PKPROJECTS_ACTION_DELETE_PROJECTS_DESC" />
+		<action name="core.edit.project" title="COM_PKPROJECTS_ACTION_EDIT_PROJECTS" description="COM_PKPROJECTS_ACTION_EDIT_PROJECTS_DESC" />
+		<action name="core.edit.state.project" title="COM_PKPROJECTS_ACTION_EDITSTATE_PROJECTS" description="COM_PKPROJECTS_ACTION_EDITSTATE_PROJECTS_DESC" />
+		<action name="core.edit.own.project" title="COM_PKPROJECTS_ACTION_EDITOWN_PROJECTS" description="COM_PKPROJECTS_ACTION_EDITOWN_PROJECTS_DESC" />
+
+	</section>
+	<section name="category">
+		<action name="core.create" title="COM_PKPROJECTS_ACTION_CREATE_ANY" description="JACTION_CREATE_COMPONENT_DESC" />
+		<action name="core.delete" title="COM_PKPROJECTS_ACTION_DELETE_ANY" description="JACTION_DELETE_COMPONENT_DESC" />
+		<action name="core.edit" title="COM_PKPROJECTS_ACTION_EDIT_ANY" description="JACTION_EDIT_COMPONENT_DESC" />
+		<action name="core.edit.state" title="COM_PKPROJECTS_ACTION_EDITSTATE_ANY" description="JACTION_EDITSTATE_COMPONENT_DESC" />
+		<action name="core.edit.own" title="COM_PKPROJECTS_ACTION_EDITOWN_ANY" description="JACTION_EDITOWN_COMPONENT_DESC" />
+
+        <action name="core.create.project" title="COM_PKPROJECTS_ACTION_CREATE_PROJECTS" description="COM_PKPROJECTS_ACTION_CREATE_PROJECTS_DESC" />
+		<action name="core.delete.project" title="COM_PKPROJECTS_ACTION_DELETE_PROJECTS" description="COM_PKPROJECTS_ACTION_DELETE_PROJECTS_DESC" />
+		<action name="core.edit.project" title="COM_PKPROJECTS_ACTION_EDIT_PROJECTS" description="COM_PKPROJECTS_ACTION_EDIT_PROJECTS_DESC" />
+		<action name="core.edit.state.project" title="COM_PKPROJECTS_ACTION_EDITSTATE_PROJECTS" description="COM_PKPROJECTS_ACTION_EDITSTATE_PROJECTS_DESC" />
+		<action name="core.edit.own.project" title="COM_PKPROJECTS_ACTION_EDITOWN_PROJECTS" description="COM_PKPROJECTS_ACTION_EDITOWN_PROJECTS_DESC" />
+	</section>
+	<section name="project">
+		<action name="core.delete.project" title="JACTION_DELETE" description="COM_PKPROJECTS_ACTION_DELETE_PROJECT_DESC" />
+		<action name="core.edit.project" title="JACTION_EDIT" description="COM_PKPROJECTS_ACTION_EDIT_PROJECT_DESC" />
+		<action name="core.edit.state.project" title="JACTION_EDITSTATE" description="COM_PKPROJECTS_ACTION_EDITSTATE_PROJECT_DESC" />
+	</section>
+</access>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fieldset>
+		<field name="title" type="text" label="JGLOBAL_TITLE" class="inputbox" size="40" />
+		<field name="alias" type="text" label="JFIELD_ALIAS_LABEL" description="JFIELD_ALIAS_DESC" hint="JFIELD_ALIAS_PLACEHOLDER" size="30" />
+		<field name="description" type="text" label="JGLOBAL_DESCRIPTION" class="inputbox input-xxlarge" size="80" />
+	</fieldset>
+	<fieldset name="publishing-left-col">
+		<field type="pkproject" name="project_id" required="true" size="1" permission="core.create.milestone" label="PLG_PROJECTKNIFE_PPROJECTS_FIELD_PROJECT_LABEL" description="PLG_PROJECTKNIFE_PPROJECTS_FIELD_PROJECT_DESC" />
+        <field name="project_schedule" type="text" label="COM_PKPROJECTS_PROJECT_SCHEDULE" size="30" class="inputbox" filter="unset" disabled="true"/>
+		<field name="published" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC" filter="intval" size="1" default="1" >
+			<option value="1">JPUBLISHED</option>
+			<option value="0">JUNPUBLISHED</option>
+			<option value="2">JARCHIVED</option>
+			<option value="-2">JTRASHED</option>
+		</field>
+		<field name="access" type="accesslevel" label="JFIELD_ACCESS_LABEL" description="JFIELD_ACCESS_DESC" size="1">
+            <option value="0">PKGLOBAL_OPTION_INHERITED</option>
+        </field>
+		<field name="start_date" type="calendar" label="COM_PKMILESTONES_FIELD_START_DATE_LABEL" description="COM_PKMILESTONES_FIELD_START_DATE_DESC" size="22" format="%Y-%m-%d" filter="user_utc"/>
+		<field name="due_date" type="calendar" label="COM_PKMILESTONES_FIELD_DUE_DATE_LABEL" description="COM_PKMILESTONES_FIELD_DUE_DATE_LABEL" size="22" format="%Y-%m-%d" filter="user_utc"/>
+        <field name="tags" type="tag" label="JTAG" description="JTAG_DESC" class="inputbox" multiple="true"/>
+	</fieldset>
+    <fieldset name="publishing-middle-col">
+        <field name="created" type="calendar" label="PKGLOBAL_CREATED_ON_LABEL" size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc" />
+		<field name="created_by" type="user" label="PKGLOBAL_CREATED_BY_LABEL"/>
+		<field name="modified" type="hidden" size="22" readonly="true" format="%Y-%m-%d %H:%M:%S" filter="user_utc"/>
+		<field name="modified_by" type="hidden" readonly="true" filter="unset" />
+		<field name="checked_out" type="hidden" filter="unset" />
+		<field name="checked_out_time" type="hidden" filter="unset" />
+        <field name="asset_id" type="hidden" filter="unset"/>
+		<field name="id" type="hidden" size="10" default="0" readonly="true" />
+    </fieldset>
+    <fieldset name="publishing-right-col">
+
+    </fieldset>
+</form>

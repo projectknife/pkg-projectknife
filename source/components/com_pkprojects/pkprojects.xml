@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" version="3.5" method="install">
+    <!-- Extension info -->
+    <name>com_pkprojects</name>
+    <author>Tobias Kuhn</author>
+    <creationDate>July 2016</creationDate>
+    <copyright>(C) 2015-2016 Tobias Kuhn. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later.</license>
+    <authorEmail>support@projectknife.net</authorEmail>
+    <authorUrl>http://projectknife.net</authorUrl>
+    <version>5.0.0.alpha.1</version>
+    <description>COM_PKPROJECTS_XML_DESCRIPTION</description>
+
+    <!-- Install script -->
+    <scriptfile>setup.php</scriptfile>
+
+    <!-- Install SQL -->
+    <install>
+        <sql>
+            <file driver="mysql" charset="utf8">_install/structure.sql</file>
+        </sql>
+    </install>
+
+    <!-- Uninstall SQL -->
+    <uninstall folder="admin">
+        <sql>
+            <file driver="mysql" charset="utf8">_uninstall/structure.sql</file>
+        </sql>
+    </uninstall>
+
+    <!-- Site files -->
+    <files folder="site">
+        <folder>controllers</folder>
+        <folder>helpers</folder>
+        <folder>models</folder>
+        <folder>views</folder>
+        <filename>controller.php</filename>
+        <filename>pkprojects.php</filename>
+        <filename>router.php</filename>
+    </files>
+
+    <!-- Media files -->
+    <media folder="media" destination="com_pkprojects">
+        <folder>css</folder>
+    </media>
+
+    <administration>
+        <!-- Admin files -->
+        <files folder="admin">
+            <folder>_install</folder>
+            <folder>_uninstall</folder>
+            <folder>controllers</folder>
+            <folder>helpers</folder>
+            <folder>models</folder>
+            <folder>tables</folder>
+            <folder>views</folder>
+            <filename>access.xml</filename>
+            <filename>config.xml</filename>
+            <filename>controller.php</filename>
+            <filename>pkprojects.php</filename>
+        </files>
+
+        <!-- Admin language files -->
+        <languages folder="admin">
+            <language tag="en-GB">language/en-GB/en-GB.com_pkprojects.ini</language>
+            <language tag="en-GB">language/en-GB/en-GB.com_pkprojects.sys.ini</language>
+        </languages>
+    </administration>
+</extension>

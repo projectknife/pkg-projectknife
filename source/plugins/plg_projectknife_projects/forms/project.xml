@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fieldset name="general_top">
+        <field
+            name="project_id"
+            type="project"
+            size="1"
+            label="PLG_PROJECTKNIFE_PPROJECTS_FIELD_PROJECT_LABEL"
+            description="PLG_PROJECTKNIFE_PPROJECTS_FIELD_PROJECT_DESC"
+        />
+    </fieldset>
+</form>

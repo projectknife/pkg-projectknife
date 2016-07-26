@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" version="3.5" method="install">
+    <!-- Extension info -->
+    <name>com_pkdashboard</name>
+    <author>Tobias Kuhn</author>
+    <creationDate>July 2016</creationDate>
+    <copyright>Copyright (C) 2015-2016 Tobias Kuhn. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later.</license>
+    <authorEmail>support@projectknife.net</authorEmail>
+    <authorUrl>http://projectknife.net</authorUrl>
+    <version>5.0.0.alpha.1</version>
+    <description>COM_PKDASHBOARD_XML_DESCRIPTION</description>
+
+    <!-- Install script -->
+    <scriptfile>setup.php</scriptfile>
+
+    <!-- Site files -->
+    <files folder="site">
+        <filename>pkdashboard.php</filename>
+        <filename>controller.php</filename>
+    </files>
+
+    <administration>
+        <!-- Admin files -->
+        <files folder="admin">
+            <folder>helpers</folder>
+            <folder>views</folder>
+            <filename>config.xml</filename>
+            <filename>controller.php</filename>
+            <filename>pkdashboard.php</filename>
+        </files>
+
+        <!-- Admin language files -->
+        <languages folder="admin">
+            <language tag="en-GB">language/en-GB/en-GB.com_pkdashboard.ini</language>
+            <language tag="en-GB">language/en-GB/en-GB.com_pkdashboard.sys.ini</language>
+        </languages>
+
+        <!-- Admin menu item -->
+        <menu>COM_PKDASHBOARD_PROJECTKNIFE_MENU</menu>
+    </administration>
+</extension>
