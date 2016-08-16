@@ -1,0 +1,1 @@
+DELETE FROM `#__content_types` WHERE type_alias = 'com_pkmilestones.milestone';
