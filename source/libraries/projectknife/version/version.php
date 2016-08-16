@@ -36,7 +36,7 @@ final class PKVersion
     public $CODENAME = 'Ash';
 
     /** @var  string  Release date. */
-    public $RELDATE = '26-July-2016';
+    public $RELDATE = '16-August-2016';
 
     /** @var  string  Release time. */
     public $RELTIME = '16:00';
@@ -60,7 +60,7 @@ final class PKVersion
      */
     public function isCompatible($minimum)
     {
-        return version_compare(PFVERSION, $minimum, 'ge');
+        return version_compare(PK_VERSION, $minimum, 'ge');
     }
 
 

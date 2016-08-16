@@ -2,7 +2,7 @@
 <extension version="3.5" type="plugin" group="projectknife" method="install">
     <!-- Extension info -->
     <name>plg_projectknife_milestones</name>
-    <creationDate>July 2016</creationDate>
+    <creationDate>August 2016</creationDate>
     <author>Tobias Kuhn</author>
     <copyright>Copyright (C) 2015-2016 Tobias Kuhn. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later.</license>
