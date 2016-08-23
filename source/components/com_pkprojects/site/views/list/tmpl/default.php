@@ -14,11 +14,10 @@ defined('_JEXEC') or die;
 use Joomla\Registry\Registry;
 
 
-JHtml::_('stylesheet', 'projectknife/lib_projectknife/core.css', false, true, false, false, true);
-JHtml::_('stylesheet', 'projectknife/com_pkprojects/projects.css', false, true, false, false, true);
+JHtml::_('stylesheet', 'lib_projectknife/core.css', false, true, false, false, true);
+JHtml::_('stylesheet', 'com_pkprojects/projects.css', false, true, false, false, true);
 JHtml::_('behavior.multiselect');
 JHtml::_('bootstrap.tooltip');
-JHtml::_('formbehavior.chosen', 'select');
 PKGrid::script();
 
 
@@ -56,7 +55,6 @@ JFactory::getDocument()->addScriptDeclaration('
         echo $this->toolbar;
 
         // Items
-
         echo '<div id="projectList">' . $this->loadTemplate('items') . '</div>';
 
         // Copy options

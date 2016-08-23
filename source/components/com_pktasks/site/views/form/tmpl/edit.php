@@ -13,9 +13,9 @@ defined('_JEXEC') or die;
 
 JHtml::_('behavior.formvalidator');
 JHtml::_('behavior.keepalive');
-JHtml::_('formbehavior.chosen', 'select');
-JHtml::_('script', 'projectknife/lib_projectknife/form.js', false, true, false, false, true);
-JHtml::_('script', 'projectknife/lib_projectknife/calendar.js', false, true, false, false, true);
+JHtml::_('formbehavior.chosen', '#adminForm select');
+JHtml::_('script', 'lib_projectknife/form.js', false, true, false, false, true);
+JHtml::_('script', 'lib_projectknife/calendar.js', false, true, false, false, true);
 
 $app    = JFactory::getApplication();
 $input  = $app->input;

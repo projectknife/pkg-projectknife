@@ -18,8 +18,8 @@ $item = $this->item;
 JPluginHelper::importPlugin('projectknife');
 $dispatcher = JEventDispatcher::getInstance();
 
-JHtml::_('stylesheet', 'projectknife/lib_projectknife/core.css', false, true, false, false, true);
-JHtml::_('stylesheet', 'projectknife/com_pkmilestones/milestones.css', false, true, false, false, true);
+JHtml::_('stylesheet', 'lib_projectknife/core.css', false, true, false, false, true);
+JHtml::_('stylesheet', 'com_pkmilestones/milestones.css', false, true, false, false, true);
 JHtml::_('bootstrap.tooltip');
 
 JFactory::getDocument()->addScriptDeclaration('

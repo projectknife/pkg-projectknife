@@ -29,15 +29,14 @@ JPluginHelper::importPlugin('projectknife');
 $dispatcher = JEventDispatcher::getInstance();
 
 
-JHtml::_('script', 'projectknife/lib_projectknife/form.js', false, true, false, false, true);
-JHtml::_('script', 'projectknife/com_pktasks/list.js', false, true, false, false, true);
+JHtml::_('script', 'lib_projectknife/form.js', false, true, false, false, true);
+JHtml::_('script', 'com_pktasks/list.js', false, true, false, false, true);
 JHtml::_('behavior.multiselect');
 JHtml::_('bootstrap.tooltip');
-JHtml::_('formbehavior.chosen', 'select');
 PKGrid::script();
 
-JHtml::_('stylesheet', 'projectknife/lib_projectknife/core.css', false, true, false, false, true);
-JHtml::_('stylesheet', 'projectknife/com_pktasks/tasks.css', false, true, false, false, true);
+JHtml::_('stylesheet', 'lib_projectknife/core.css', false, true, false, false, true);
+JHtml::_('stylesheet', 'com_pktasks/tasks.css', false, true, false, false, true);
 
 
 // Export strings to JS
@@ -49,8 +48,8 @@ JText::script('PKGLOBAL_DUE_TODAY');
 
 // JS for progress button
 if ($progress_type > 1) {
-    JHtml::_('script', 'projectknife/bootstrap-slider/bootstrap-slider.js', false, true, false, false, true);
-    JHtml::_('stylesheet', 'projectknife/bootstrap-slider/bootstrap-slider.css', false, true, false, false, true);
+    JHtml::_('script', 'com_pktasks/bootstrap-slider.js', false, true, false, false, true);
+    JHtml::_('stylesheet', 'com_pktasks/bootstrap-slider.css', false, true, false, false, true);
 
     JFactory::getDocument()->addScriptDeclaration('
         jQuery(document).ready(function()
