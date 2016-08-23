@@ -26,6 +26,12 @@
     <!-- Config -->
 	<config>
 		<fields name="params">
+			<fieldset name="basic">
+                <field name="js_chosen" type="list" default="1" label="MOD_PKFILTERS_CONFIG_JS_SELECT_LABEL" description="MOD_PKFILTERS_CONFIG_JS_SELECT_DESC">
+                    <option value="1">MOD_PKFILTERS_CONFIG_ENABLED_OPTION</option>
+                    <option value="0">MOD_PKFILTERS_CONFIG_DISABLED_OPTION</option>
+                </field>
+			</fieldset>
 			<fieldset name="advanced">
 				<field
 					name="layout"

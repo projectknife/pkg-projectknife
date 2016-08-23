@@ -69,15 +69,18 @@ if (!count($filters)) {
 }
 
 // Load JS
-JHtml::_('script', 'projectknife/mod_pkfilters/filters.js', false, true, false, false, true);
+JHtml::_('script', 'mod_pkfilters/filters.js', false, true, false, false, true);
 
 JFactory::getDocument()->addScriptDeclaration('
     jQuery(document).ready(function()
 	{
 		PKfilters.init(jQuery("#mod-pkfilters-' . $module->id . '"));
 	});
- ');
+');
 
+if ($params->get('js_chosen', 1)) {
+    JHtml::_('formbehavior.chosen', '#mod-pkfilters-' . $module->id . ' select');
+}
 
 $moduleclass_sfx = htmlspecialchars($params->get('moduleclass_sfx'));
 
