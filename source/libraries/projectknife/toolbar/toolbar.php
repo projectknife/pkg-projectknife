@@ -54,6 +54,7 @@ abstract class PKToolbar
          // Load toolbar js
          if (!self::$js_loaded && $js) {
             JHtml::_('script', 'lib_projectknife/toolbar.js', false, true, false, false, true);
+            JHtml::_('script', 'lib_projectknife/grid.js', false, true, false, false, true);
             JFactory::getDocument()->addScriptDeclaration('jQuery(document).ready(function(){PKToolbar.init();});');
 
             JHtml::_('formbehavior.chosen', '#pk-toolbar select');
