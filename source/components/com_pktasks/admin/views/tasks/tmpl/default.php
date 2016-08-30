@@ -30,8 +30,8 @@ if ($list_order == 'a.ordering' || $list_order == 'ordering') {
 
 // JS for progress button
 if ($progress_type > 1) {
-    JHtml::_('script', 'projectknife/bootstrap-slider/bootstrap-slider.js', false, true, false, false, true);
-    JHtml::_('stylesheet', 'projectknife/bootstrap-slider/bootstrap-slider.css', false, true, false, false, true);
+    JHtml::_('script', 'com_pktasks/bootstrap-slider.js', false, true, false, false, true);
+    JHtml::_('stylesheet', 'com_pktasks/bootstrap-slider.css', false, true, false, false, true);
 
     JFactory::getDocument()->addScriptDeclaration('
     jQuery(document).ready(function()
@@ -68,9 +68,9 @@ if ((int) $this->state->get('filter.project_id') === 0) {
     ');
 }
 
-JHtml::_('script', 'projectknife/lib_projectknife/form.js', false, true, false, false, true);
-JHtml::_('script', 'projectknife/com_pktasks/list.js', false, true, false, false, true);
-JHtml::_('stylesheet', 'projectknife/com_pktasks/tasks.css', false, true, false, false, true);
+JHtml::_('script', 'lib_projectknife/form.js', false, true, false, false, true);
+JHtml::_('script', 'com_pktasks/list.js', false, true, false, false, true);
+JHtml::_('stylesheet', 'com_pktasks/tasks.css', false, true, false, false, true);
 
 // Export strings to JS
 JText::script('PKGLOBAL_TODO');
