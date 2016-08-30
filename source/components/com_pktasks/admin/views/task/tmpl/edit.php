@@ -39,6 +39,7 @@ JFactory::getDocument()->addScriptDeclaration('
             function()
             {
                 PKform.ajaxUpdateSchedule(this, "#jform_project_schedule", "index.php?option=com_pkprojects&task=project.getSchedule");
+                PKform.ajaxUpdateOptions("#jform_milestone_id", true, "index.php?option=com_pktasks&task=tasks.getMilestoneOptions&project_id=" + jQuery(this).val());
             }
         );
 

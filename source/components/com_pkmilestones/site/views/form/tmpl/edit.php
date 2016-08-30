@@ -36,7 +36,7 @@ JFactory::getDocument()->addScriptDeclaration('
         jQuery("#jform_project_id").change(
             function()
             {
-                PKform.ajaxUpdateSchedule(this, "#jform_project_schedule", "index.php?option=com_pkprojects&task=project.getSchedule")
+                PKform.ajaxUpdateSchedule(this, "#jform_project_schedule", "index.php?option=com_pkprojects&task=form.getSchedule")
             }
         ).trigger("change");
     });

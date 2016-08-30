@@ -12,7 +12,7 @@ defined('_JEXEC') or die();
 
 
 
-class PKtasksControllerTasks extends JControllerLegacy
+class PKTasksControllerTasks extends JControllerLegacy
 {
     protected $text_prefix = 'COM_PKTASKS';
 

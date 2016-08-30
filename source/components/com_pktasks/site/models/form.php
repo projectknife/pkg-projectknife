@@ -13,10 +13,10 @@ defined('_JEXEC') or die;
 
 use Joomla\Registry\Registry;
 
-JLoader::register('PKtasksModelTask', JPATH_ADMINISTRATOR . '/components/com_pktasks/models/task.php');
+JLoader::register('PKTasksModelTask', JPATH_ADMINISTRATOR . '/components/com_pktasks/models/task.php');
 
 
-class PKtasksModelForm extends PKtasksModelTask
+class PKtasksModelForm extends PKTasksModelTask
 {
     /**
      * Get the return URL.

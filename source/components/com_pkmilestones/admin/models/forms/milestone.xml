@@ -6,7 +6,7 @@
 		<field name="description" type="text" label="JGLOBAL_DESCRIPTION" class="inputbox input-xxlarge" size="80" />
 	</fieldset>
 	<fieldset name="publishing-left-col">
-		<field type="pkproject" name="project_id" required="true" size="1" permission="core.create.milestone" label="PLG_PROJECTKNIFE_PPROJECTS_FIELD_PROJECT_LABEL" description="PLG_PROJECTKNIFE_PPROJECTS_FIELD_PROJECT_DESC" />
+		<field type="pkproject" name="project_id" required="true" size="1" permission="core.create.milestone" label="PLG_PROJECTKNIFE_PROJECTS_FIELD_PROJECT_LABEL" description="PLG_PROJECTKNIFE_PROJECTS_FIELD_PROJECT_DESC" />
         <field name="project_schedule" type="text" label="COM_PKPROJECTS_PROJECT_SCHEDULE" size="30" class="inputbox" filter="unset" disabled="true"/>
 		<field name="published" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC" filter="intval" size="1" default="1" >
 			<option value="1">JPUBLISHED</option>
