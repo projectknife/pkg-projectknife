@@ -21,6 +21,9 @@
         <!-- Install library -->
         <file type="library" id="projectknife">libraries/projectknife</file>
 
+        <!-- Install system plugin -->
+        <file type="plugin" id="projectknife" group="system">plugins/plg_system_projectknife</file>
+
         <!-- Install components -->
         <file type="component" id="com_pkdashboard">components/com_pkdashboard</file>
         <file type="component" id="com_pkprojects">components/com_pkprojects</file>
@@ -28,7 +31,6 @@
         <file type="component" id="com_pktasks">components/com_pktasks</file>
 
         <!-- Install plugins -->
-        <file type="plugin" id="projectknife" group="system">plugins/plg_system_projectknife</file>
         <file type="plugin" id="projectknife" group="content">plugins/plg_content_projectknife</file>
         <file type="plugin" id="projects" group="projectknife">plugins/plg_projectknife_projects</file>
         <file type="plugin" id="milestones" group="projectknife">plugins/plg_projectknife_milestones</file>

@@ -16,6 +16,8 @@
 
     <!-- Files -->
     <files>
+        <folder>_install</folder>
+        <folder>_uninstall</folder>
         <filename plugin="projectknife">projectknife.php</filename>
         <filename>setup.php</filename>
     </files>
@@ -25,4 +27,18 @@
         <language tag="en-GB">language/en-GB/en-GB.plg_system_projectknife.ini</language>
         <language tag="en-GB">language/en-GB/en-GB.plg_system_projectknife.sys.ini</language>
     </languages>
+
+    <!-- Install SQL -->
+    <install>
+        <sql>
+            <file driver="mysql" charset="utf8">_install/structure.sql</file>
+        </sql>
+    </install>
+
+    <!-- Uninstall SQL -->
+    <uninstall>
+        <sql>
+            <file driver="mysql" charset="utf8">_uninstall/structure.sql</file>
+        </sql>
+    </uninstall>
 </extension>
