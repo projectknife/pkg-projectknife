@@ -15,7 +15,7 @@ JHtml::_('stylesheet', 'lib_projectknife/core.css', false, true, false, false, t
 JHtml::_('stylesheet', 'com_pkprojects/projects.css', false, true, false, false, true);
 JHtml::_('behavior.formvalidator');
 JHtml::_('behavior.keepalive');
-JHtml::_('formbehavior.chosen', '#adminForm select');
+JHtml::_('formbehavior.chosen', '#item-form select');
 
 $app    = JFactory::getApplication();
 $input  = $app->input;

@@ -13,7 +13,7 @@ defined('_JEXEC') or die;
 
 JHtml::_('behavior.formvalidator');
 JHtml::_('behavior.keepalive');
-JHtml::_('formbehavior.chosen', '#adminForm select');
+JHtml::_('formbehavior.chosen', '#item-form select');
 JHtml::_('script', 'lib_projectknife/form.js', false, true, false, false, true);
 JHtml::_('script', 'lib_projectknife/calendar.js', false, true, false, false, true);
 
