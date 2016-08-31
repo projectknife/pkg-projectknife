@@ -36,10 +36,10 @@ final class PKVersion
     public $CODENAME = 'Ash';
 
     /** @var  string  Release date. */
-    public $RELDATE = '16-August-2016';
+    public $RELDATE = '31-August-2016';
 
     /** @var  string  Release time. */
-    public $RELTIME = '16:00';
+    public $RELTIME = '21:00';
 
     /** @var  string  Release timezone. */
     public $RELTZ = 'CET';
@@ -48,7 +48,7 @@ final class PKVersion
     public $COPYRIGHT = 'Copyright (C) 2015-2016 Tobias Kuhn. All rights reserved.';
 
     /** @var  string  Link text. */
-    public $URL = '<a href="http://www.projectknife.net">Projectknife</a> is Free Software released under the GNU General Public License.';
+    public $URL = '<a href="http://www.projectknife.net">Projectknife</a> is free software released under the GNU General Public License.';
 
 
     /**
