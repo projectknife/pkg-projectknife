@@ -11,11 +11,15 @@
 	<version>5.0.0.alpha.1</version>
 	<description>MOD_PKFILTERS_XML_DESCRIPTION</description>
 
+    <!-- Install script -->
+    <scriptfile>setup.php</scriptfile>
+
     <!-- Files -->
     <files>
 		<filename module="mod_pkfilters">mod_pkfilters.php</filename>
 		<folder>tmpl</folder>
 		<filename>helper.php</filename>
+		<filename>setup.php</filename>
 	</files>
 
     <!-- Media files -->
