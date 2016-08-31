@@ -16,6 +16,8 @@
 
     <!-- Site files -->
     <files folder="site">
+        <folder>models</folder>
+        <folder>views</folder>
         <filename>pkdashboard.php</filename>
         <filename>controller.php</filename>
     </files>
