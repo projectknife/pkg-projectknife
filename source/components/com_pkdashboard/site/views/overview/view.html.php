@@ -108,7 +108,7 @@ class PKdashboardViewOverview extends JViewLegacy
             $this->params->def('page_heading', $this->params->get('page_title', $this->menu->title));
         }
         else {
-            $this->params->def('page_heading', JText::_($this->defaultPageTitle));
+            $this->params->def('page_heading', JText::_('COM_PKDASHBOARD_SUBMENU_OVERVIEW'));
         }
 
         $title = $this->params->get('page_title', '');

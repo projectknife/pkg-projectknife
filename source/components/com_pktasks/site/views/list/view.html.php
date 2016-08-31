@@ -116,7 +116,7 @@ class PKtasksViewList extends JViewLegacy
             $this->params->def('page_heading', $this->params->get('page_title', $this->menu->title));
         }
         else {
-            $this->params->def('page_heading', JText::_($this->defaultPageTitle));
+            $this->params->def('page_heading', JText::_('COM_PKTASKS_SUBMENU_TASKS'));
         }
 
         $title = $this->params->get('page_title', '');
