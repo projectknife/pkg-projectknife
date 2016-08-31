@@ -5,7 +5,7 @@
     </layout>
     <fields name="request">
 		<fieldset name="request">
-			<field name="id" type="pkproject" label="PLG_PROJECTKNIFE_PPROJECTS_FIELD_PROJECT_LABEL">
+			<field name="id" type="pkproject" label="PLG_PROJECTKNIFE_PROJECTS_FIELD_PROJECT_LABEL">
                 <option value="">COM_PKDASHBOARD_OPTION_DYNAMIC</option>
             </field>
 
