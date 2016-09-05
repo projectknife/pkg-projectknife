@@ -493,6 +493,20 @@ class PKtasksModelTask extends PKModelAdmin
             }
         }
 
+
+        // Set completed and completed by data
+        if ($this->progress_changed && $data['progress'] == 100) {
+            $user = JFactory::getUser();
+            $date = JDate::getInstance();
+
+            $data['completed_by'] = $user->id;
+            $data['completed']    = $date->toSql();
+        }
+        else {
+            $data['completed_by'] = 0;
+            $data['completed']    = $this->_db->getNullDate();
+        }
+
         parent::prepareSaveData($data, $is_new);
     }
 
@@ -712,10 +726,24 @@ class PKtasksModelTask extends PKModelAdmin
 
         $pks = array_keys($items);
 
+        if ($progress == 100) {
+            $user = JFactory::getUser();
+            $date = JDate::getInstance();
+
+            $completed_by = $user->id;
+            $completed    = $date->toSql();
+        }
+        else {
+            $completed_by = 0;
+            $completed    = $this->_db->toSql();
+        }
+
         // Update progress
         $query->clear()
               ->update('#__pk_tasks')
               ->set('progress = ' . (int) $progress)
+              ->set('completed_by = ' . $completed_by)
+              ->set('completed = ' . $this->_db->quote($completed))
               ->where('id IN(' . implode(', ', $pks) . ')');
 
         try {

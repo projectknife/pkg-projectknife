@@ -16,6 +16,8 @@ CREATE TABLE IF NOT EXISTS `#__pk_tasks` (
   `created_by` int(10) UNSIGNED NOT NULL DEFAULT '0',
   `modified` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `modified_by` int(10) UNSIGNED NOT NULL DEFAULT '0',
+  `completed` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `completed_by` int(10) UNSIGNED NOT NULL DEFAULT '0',
   `start_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `start_date_inherit` tinyint(1) UNSIGNED NOT NULL DEFAULT '0',
   `due_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
@@ -28,7 +30,8 @@ CREATE TABLE IF NOT EXISTS `#__pk_tasks` (
   KEY `idx_published` (`published`),
   KEY `idx_access` (`access`),
   KEY `idx_created_by` (`created_by`),
-  KEY `idx_milestone_id` (`milestone_id`)
+  KEY `idx_milestone_id` (`milestone_id`),
+  KEY `completed_by` (`completed_by`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `#__pk_task_assignees` (
