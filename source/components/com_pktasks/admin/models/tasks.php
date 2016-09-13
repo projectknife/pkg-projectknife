@@ -265,13 +265,27 @@ class PKtasksModelTasks extends PKModelList
                 $query->where('a.progress != 100');
                 break;
 
+            case 'overdue':
+                $date = new JDate();
+                $query->where('(a.progress != 100 AND a.due_date < ' . $this->_db->quote($date->toSql()) . ')');
+                break;
+
             case 'completed':
                 $query->where('a.progress = 100');
                 break;
 
-            case 'overdue':
-                $date = new JDate();
-                $query->where('(a.progress != 100 AND a.due_date < ' . $this->_db->quote($date->toSql()) . ')');
+            case 'completed-me':
+                $user = JFactory::getUser();
+
+                $query->where('a.progress = 100')
+                      ->where('a.completed_by = ' . (int) $user->id);
+                break;
+
+            case 'completed-notme':
+                $user = JFactory::getUser();
+
+                $query->where('a.progress = 100')
+                      ->where('a.completed_by != ' . (int) $user->id);
                 break;
         }
 
@@ -589,7 +603,9 @@ class PKtasksModelTasks extends PKModelList
         $options = array(
             JHtml::_('select.option', 'to-do',     JText::_('PKGLOBAL_TODO')),
             JHtml::_('select.option', 'overdue',   JText::_('PKGLOBAL_OVERDUE')),
-            JHtml::_('select.option', 'completed', JText::_('PKGLOBAL_COMPLETED'))
+            JHtml::_('select.option', 'completed', JText::_('PKGLOBAL_COMPLETED')),
+            JHtml::_('select.option', 'completed-me', JText::_('PKGLOBAL_COMPLETED_BY_ME')),
+            JHtml::_('select.option', 'completed-notme', JText::_('PKGLOBAL_COMPLETED_NOT_BY_ME'))
         );
 
         return $options;
