@@ -34,6 +34,7 @@ class PKdashboardModelOverview extends PKprojectsModelProject
         }
 
         // Split the description into introtext and fulltext
+        $item->text      = $item->description;
         $item->introtext = $item->description;
         $item->fulltext  = '';
 

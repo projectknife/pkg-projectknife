@@ -79,6 +79,25 @@ class PKdashboardViewOverview extends JViewLegacy
                      return;
                 }
             }
+
+            // Import plugins
+    		JPluginHelper::importPlugin('content');
+
+            $context    = 'com_pkdashboard.overview';
+            $dispatcher	= JDispatcher::getInstance();
+
+            // Trigger events
+    		$results = $dispatcher->trigger('onContentPrepare', array ($context, &$this->item, &$this->params, 0));
+
+    		$this->item->event = new stdClass();
+    		$results = $dispatcher->trigger('onContentAfterTitle', array($context, &$this->item, &$this->params, 0));
+    		$this->item->event->afterDisplayTitle = trim(implode("\n", $results));
+
+    		$results = $dispatcher->trigger('onContentBeforeDisplay', array($context, &$this->item, &$this->params, 0));
+    		$this->item->event->beforeDisplayContent = trim(implode("\n", $results));
+
+    		$results = $dispatcher->trigger('onContentAfterDisplay', array($context, &$this->item, &$this->params, 0));
+    		$this->item->event->afterDisplayContent = trim(implode("\n", $results));
         }
 
         // Prepare doc
