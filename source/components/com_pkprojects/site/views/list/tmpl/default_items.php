@@ -88,7 +88,7 @@ $url_list   = 'index.php?option=com_pkprojects&view=list&Itemid=' . PKApplicatio
 $url_ms     = 'index.php?option=com_pkmilestones&view=list&Itemid=' . PKApplicationHelper::getMenuItemId('com_pkmilestones', 'list');
 $url_tasks  = 'index.php?option=com_pktasks&view=list&Itemid=' . PKApplicationHelper::getMenuItemId('com_pktasks', 'list');
 $url_return = base64_encode($url_list);
-$db_itemid  = PKApplicationHelper::getMenuItemId('com_pkdashboard', 'overview');
+
 
 
 // Misc
@@ -98,6 +98,15 @@ $db_nulldate    = JFactory::getDbo()->getNullDate();
 $time_now       = strtotime(JHtml::_('date'));
 $view_levels    = JAccess::getAuthorisedViewLevels($user->get('id'));
 $sorting_manual = ($list_order == 'ordering');
+
+
+// Menu item id's
+$itemid_active     = PKApplicationHelper::getMenuItemId('active');
+$itemid_db_default = PKApplicationHelper::getMenuItemId('com_pkdashboard', 'overview', array('id' => 0));
+
+if ($itemid_db_default == $itemid_active) {
+    $itemid_db_default = '';
+}
 
 
 // Enable popups for date buttons
@@ -121,9 +130,17 @@ for ($i = 0; $i != $count; $i++)
     $can_change   = ($can_edit || $can_edit_own);
 
 
+    // Get the correct menu item id for this project
+    $itemid = PKApplicationHelper::getMenuItemId('com_pkdashboard', 'overview', array('id' => $item->id));
+
+    if ($itemid == $itemid_active) {
+        $itemid = $itemid_db_default;
+    }
+
+
     // Format title
-    $link  = 'index.php?option=com_pkdashboard&view=overview&id=' . $item->slug . '&Itemid=' . $db_itemid . '&return=' . $url_return;
-    $title = '<a href="' . JRoute::_($link) . '" class="item-title">' . $this->escape($item->title) . '</a>';
+    $link   = 'index.php?option=com_pkdashboard&view=overview&id=' . $item->slug . '&Itemid=' . $itemid . '&return=' . $url_return;
+    $title  = '<a href="' . JRoute::_($link) . '" class="item-title">' . $this->escape($item->title) . '</a>';
 
 
     // Grid select button
