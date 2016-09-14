@@ -27,7 +27,7 @@ abstract class PKRouteHelper
      *
      * @return    integer
      */
-    public function getSlugId($slug)
+    public static function getSlugId($slug)
     {
         if (strpos($slug, ':') === false) {
             return (int) $slug;

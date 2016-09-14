@@ -62,49 +62,26 @@ class PKDashboardRouter extends JComponentRouterBase
 
         // #5: Store the id var in the segments
         if (isset($query['id'])) {
-            $segments[] = $query['id'];
+            // Check if we have the alias as part of the slug. If not, load it.
+            if (strpos($query['id'], ':') === false) {
+                $db  = JFactory::getDbo();
+                $dbq = $db->getQuery(true);
+
+				$dbq->select('alias')
+                    ->from('#__pk_projects')
+                    ->where('id = ' . (int) $query['id']);
+
+				$db->setQuery($dbq);
+				$query['id'] = $query['id'] . ':' . $db->loadResult();
+            }
+
+            // Add the alias to the URL
+            list($tmp, $id) = explode(':', $query['id'], 2);
+
+            $segments[] = $id;
             unset($query['id']);
         }
 
-
-        // #5: Store the return var in the segments
-        if (isset($query['return'])) {
-            $segments[] = $query['return'];
-            unset($query['return']);
-        }
-
-        return $segments;
-
-        // OLD code below
-        $segments = array();
-        $view     = '';
-
-        // We need a menu item. Either the one specified in the query, or the current active one if none specified
-        if (empty($query['Itemid'])) {
-            $menu_item = $this->menu->getActive();
-            $menu_item_given = false;
-        }
-        else {
-            $menu_item = $this->menu->getItem($query['Itemid']);
-            $menu_item_given = true;
-        }
-
-        // Check again
-        if ($menu_item_given && ($menu_item instanceof stdClass) && $menu_item->component != 'com_pkdashboard') {
-            $menu_item_given = false;
-            unset($query['Itemid']);
-        }
-
-        // Are we dealing with an article or category that is attached to a menu item?
-        if (($menu_item instanceof stdClass) && $menu_item->query['view'] == $query['view'] && isset($query['id']) && $menu_item->query['id'] == (int) $query['id']) {
-            unset($query['view'], $query['id']);
-
-            return $segments;
-        }
-
-        if (isset($query['id'])) {
-            $segments[] = $query['id'];
-        }
 
         return $segments;
     }
@@ -119,23 +96,24 @@ class PKDashboardRouter extends JComponentRouterBase
      */
     public function parse(&$segments)
     {
-        $vars  = array();
-
         $total = count($segments);
         $vars  = array();
 
-        for ($i = 0; $i < $total; $i++)
-        {
-            // $segments[$i] = preg_replace('/-/', ':', $segments[$i], 1);
-        }
-
-
         if ($total >= 1) {
-            $vars['id'] = PKRouteHelper::getSlugId($segments[0]);
-        }
+            if (strval(intval($segments[0])) === strval($segments[0])) {
+                $vars['id'] = intval($segments[0]);
+            }
+            else {
+                $db  = JFactory::getDbo();
+                $dbq = $db->getQuery(true);
 
-        if ($total >= 2) {
-            $vars['return'] = $segments[1];
+				$dbq->select('id')
+				    ->from('#__pk_projects')
+				    ->where('alias = ' . $db->quote($segments[0]));
+
+				$db->setQuery($dbq);
+				$vars['id'] = intval($db->loadResult());
+            }
         }
 
         return $vars;
