@@ -84,9 +84,9 @@ if ($date_dynamic && $heading_by_date) {
 
 
 // Setup URL related vars
-$url_list   = 'index.php?option=com_pkprojects&view=list&Itemid=' . PKApplicationHelper::getMenuItemId('active');
-$url_ms     = 'index.php?option=com_pkmilestones&view=list&Itemid=' . PKApplicationHelper::getMenuItemId('com_pkmilestones', 'list');
-$url_tasks  = 'index.php?option=com_pktasks&view=list&Itemid=' . PKApplicationHelper::getMenuItemId('com_pktasks', 'list');
+$url_list   = 'index.php?option=com_pkprojects&view=list&Itemid=' . PKRouteHelper::getMenuItemId('active');
+$url_ms     = 'index.php?option=com_pkmilestones&view=list&Itemid=' . PKRouteHelper::getMenuItemId('com_pkmilestones', 'list');
+$url_tasks  = 'index.php?option=com_pktasks&view=list&Itemid=' . PKRouteHelper::getMenuItemId('com_pktasks', 'list');
 $url_return = base64_encode($url_list);
 
 
@@ -101,8 +101,8 @@ $sorting_manual = ($list_order == 'ordering');
 
 
 // Menu item id's
-$itemid_active     = PKApplicationHelper::getMenuItemId('active');
-$itemid_db_default = PKApplicationHelper::getMenuItemId('com_pkdashboard', 'overview', array('id' => 0));
+$itemid_active     = PKRouteHelper::getMenuItemId('active');
+$itemid_db_default = PKRouteHelper::getMenuItemId('com_pkdashboard', 'overview', array('id' => 0));
 
 if ($itemid_db_default == $itemid_active) {
     $itemid_db_default = '';
@@ -131,7 +131,7 @@ for ($i = 0; $i != $count; $i++)
 
 
     // Get the correct menu item id for this project
-    $itemid = PKApplicationHelper::getMenuItemId('com_pkdashboard', 'overview', array('id' => $item->id));
+    $itemid = PKRouteHelper::getMenuItemId('com_pkdashboard', 'overview', array('id' => $item->id));
 
     if ($itemid == $itemid_active) {
         $itemid = $itemid_db_default;

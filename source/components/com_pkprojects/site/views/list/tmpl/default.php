@@ -49,7 +49,7 @@ JFactory::getDocument()->addScriptDeclaration('
         <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
     <?php endif; ?>
 
-    <form name="adminForm" id="adminForm" action="<?php echo JRoute::_('index.php?option=com_pkprojects&view=list&Itemid=' . PKApplicationHelper::getMenuItemId('active')); ?>" method="post">
+    <form name="adminForm" id="adminForm" action="<?php echo JRoute::_('index.php?option=com_pkprojects&view=list&Itemid=' . PKRouteHelper::getMenuItemId('active')); ?>" method="post">
         <?php
         // Toolbar
         echo $this->toolbar;

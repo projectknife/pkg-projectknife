@@ -40,11 +40,11 @@ abstract class PKtasksHelperRoute
     {
         $link = 'index.php?option=com_pktasks&view=item&id=' . $slug;
 
-        if ($item = PKApplicationHelper::getMenuItemId('com_pktasks', 'item', array($slug))) {
+        if ($item = PKRouteHelper::getMenuItemId('com_pktasks', 'item', array($slug))) {
             $link .= '&Itemid=' . $item;
         }
         else {
-            $link .= '&Itemid=' . PKApplicationHelper::getMenuItemId('active');
+            $link .= '&Itemid=' . PKRouteHelper::getMenuItemId('active');
         }
 
         return $link;

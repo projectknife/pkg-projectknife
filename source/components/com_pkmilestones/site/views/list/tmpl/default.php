@@ -47,7 +47,7 @@ JFactory::getDocument()->addScriptDeclaration('
 <div class="grid milestone-list">
     <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
 
-    <form name="adminForm" id="adminForm" action="<?php echo JRoute::_('index.php?option=com_pkmilestones&view=list&Itemid=' . PKApplicationHelper::getMenuItemId('active')); ?>" method="post">
+    <form name="adminForm" id="adminForm" action="<?php echo JRoute::_('index.php?option=com_pkmilestones&view=list&Itemid=' . PKRouteHelper::getMenuItemId('active')); ?>" method="post">
         <?php
         // Toolbar
         echo $this->toolbar;

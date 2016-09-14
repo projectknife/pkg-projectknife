@@ -185,8 +185,8 @@ class PKdashboardViewOverview extends JViewLegacy
             // Edit button
             if ($can_edit || $can_edit_own) {
                 $slug       = $this->item->id . ':' . $this->item->alias;
-                $url_return = base64_encode('index.php?option=com_pkdashboard&view=overview&Itemid=' . PKApplicationHelper::getMenuItemId('active'));
-                $item_form  = PKApplicationHelper::getMenuItemId('com_pkprojects', 'form');
+                $url_return = base64_encode('index.php?option=com_pkdashboard&view=overview&Itemid=' . PKRouteHelper::getMenuItemId('active'));
+                $item_form  = PKRouteHelper::getMenuItemId('com_pkprojects', 'form');
                 $url_edit   = JRoute::_('index.php?option=com_pkprojects&task=form.edit&id=' . $slug . '&Itemid=' . $item_form . '&return=' . $url_return);
 
                 PKToolbar::btnURL($url_edit, JText::_('JGLOBAL_EDIT'), array('icon' => 'edit'));

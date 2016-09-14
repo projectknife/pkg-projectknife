@@ -22,7 +22,7 @@ abstract class PKmilestonesHelperRoute
     {
         $link = 'index.php?option=com_pkmilestones&view=list';
 
-        if ($item = PKApplicationHelper::getMenuItemId('com_pkmilestones', 'list')) {
+        if ($item = PKRouteHelper::getMenuItemId('com_pkmilestones', 'list')) {
             $link .= '&Itemid=' . $item;
         }
 
@@ -41,7 +41,7 @@ abstract class PKmilestonesHelperRoute
     {
         $link = 'index.php?option=com_pkmilestones&view=item&id=' . $slug;
 
-        if ($item = PKApplicationHelper::getMenuItemId('com_pkmilestones', 'item', array($slug))) {
+        if ($item = PKRouteHelper::getMenuItemId('com_pkmilestones', 'item', array($slug))) {
             $link .= '&Itemid=' . $item;
         }
 
@@ -64,7 +64,7 @@ abstract class PKmilestonesHelperRoute
             $link .= "&id=" . $slug;
         }
 
-        if ($item = PKApplicationHelper::getMenuItemId('com_pkmilestones', 'form')) {
+        if ($item = PKRouteHelper::getMenuItemId('com_pkmilestones', 'form')) {
             $link .= '&Itemid=' . $item;
         }
 

@@ -33,7 +33,7 @@ $txt_dateformat = JText::_('DATE_FORMAT_LC4');
     <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
 <?php endif; ?>
 
-<form name="adminForm" id="adminForm" action="<?php echo JRoute::_('index.php?option=com_pkdashboard&view=overview&Itemid=' . PKApplicationHelper::getMenuItemId('active')); ?>" method="post">
+<form name="adminForm" id="adminForm" action="<?php echo JRoute::_('index.php?option=com_pkdashboard&view=overview&Itemid=' . PKRouteHelper::getMenuItemId('active')); ?>" method="post">
     <?php
     // Toolbar
     echo $this->toolbar;

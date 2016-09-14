@@ -92,7 +92,7 @@ if ($date_dynamic && $heading_by_date) {
 
 
 // Setup URL related vars
-$url_list   = 'index.php?option=com_pktasks&view=list&Itemid=' . PKApplicationHelper::getMenuItemId('active');
+$url_list   = 'index.php?option=com_pktasks&view=list&Itemid=' . PKRouteHelper::getMenuItemId('active');
 $url_return = base64_encode($url_list);
 
 

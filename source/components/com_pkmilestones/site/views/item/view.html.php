@@ -155,8 +155,8 @@ class PKmilestonesViewItem extends JViewLegacy
             // Edit button
             if ($can_edit || $can_edit_own) {
                 $slug       = $this->item->id . ':' . $this->item->alias;
-                $url_return = base64_encode('index.php?option=com_pkmilestones&view=item&id=' . $slug . '&Itemid=' . PKApplicationHelper::getMenuItemId('active'));
-                $item_form  = PKApplicationHelper::getMenuItemId('com_pkmilestones', 'form');
+                $url_return = base64_encode('index.php?option=com_pkmilestones&view=item&id=' . $slug . '&Itemid=' . PKRouteHelper::getMenuItemId('active'));
+                $item_form  = PKRouteHelper::getMenuItemId('com_pkmilestones', 'form');
                 $url_edit   = JRoute::_('index.php?option=com_pkmilestones&task=form.edit&id=' . $slug . '&Itemid=' . $item_form . '&return=' . $url_return);
 
                 PKToolbar::btnURL($url_edit, JText::_('JACTION_EDIT'), array('icon' => 'pencil'));

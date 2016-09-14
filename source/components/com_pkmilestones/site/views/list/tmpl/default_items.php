@@ -82,8 +82,8 @@ if ($date_dynamic && $heading_by_date) {
 
 
 // Setup URL related vars
-$url_list   = 'index.php?option=com_pkmilestones&view=list&Itemid=' . PKApplicationHelper::getMenuItemId('active');
-$url_tasks  = 'index.php?option=com_pktasks&view=list&Itemid=' . PKApplicationHelper::getMenuItemId('com_pktasks', 'list');
+$url_list   = 'index.php?option=com_pkmilestones&view=list&Itemid=' . PKRouteHelper::getMenuItemId('active');
+$url_tasks  = 'index.php?option=com_pktasks&view=list&Itemid=' . PKRouteHelper::getMenuItemId('com_pktasks', 'list');
 $url_return = base64_encode($url_list);
 
 

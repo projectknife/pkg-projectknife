@@ -22,7 +22,7 @@ abstract class PKprojectsHelperRoute
     {
         $link = 'index.php?option=com_pkprojects&view=list';
 
-        if ($item = PKApplicationHelper::getMenuItemId('com_pkprojects', 'list')) {
+        if ($item = PKRouteHelper::getMenuItemId('com_pkprojects', 'list')) {
             $link .= '&Itemid=' . $item;
         }
 
@@ -41,7 +41,7 @@ abstract class PKprojectsHelperRoute
     {
         $link = 'index.php?option=com_pkdashboard&&view=overview&id=' . $slug;
 
-        if ($item = PKApplicationHelper::getMenuItemId('com_pkdashboard', 'overview')) {
+        if ($item = PKRouteHelper::getMenuItemId('com_pkdashboard', 'overview')) {
             $link .= '&Itemid=' . $item;
         }
 
@@ -64,7 +64,7 @@ abstract class PKprojectsHelperRoute
             $link .= "&id=" . $slug;
         }
 
-        if ($item = PKApplicationHelper::getMenuItemId('com_pkprojects', 'form')) {
+        if ($item = PKRouteHelper::getMenuItemId('com_pkprojects', 'form')) {
             $link .= '&Itemid=' . $item;
         }
 
