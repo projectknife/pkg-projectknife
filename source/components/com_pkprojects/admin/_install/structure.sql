@@ -24,11 +24,12 @@ CREATE TABLE IF NOT EXISTS `#__pk_projects` (
   `due_date_task_id` int(10) UNSIGNED NOT NULL DEFAULT '0',
   `duration` int(10) UNSIGNED NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `idx_alias` (`category_id`,`alias`),
+  UNIQUE KEY `idx_alias` (`alias`,`category_id`) USING BTREE,
   KEY `idx_published` (`published`),
   KEY `idx_access` (`access`),
   KEY `idx_created_by` (`created_by`),
-  KEY `idx_asset_id` (`asset_id`) USING BTREE
+  KEY `idx_asset_id` (`asset_id`) USING BTREE,
+  KEY `idx_checked_out` (`checked_out`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `#__pk_project_users` (
