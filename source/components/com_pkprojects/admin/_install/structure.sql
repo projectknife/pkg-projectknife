@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS `#__pk_projects` (
   `due_date_task_id` int(10) UNSIGNED NOT NULL DEFAULT '0',
   `duration` int(10) UNSIGNED NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `idx_alias` (`alias`,`category_id`) USING BTREE,
+  UNIQUE KEY `idx_alias` (`alias`) USING BTREE,
   KEY `idx_published` (`published`),
   KEY `idx_access` (`access`),
   KEY `idx_created_by` (`created_by`),
