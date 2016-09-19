@@ -437,15 +437,29 @@ class JFormFieldPKUserRules extends JFormFieldRules
      */
     protected function getUsers($project_id = 0)
     {
+        // Get system plugin settings
+        $sys_params = PKPluginHelper::getParams('system', 'projectknife');
+
+        switch ($sys_params->get('user_display_name'))
+        {
+            case '1':
+                $display_name_field = 'name';
+                break;
+
+            default:
+                $display_name_field = 'username';
+                break;
+        }
+
         $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        $query->select('a.id AS value, a.name AS text')
+        $query->select('a.id AS value, a.' . $display_name_field . ' AS text')
               ->from('#__users AS a')
               ->join('INNER', '#__pk_project_users AS b ON b.user_id = a.id')
               ->where('b.project_id = ' . $project_id)
-              ->group('a.id, a.name')
-              ->order('a.name ASC');
+              ->group('a.id, a.' . $display_name_field)
+              ->order('a.' . $display_name_field . ' ASC');
 
         $db->setQuery($query);
         $options = $db->loadObjectList();

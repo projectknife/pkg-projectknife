@@ -191,6 +191,20 @@ class PKtasksModelTasks extends PKModelList
         $tag_id      = $this->getState('filter.tag_id');
         $search      = $this->getState('filter.search');
 
+        // Get system plugin settings
+        $sys_params = PKPluginHelper::getParams('system', 'projectknife');
+
+        switch ($sys_params->get('user_display_name'))
+        {
+            case '1':
+                $display_name_field = 'name';
+                break;
+
+            default:
+                $display_name_field = 'username';
+                break;
+        }
+
         $query->select(
             $this->getState(
                 'list.select',
@@ -203,7 +217,7 @@ class PKtasksModelTasks extends PKModelList
         $query->from('#__pk_tasks AS a');
 
         // Join over the users for the checked out user.
-        $query->select('uc.name AS editor')
+        $query->select('uc.' . $display_name_field . ' AS editor')
               ->join('LEFT', '#__users AS uc ON uc.id = a.checked_out');
 
         // Join over the asset groups.
@@ -211,7 +225,7 @@ class PKtasksModelTasks extends PKModelList
               ->join('LEFT', '#__viewlevels AS ag ON ag.id = a.access');
 
         // Join over the users for the author.
-        $query->select('ua.name AS author_name')
+        $query->select('ua.' . $display_name_field . ' AS author_name')
               ->join('LEFT', '#__users AS ua ON ua.id = a.created_by');
 
         // Join over the projects for the title
@@ -354,7 +368,7 @@ class PKtasksModelTasks extends PKModelList
             }
             elseif (stripos($search, 'author:') === 0) {
                 $search = $this->_db->quote('%' . $this->_db->escape(substr($search, 7), true) . '%');
-                $query->where('(ua.name LIKE ' . $search . ' OR ua.username LIKE ' . $search . ')');
+                $query->where('ua.' . $display_name_field . ' LIKE ' . $search);
             }
             else {
                 $search = $this->_db->quote('%' . str_replace(' ', '%', $this->_db->escape(trim($search), true) . '%'));
@@ -511,18 +525,32 @@ class PKtasksModelTasks extends PKModelList
      */
     public function getAuthorOptions()
     {
+        // Get system plugin settings
+        $sys_params = PKPluginHelper::getParams('system', 'projectknife');
+
+        switch ($sys_params->get('user_display_name'))
+        {
+            case '1':
+                $display_name_field = 'name';
+                break;
+
+            default:
+                $display_name_field = 'username';
+                break;
+        }
+
         $query = $this->_db->getQuery(true);
 
-        $query->select('u.id AS value, u.name AS text')
+        $query->select('u.id AS value, u.' . $display_name_field . ' AS text')
               ->from('#__users AS u')
               ->join('INNER', '#__pk_tasks AS t ON t.created_by = u.id')
-              ->group('u.id, u.name')
-              ->order('u.name ASC');
+              ->group('u.id, u.' . $display_name_field)
+              ->order('u.' . $display_name_field . ' ASC');
 
         // Restrict user visibility
         if ($this->getState('restrict.access')) {
             $levels   = $this->getState('auth.levels',   array(0));
-            $projects = $this->getState('auth.proejcts', array(0));
+            $projects = $this->getState('auth.projects', array(0));
 
             $query->where('(t.access IN(' . implode(', ', $levels) . ') OR t.project_id IN(' . implode(', ', $projects) . '))');
         }

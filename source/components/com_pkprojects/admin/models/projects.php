@@ -204,6 +204,20 @@ class PKprojectsModelProjects extends PKModelList
         $progress  = $this->getState('filter.progress');
         $search    = $this->getState('filter.search');
 
+        // Get system plugin settings
+        $sys_params = PKPluginHelper::getParams('system', 'projectknife');
+
+        switch ($sys_params->get('user_display_name'))
+        {
+            case '1':
+                $display_name_field = 'name';
+                break;
+
+            default:
+                $display_name_field = 'username';
+                break;
+        }
+
         // Restrict category
         if ((is_numeric($cat_id) && $cat_id > 0) && $this->getState('restrict.access')) {
             $levels = $this->getState('auth.levels', array(0));
@@ -226,7 +240,7 @@ class PKprojectsModelProjects extends PKModelList
         $query->from('#__pk_projects AS a');
 
         // Join over the users for the checked out user.
-        $query->select('uc.name AS editor')
+        $query->select('uc.' . $display_name_field . ' AS editor')
               ->join('LEFT', '#__users AS uc ON uc.id = a.checked_out');
 
         // Join over the asset groups.
@@ -238,7 +252,7 @@ class PKprojectsModelProjects extends PKModelList
               ->join('LEFT', '#__categories AS c ON c.id = a.category_id');
 
         // Join over the users for the author.
-        $query->select('ua.name AS author_name')
+        $query->select('ua.' . $display_name_field . ' AS author_name')
               ->join('LEFT', '#__users AS ua ON ua.id = a.created_by');
 
         // Join over the tasks for the start date task title
@@ -355,7 +369,7 @@ class PKprojectsModelProjects extends PKModelList
             }
             elseif (stripos($search, 'author:') === 0) {
                 $search = $db->quote('%' . $db->escape(substr($search, 7), true) . '%');
-                $query->where('(ua.name LIKE ' . $search . ' OR ua.username LIKE ' . $search . ')');
+                $query->where('(ua.' . $display_name_field . ' LIKE ' . $search . ')');
             }
             else {
                 $search = $db->quote('%' . str_replace(' ', '%', $db->escape(trim($search), true) . '%'));
@@ -670,13 +684,27 @@ class PKprojectsModelProjects extends PKModelList
      */
     public function getAuthorOptions()
     {
+        // Get system plugin settings
+        $sys_params = PKPluginHelper::getParams('system', 'projectknife');
+
+        switch ($sys_params->get('user_display_name'))
+        {
+            case '1':
+                $display_name_field = 'name';
+                break;
+
+            default:
+                $display_name_field = 'username';
+                break;
+        }
+
         $query = $this->_db->getQuery(true);
 
-        $query->select('u.id AS value, u.name AS text')
+        $query->select('u.id AS value, u.' . $display_name_field . ' AS text')
               ->from('#__users AS u')
               ->join('INNER', '#__pk_projects AS c ON c.created_by = u.id')
-              ->group('u.id, u.name')
-              ->order('u.name ASC');
+              ->group('u.id, u.' . $display_name_field)
+              ->order('u.' . $display_name_field . ' ASC');
 
         // Restrict user visibility
         if ($this->getState('restrict.access')) {

@@ -98,14 +98,27 @@ class PKprojectsControllerProject extends JControllerLegacy
             }
         }
 
+        // Get system plugin settings
+        $sys_params = PKPluginHelper::getParams('system', 'projectknife');
+
+        switch ($sys_params->get('user_display_name'))
+        {
+            case '1':
+                $display_name_field = 'name';
+                break;
+
+            default:
+                $display_name_field = 'username';
+                break;
+        }
 
         // Search query
         $query->clear()
-              ->select('a.id AS value, a.username AS text')
+              ->select('a.id AS value, a.' . $display_name_field . ' AS text')
               ->from('#__users AS a')
               ->join('inner', '#__user_usergroup_map AS m ON m.user_id = a.id')
-              ->where('(a.username LIKE ' . $db->quote('%' . $like . '%') . ' OR a.name LIKE ' . $db->quote('%' . $like . '%') . ')')
-              ->group('a.id, a.username');
+              ->where('a.' . $display_name_field . ' LIKE ' . $db->quote('%' . $like . '%'))
+              ->group('a.id, a.' . $display_name_field);
 
         // Filter on member groups and users
         if ($group_count || $user_count) {

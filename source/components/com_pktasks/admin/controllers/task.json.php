@@ -34,6 +34,7 @@ class PKtasksControllerTask extends JControllerLegacy
     }
 
 
+    /*
     public function searchUser()
     {
         $app   = JFactory::getApplication();
@@ -81,4 +82,5 @@ class PKtasksControllerTask extends JControllerLegacy
         echo json_encode(array($obj));
         JFactory::getApplication()->close();
     }
+    */
 }

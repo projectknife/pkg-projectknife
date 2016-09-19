@@ -84,13 +84,27 @@ class JFormFieldPKtaskAssignee extends JFormFieldList
 
         JArrayHelper::toInteger($this->value);
 
+        // Get system plugin settings
+        $sys_params = PKPluginHelper::getParams('system', 'projectknife');
+
+        switch ($sys_params->get('user_display_name'))
+        {
+            case '1':
+                $display_name_field = 'name';
+                break;
+
+            default:
+                $display_name_field = 'username';
+                break;
+        }
+
         $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        $query->select('id AS value, username AS text')
+        $query->select('id AS value, ' . $display_name_field . ' AS text')
               ->from('#__users')
               ->where('id IN(' . implode(', ', $this->value) . ')')
-              ->order('username ASC');
+              ->order('' . $display_name_field . ' ASC');
 
         $db->setQuery($query);
         $users = $db->loadObjectList();
