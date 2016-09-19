@@ -231,14 +231,14 @@ class JFormFieldPKRules extends JFormFieldRules
 			    foreach ($action_options AS $action)
                 {
                     $html[] = '<tr>';
-    				$html[] = '<td headers="actions-th' . $group->value . '">';
+    				$html[] = '<td headers="actions-th' . $group->value . '" class="span4">';
     				$html[] = '<label for="' . $this->id . '_' . $action->name . '_' . $group->value . '" class="hasTooltip" title="'
     					. JHtml::_('tooltipText', $action->title, $action->description) . '">';
     				$html[] = JText::_($action->title);
     				$html[] = '</label>';
     				$html[] = '</td>';
 
-    				$html[] = '<td headers="settings-th' . $group->value . '">';
+    				$html[] = '<td headers="settings-th' . $group->value . '" class="span4">';
 
     				$html[] = '<select ' . $permission_onchange . ' data-chosen="true" class="input-small novalidate"'
     					. ' name="' . $this->name . '[' . $action->name . '][' . $group->value . ']"'
@@ -271,7 +271,7 @@ class JFormFieldPKRules extends JFormFieldRules
     				$html[] = '</td>';
 
     				// Build the Calculated Settings column.
-    				$html[] = '<td headers="aclactionth' . $group->value . '">';
+    				$html[] = '<td headers="aclactionth' . $group->value . '"  class="span4">';
 
     				$result = array();
 

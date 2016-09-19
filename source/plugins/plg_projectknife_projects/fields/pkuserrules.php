@@ -287,15 +287,15 @@ class JFormFieldPKUserRules extends JFormFieldRules
             $html[] = '<thead>';
             $html[] = '<tr>';
 
-            $html[] = '<th class="actions" id="' . $this->fieldname . '-actions-th-' . $uid . '">';
+            $html[] = '<th class="actions" id="' . $this->fieldname . '-actions-th-' . $uid . '" class="span4">';
             $html[] = '<span class="acl-action">' . JText::_(strtoupper($action_group) . '_PERMISSIONS_HEADING') . '</span>';
             $html[] = '</th>';
-            $html[] = '<th class="settings" id="' . $this->fieldname . '-settings-th-' . $uid . '">';
+            $html[] = '<th class="settings" id="' . $this->fieldname . '-settings-th-' . $uid . '" class="span4">';
             $html[] = '<span class="acl-action">' . JText::_('JLIB_RULES_SELECT_SETTING') . '</span>';
             $html[] = '</th>';
 
             if ($can_calc) {
-                $html[] = '<th id="' . $this->fieldname . '-aclaction-th-' . $uid . '">';
+                $html[] = '<th id="' . $this->fieldname . '-aclaction-th-' . $uid . '" class="span4">';
                 $html[] = '<span class="acl-action">' . JText::_('JLIB_RULES_CALCULATED_SETTING') . '</span>';
                 $html[] = '</th>';
             }
@@ -308,14 +308,14 @@ class JFormFieldPKUserRules extends JFormFieldRules
             foreach ($action_options as $action)
             {
                 $html[] = '<tr>';
-                $html[] = '<td headers="actions-th' . $uid . '">';
+                $html[] = '<td headers="actions-th' . $uid . '" class="span4">';
                 $html[] = '<label for="' . $this->id . '_' . $action->name . '_' . $uid . '" class="hasTooltip" title="'
                     . htmlspecialchars(JText::_($action->title) . ' ' . JText::_($action->description), ENT_COMPAT, 'UTF-8') . '">';
                 $html[] = JText::_($action->title);
                 $html[] = '</label>';
                 $html[] = '</td>';
 
-                $html[] = '<td headers="' . $this->fieldname . '-settings-th-' . $uid . '">';
+                $html[] = '<td headers="' . $this->fieldname . '-settings-th-' . $uid . '" class="span4">';
 
                 $html[] = '<select data-chosen="true" class="input-small"'
                     . ' name="' . $this->name . '[' . $action->name . '][-' . $uid . ']"'
@@ -353,7 +353,7 @@ class JFormFieldPKUserRules extends JFormFieldRules
                 // The inherited settings column is not displayed for the root group in global configuration.
                 if ($can_calc)
                 {
-                    $html[] = '<td headers="' . $this->fieldname . '-aclaction-th-' . $uid . '">';
+                    $html[] = '<td headers="' . $this->fieldname . '-aclaction-th-' . $uid . '" class="span4">';
 
                     // This is where we show the current effective settings considering currrent group, path and cascade.
                     // Check whether this is a component or global. Change the text slightly.
