@@ -103,9 +103,14 @@ $sorting_manual = ($list_order == 'ordering');
 // Menu item id's
 $itemid_active     = PKRouteHelper::getMenuItemId('active');
 $itemid_db_default = PKRouteHelper::getMenuItemId('com_pkdashboard', 'overview', array('id' => 0));
+$itemid_form       = PKRouteHelper::getMenuItemId('com_pkprojects', 'form');
 
 if ($itemid_db_default == $itemid_active) {
     $itemid_db_default = '';
+}
+
+if ($itemid_form == $itemid_active) {
+    $itemid_form = '';
 }
 
 
@@ -153,8 +158,9 @@ for ($i = 0; $i != $count; $i++)
         $btn_edit = str_replace('btn-micro', 'btn-small btn-link', $btn_edit);
     }
     elseif ($can_edit || $can_edit_own) {
+        $link_edit = 'index.php?option=com_pkprojects&task=form.edit&id=' . $item->slug . '&Itemid=' . $itemid_form . '&return=' . $url_return;
         $btn_edit = '<a class="btn btn-small btn-link hasTooltip" title="' . $txt_edit . '" href="'
-                  . JRoute::_(PKprojectsHelperRoute::getFormRoute($item->slug) . '&return=' . $url_return)  . '">'
+                  . JRoute::_($link_edit)  . '">'
                   . '<span class="icon-edit"></span></a>';
     }
     else {
