@@ -9,7 +9,7 @@
     <authorEmail>support@projectknife.net</authorEmail>
     <authorUrl>http://projectknife.net</authorUrl>
     <version>5.0.0.alpha.1</version>
-    <description>PLG_SYSTEM_PROJECTKNIFE_DESC</description>
+    <description>PLG_SYSTEM_PROJECTKNIFE_XML_DESCRIPTION</description>
 
     <!-- Install script -->
     <scriptfile>setup.php</scriptfile>
@@ -41,4 +41,15 @@
             <file driver="mysql" charset="utf8">_uninstall/structure.sql</file>
         </sql>
     </uninstall>
+
+    <config>
+		<fields name="params">
+			<fieldset name="basic">
+                <field type="list" name="user_display_name" label="PLG_SYSTEM_PROJECTKNIFE_CONFIG_USER_DISPLAY_NAME_LABEL" description="PLG_SYSTEM_PROJECTKNIFE_CONFIG_USER_DISPLAY_NAME_DESC">
+                    <option value="0">PLG_SYSTEM_PROJECTKNIFE_CONFIG_USERNAME_OPTION</option>
+                    <option value="1">PLG_SYSTEM_PROJECTKNIFE_CONFIG_NAME_OPTION</option>
+                </field>
+            </fieldset>
+        </fields>
+    </config>
 </extension>
