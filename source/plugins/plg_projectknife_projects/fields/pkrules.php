@@ -55,23 +55,32 @@ class JFormFieldPKRules extends JFormFieldRules
 	 */
 	protected function getInput()
 	{
+	    $app = JFactory::getApplication();
+
 		JHtml::_('bootstrap.tooltip');
 
-		// Add Javascript for permission change
-		JHtml::_('script', 'system/permissions.js', false, true);
+        if (!$app->isSite()) {
+            // Add Javascript for permission change
+    		JHtml::_('script', 'system/permissions.js', false, true);
 
-		// Load JavaScript message titles
-		JText::script('ERROR');
-		JText::script('WARNING');
-		JText::script('NOTICE');
-		JText::script('MESSAGE');
+    		// Load JavaScript message titles
+    		JText::script('ERROR');
+    		JText::script('WARNING');
+    		JText::script('NOTICE');
+    		JText::script('MESSAGE');
 
-		// Add strings for JavaScript error translations.
-		JText::script('JLIB_JS_AJAX_ERROR_CONNECTION_ABORT');
-		JText::script('JLIB_JS_AJAX_ERROR_NO_CONTENT');
-		JText::script('JLIB_JS_AJAX_ERROR_OTHER');
-		JText::script('JLIB_JS_AJAX_ERROR_PARSE');
-		JText::script('JLIB_JS_AJAX_ERROR_TIMEOUT');
+    		// Add strings for JavaScript error translations.
+    		JText::script('JLIB_JS_AJAX_ERROR_CONNECTION_ABORT');
+    		JText::script('JLIB_JS_AJAX_ERROR_NO_CONTENT');
+    		JText::script('JLIB_JS_AJAX_ERROR_OTHER');
+    		JText::script('JLIB_JS_AJAX_ERROR_PARSE');
+    		JText::script('JLIB_JS_AJAX_ERROR_TIMEOUT');
+
+            $permission_onchange = 'onchange="sendPermissions.call(this, event)"';
+        }
+        else {
+            $permission_onchange = '';
+        }
 
 		// Initialise some field attributes.
 		$section    = $this->section;
@@ -123,8 +132,7 @@ class JFormFieldPKRules extends JFormFieldRules
 		}
 
 		// If not in global config we need the parent_id asset to calculate permissions.
-		if (!$isGlobalConfig)
-		{
+		if (!$isGlobalConfig) {
 			// In this case we need to get the component rules too.
 			$db = JFactory::getDbo();
 
@@ -232,7 +240,7 @@ class JFormFieldPKRules extends JFormFieldRules
 
     				$html[] = '<td headers="settings-th' . $group->value . '">';
 
-    				$html[] = '<select onchange="sendPermissions.call(this, event)" data-chosen="true" class="input-small novalidate"'
+    				$html[] = '<select ' . $permission_onchange . ' data-chosen="true" class="input-small novalidate"'
     					. ' name="' . $this->name . '[' . $action->name . '][' . $group->value . ']"'
     					. ' id="' . $this->id . '_' . $action->name	. '_' . $group->value . '"'
     					. ' title="' . JText::sprintf('JLIB_RULES_SELECT_ALLOW_DENY_GROUP', JText::_($action->title), trim($group->text)) . '">';
