@@ -135,7 +135,7 @@ for ($i = 0; $i != $count; $i++)
     $can_edit       = PKUserHelper::authProject('core.edit.task', $item->project_id);
     $can_edit_state = PKUserHelper::authProject('core.edit.state.task', $item->project_id);
     $can_edit_own   = (PKUserHelper::authProject('core.edit.own.task', $item->project_id) && $item->created_by == $user->id);
-    $can_checkin    = ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0);
+    $can_checkin    = ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $user->id || $item->checked_out == 0);
     $can_change     = ($can_edit || $can_edit_own);
 
 

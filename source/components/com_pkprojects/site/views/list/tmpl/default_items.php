@@ -122,7 +122,7 @@ for ($i = 0; $i != $count; $i++)
     // Check permissions
     $can_edit     = PKUserHelper::authProject('core.edit.project', $item->id);
     $can_edit_own = (PKUserHelper::authProject('core.edit.own.project', $item->id) && $item->created_by == $user->id);
-    $can_checkin  = ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0);
+    $can_checkin  = ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $user->id || $item->checked_out == 0);
     $can_change   = ($can_edit || $can_edit_own);
 
 
