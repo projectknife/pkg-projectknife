@@ -128,8 +128,10 @@ abstract class PKRouteHelper
             }
         }
 
+        return null;
+
         // Not found; fall back to active menu item
-        $app    = JFactory::getApplication();
+        /*$app    = JFactory::getApplication();
         $menus  = $app->getMenu('site');
         $active = $menus->getActive();
 
@@ -140,6 +142,6 @@ abstract class PKRouteHelper
         // If not found, return language specific home link
         $default = $menus->getDefault($language);
 
-        return !empty($default->id) ? $default->id : null;
+        return !empty($default->id) ? $default->id : null;*/
     }
 }

@@ -11,14 +11,66 @@
 defined('_JEXEC') or die;
 
 
-class PKprojectsControllerForm extends JControllerForm
+class PKProjectsControllerForm extends JControllerForm
 {
     /**
      * The URL view list variable.
      *
-     * @var    string    
+     * @var    string
      */
     protected $view_list = 'list';
+
+
+    /**
+     * Method to check if you can add a new record.
+     *
+     * @param     array      $data    An array of input data.
+     *
+     * @return    boolean
+     */
+    protected function allowAdd($data = array())
+    {
+        return PKUserHelper::authProject('core.create.project');
+    }
+
+
+    /**
+     * Method to check if you can edit an existing record.
+     *
+     * @param     array      $data    An array of input data.
+     * @param     string     $key     The name of the key for the primary key; default is id.
+     *
+     * @return    boolean
+     */
+    protected function allowEdit($data = array(), $key = 'id')
+    {
+        $id = (isset($data[$key])) ? intval($data[$key]) : 0;
+
+        // Check "edit" permission
+        if (PKUserHelper::authProject('core.edit.project', $id)) {
+            return true;
+        }
+
+        if (!$id) {
+            return false;
+        }
+
+        // Fall back to "edit.own" permission check
+        $user  = JFactory::getUser();
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('created_by')
+              ->from('#__pk_projects')
+              ->where('id = ' . $id);
+
+        $db->setQuery($query);
+        $author = (int) $db->loadResult();
+
+        $can_edit_own = PKUserHelper::authProject('core.edit.own.project', $id);
+
+        return ($can_edit_own && $user->id > 0 && $user->id == $author);
+    }
 
 
     /**
@@ -28,7 +80,7 @@ class PKprojectsControllerForm extends JControllerForm
      * @param     jmodellegacy    $model    The data model object.
      * @param     array           $data     The validated data.
      *
-     * @return    void                      
+     * @return    void
      */
     protected function postSaveHook(JModelLegacy $model, $data = array())
     {

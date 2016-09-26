@@ -11,7 +11,7 @@
 defined('_JEXEC') or die;
 
 
-abstract class PKprojectsHelperRoute
+abstract class PKProjectsHelperRoute
 {
     /**
      * Get the list route.
@@ -33,9 +33,9 @@ abstract class PKprojectsHelperRoute
     /**
      * Get the item route.
      *
-     * @param     string  $slug The project id slug
+     * @param     string    $slug    The project id slug
      *
-     * @return    string    The project item route.
+     * @return    string             The project item route.
      */
     public static function getItemRoute($slug)
     {
@@ -52,9 +52,9 @@ abstract class PKprojectsHelperRoute
     /**
      * Get the form route.
      *
-     * @param     string  $slug The project id slug
+     * @param     string    $slug    The project id slug
      *
-     * @return    string    The project form route.
+     * @return    string             The project form route.
      */
     public static function getFormRoute($slug = null)
     {

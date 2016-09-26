@@ -30,6 +30,10 @@ class JFormFieldPKRules extends JFormFieldRules
         $actions    = array($component => JAccess::getActions($component, $section));
         $components = PKApplicationHelper::getComponents();
 
+        if ($section == 'component') {
+            $section = 'project';
+        }
+
         foreach ($components AS $cmp)
         {
             if (!$cmp->enabled || $cmp->element == $component) {
@@ -208,6 +212,10 @@ class JFormFieldPKRules extends JFormFieldRules
 
 			foreach ($actions as $action_group => $action_options)
 			{
+			    if ($section == 'component' && $action_group == 'com_pkprojects') {
+                    $action_group .= '_global';
+                }
+
                 $html[] = '<table class="table table-striped">';
     			$html[] = '<thead>';
     			$html[] = '<tr>';

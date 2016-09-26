@@ -66,7 +66,7 @@
 		</field>
         <field name="duration" type="text" class="input-small" default="30" label="COM_PKPROJECTS_DEFAULT_DURATION_LABEL" description="COM_PKPROJECTS_DEFAULT_DURATION_DESC"/>
     </fieldset>
-    <fieldset name="permissions" label="JCONFIG_PERMISSIONS_LABEL" description="JCONFIG_PERMISSIONS_DESC">
-		<field name="rules" type="rules" label="JCONFIG_PERMISSIONS_LABEL" validate="rules" filter="rules" component="com_pkprojects" section="component" />
+    <fieldset name="permissions" label="JCONFIG_PERMISSIONS_LABEL" description="JCONFIG_PERMISSIONS_DESC" addrulepath="/plugins/projectknife/projects/rules">
+		<field name="rules" type="pkrules" label="JCONFIG_PERMISSIONS_LABEL" validate="pkrules" filter="rules" component="com_pkprojects" section="component" />
 	</fieldset>
 </config>

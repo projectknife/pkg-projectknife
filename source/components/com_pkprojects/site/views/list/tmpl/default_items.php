@@ -101,17 +101,9 @@ $sorting_manual = ($list_order == 'ordering');
 
 
 // Menu item id's
-$itemid_active     = PKRouteHelper::getMenuItemId('active');
-$itemid_db_default = PKRouteHelper::getMenuItemId('com_pkdashboard', 'overview', array('id' => 0));
-$itemid_form       = PKRouteHelper::getMenuItemId('com_pkprojects', 'form');
-
-if ($itemid_db_default == $itemid_active) {
-    $itemid_db_default = '';
-}
-
-if ($itemid_form == $itemid_active) {
-    $itemid_form = '';
-}
+$itemid_active   = PKRouteHelper::getMenuItemId('active');
+$itemid_overview = PKRouteHelper::getMenuItemId('com_pkdashboard', 'overview', array('id' => 0));
+$itemid_form     = PKRouteHelper::getMenuItemId('com_pkprojects', 'form');
 
 
 // Enable popups for date buttons
@@ -128,7 +120,6 @@ for ($i = 0; $i != $count; $i++)
     $item = $this->items[$i];
 
     // Check permissions
-    $can_create   = PKUserHelper::authProject('core.create.project', $item->id);
     $can_edit     = PKUserHelper::authProject('core.edit.project', $item->id);
     $can_edit_own = (PKUserHelper::authProject('core.edit.own.project', $item->id) && $item->created_by == $user->id);
     $can_checkin  = ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0);
@@ -138,8 +129,8 @@ for ($i = 0; $i != $count; $i++)
     // Get the correct menu item id for this project
     $itemid = PKRouteHelper::getMenuItemId('com_pkdashboard', 'overview', array('id' => $item->id));
 
-    if ($itemid == $itemid_active) {
-        $itemid = $itemid_db_default;
+    if (!$itemid) {
+        $itemid = $itemid_overview;
     }
 
 

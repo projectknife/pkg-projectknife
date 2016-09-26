@@ -11,7 +11,7 @@
 defined('_JEXEC') or die();
 
 
-class PKprojectsControllerProject extends JControllerForm
+class PKProjectsControllerProject extends JControllerForm
 {
     /**
      * Function that allows child controller access to model data

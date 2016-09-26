@@ -70,6 +70,12 @@ class PKprojectsViewForm extends JViewLegacy
             return false;
         }
 
+        // Double check form view access
+        if ($this->item->id == 0 && !PKUserHelper::authProject('core.create.project')) {
+            JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'warning');
+		    return;
+        }
+
         parent::display($tpl);
     }
 
