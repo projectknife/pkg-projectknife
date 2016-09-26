@@ -210,7 +210,7 @@ class JFormFieldPKUserRules extends JFormFieldRules
 
         // Prepare output
         $html   = array();
-        // $html[] = '<input type="hidden" name="' . $this->name . '" value=""/>';
+        $html[] = '<input type="hidden" name="' . $this->name . '" value=""/>';
         $html[] = '<div class="control-group">';
         $html[] = '<div class="control-label"><label id="jform_' . $this->fieldname . '-lbl" class="" for="' . $this->fieldname . '_search">User Access</label></div>';
         $html[] = '<div class="controls">';
