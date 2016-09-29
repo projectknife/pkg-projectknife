@@ -148,7 +148,7 @@ for ($i = 0; $i != $count; $i++)
         $btn_edit = JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'list.', $can_checkin);
         $btn_edit = str_replace('btn-micro', 'btn-small btn-link', $btn_edit);
     }
-    elseif ($can_edit || $can_edit_own) {
+    elseif ($can_change) {
         $link_edit = 'index.php?option=com_pkprojects&task=form.edit&id=' . $item->slug . '&Itemid=' . $itemid_form . '&return=' . $url_return;
         $btn_edit = '<a class="btn btn-small btn-link hasTooltip" title="' . $txt_edit . '" href="'
                   . JRoute::_($link_edit)  . '">'
