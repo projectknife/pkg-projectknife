@@ -74,7 +74,7 @@ abstract class PKAccess
             return $cache[$user_id][$asset][$action];
         }
 
-        $result = null;
+        /*$result = null;
         $path   = explode('.', $action);
         $count  = count($path);
         $check  = '';
@@ -108,7 +108,9 @@ abstract class PKAccess
             if (is_null($result) && $allow) {
                 $result = $allow;
             }
-        }
+        }*/
+
+        $result = JAccess::check($user_id, $action, $asset);
 
         $cache[$user_id][$asset][$action] = $result;
 
