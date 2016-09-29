@@ -88,11 +88,13 @@ abstract class PKAccess
             $result = JAccess::check($user_id, $action, $asset);
         }
         else {
-            $check = $path[0] . '.' . $path[1];
+            $check = $path[0];
             $allow = false;
 
-            for ($i = 2; $i != $count; $i++)
+            for ($i = 1; $i < $count; $i++)
             {
+                $check .= '.' . $path[$i];
+
                 $result = JAccess::check($user_id, $check, $asset);
 
                 if ($result === false) {
@@ -101,8 +103,6 @@ abstract class PKAccess
                 elseif ($result === true) {
                     $allow = true;
                 }
-
-                $check .= '.' . $path[$i];
             }
 
             if (is_null($result) && $allow) {
