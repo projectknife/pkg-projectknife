@@ -62,7 +62,14 @@ class PKmilestonesModelMilestone extends PKModelAdmin
      */
     protected function canDelete($record)
     {
-        return PKUserHelper::authProject('milestone.delete', $record->project_id);
+        if (PKUserHelper::authProject('milestone.delete', $record->project_id)) {
+            return true;
+        }
+
+        $delete_own = PKUserHelper::authProject('milestone.delete.own', $record->project_id);
+        $user       = JFactory::getUser();
+
+        return ($delete_own && $user->id > 0 && $user->id == $record->created_by);
     }
 
 
@@ -75,7 +82,14 @@ class PKmilestonesModelMilestone extends PKModelAdmin
      */
     protected function canEditState($record)
     {
-        return PKUserHelper::authProject('milestone.edit.state', $record->project_id);
+        if (PKUserHelper::authProject('milestone.edit.state', $record->project_id)) {
+            return true;
+        }
+
+        $edit_own = PKUserHelper::authProject('milestone.edit.own.state', $record->project_id);
+        $user     = JFactory::getUser();
+
+        return ($edit_own && $user->id > 0 && $user->id == $record->created_by);
     }
 
 

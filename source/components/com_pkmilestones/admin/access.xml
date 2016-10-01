@@ -8,8 +8,10 @@
 	<section name="project">
 		<action name="milestone.create" title="JACTION_CREATE" description="COM_PKMILESTONES_ACTION_CREATE_MILESTONES_DESC" />
 		<action name="milestone.edit" title="JACTION_EDIT" description="COM_PKMILESTONES_ACTION_EDIT_MILESTONES_DESC" />
+        <action name="milestone.edit.own" title="JACTION_EDITOWN" description="COM_PKMILESTONES_ACTION_EDITOWN_MILESTONES_DESC" />
 		<action name="milestone.edit.state" title="JACTION_EDITSTATE" description="COM_PKMILESTONES_ACTION_EDITSTATE_MILESTONES_DESC" />
-		<action name="milestone.edit.own" title="JACTION_EDITOWN" description="COM_PKMILESTONES_ACTION_EDITOWN_MILESTONES_DESC" />
+		<action name="milestone.edit.own.state" title="PKGLOBAL_ACTION_EDITOWNSTATE" description="COM_PKMILESTONES_ACTION_EDITOWNSTATE_MILESTONES_DESC" />
         <action name="milestone.delete" title="JACTION_DELETE" description="COM_PKMILESTONES_ACTION_DELETE_MILESTONES_DESC" />
+        <action name="milestone.delete.own" title="PKGLOBAL_ACTION_DELETEOWN" description="COM_PKMILESTONES_ACTION_DELETEOWN_MILESTONES_DESC" />
 	</section>
 </access>

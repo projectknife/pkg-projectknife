@@ -110,9 +110,9 @@ for ($i = 0; $i != $count; $i++)
     $item = $this->items[$i];
 
     // Check permissions
-    $can_create   = PKUserHelper::authProject('milestone.create', $item->id);
-    $can_edit     = PKUserHelper::authProject('milestone.edit', $item->id);
-    $can_edit_own = (PKUserHelper::authProject('milestone.edit.own', $item->id) && $item->created_by == $user->id);
+    $can_create   = PKUserHelper::authProject('milestone.create', $item->project_id);
+    $can_edit     = PKUserHelper::authProject('milestone.edit', $item->project_id);
+    $can_edit_own = (PKUserHelper::authProject('milestone.edit.own', $item->project_id) && $item->created_by == $user->id);
     $can_checkin  = ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $user->id || $item->checked_out == 0);
     $can_change   = ($can_edit || $can_edit_own);
 

@@ -11,10 +11,10 @@
 defined('_JEXEC') or die;
 
 
-JLoader::register('PKmilestonesControllerMilestone', JPATH_ADMINISTRATOR . '/components/com_pkmilestones/controllers/milestone.json.php');
+JLoader::register('PKMilestonesControllerMilestone', JPATH_ADMINISTRATOR . '/components/com_pkmilestones/controllers/milestone.json.php');
 
 
-class PKMilestonesControllerForm extends PKmilestonesControllerMilestone
+class PKMilestonesControllerForm extends PKMilestonesControllerMilestone
 {
 
 }

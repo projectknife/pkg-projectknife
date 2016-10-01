@@ -72,7 +72,7 @@ class JFormFieldPKproject extends JFormFieldList
             // Check permission before adding option
             for ($i = 0; $i != $count; $i++)
             {
-                if (!PKUserHelper::authProject($permission, (int) $projects[$i]->value) && $projects[$i]->value != $this->value) {
+                if (!PKUserHelper::authProject(strval($permission), intval($projects[$i]->value)) && $projects[$i]->value != $this->value) {
                     continue;
                 }
 

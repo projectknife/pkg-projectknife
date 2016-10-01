@@ -22,6 +22,62 @@ class PKmilestonesControllerForm extends JControllerForm
 
 
     /**
+     * Method to check if you can add a new record.
+     *
+     * @param     array      $data    An array of input data.
+     *
+     * @return    boolean
+     */
+    protected function allowAdd($data = array())
+    {
+        $pid = (isset($data['project_id'])) ? intval($data['project_id']) : 0;
+
+        return PKUserHelper::authProject('milestone.create', $pid);
+    }
+
+
+    /**
+     * Method to check if you can edit an existing record.
+     *
+     * @param     array      $data    An array of input data.
+     * @param     string     $key     The name of the key for the primary key; default is id.
+     *
+     * @return    boolean
+     */
+    protected function allowEdit($data = array(), $key = 'id')
+    {
+        $id  = (isset($data[$key])) ? intval($data[$key]) : 0;
+        $pid = (isset($data['project_id'])) ? intval($data['project_id']) : 0;
+
+        if (!$id) {
+            return PKUserHelper::authProject('milestone.create', $pid);
+        }
+
+        // Check "edit" permission
+        if (PKUserHelper::authProject('milestone.edit', $pid)) {
+            return true;
+        }
+
+
+        // Fall back to "edit.own" permission check
+        $user  = JFactory::getUser();
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('created_by')
+              ->from('#__pk_milestones')
+              ->where('id = ' . $id);
+
+        $db->setQuery($query);
+        $author = (int) $db->loadResult();
+
+        $can_edit_own = PKUserHelper::authProject('milestone.edit.own', $pid);
+
+        return ($can_edit_own && $user->id > 0 && $user->id == $author);
+    }
+
+
+    /**
      * Get the return URL.
      * If a "return" variable has been passed in the request
      *

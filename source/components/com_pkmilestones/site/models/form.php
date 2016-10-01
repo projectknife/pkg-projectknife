@@ -8,14 +8,15 @@
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
-defined('_JEXEC') or die();
+defined('_JEXEC') or die;
 
 
 use Joomla\Registry\Registry;
 
-JLoader::register('PKmilestonesModelMilestone', JPATH_ADMINISTRATOR . '/components/com_pkmilestones/models/milestone.php');
+JLoader::register('PKMilestonesModelMilestone', JPATH_ADMINISTRATOR . '/components/com_pkmilestones/models/milestone.php');
 
-class PKmilestonesModelForm extends PKmilestonesModelMilestone
+
+class PKMilestonesModelForm extends PKMilestonesModelMilestone
 {
 
 }

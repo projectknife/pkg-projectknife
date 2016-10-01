@@ -62,6 +62,27 @@ class PKmilestonesViewForm extends JViewLegacy
             return false;
         }
 
+        // Double check form view access
+        if ($this->item->id == 0) {
+            if (!PKUserHelper::authProject('milestone.create', $this->item->project_id)) {
+                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'warning');
+                return;
+            }
+        }
+        elseif (!PKUserHelper::authProject('milestone.edit', $this->item->project_id)) {
+            if (!PKUserHelper::authProject('milestone.edit.own', $this->item->project_id)) {
+                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'warning');
+                return;
+            }
+
+            $user = JFactory::getUser();
+
+            if ($user->id != $this->item->created_by || $user->id <= 0) {
+                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'warning');
+                return;
+            }
+        }
+
         parent::display($tpl);
     }
 

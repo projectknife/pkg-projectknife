@@ -957,7 +957,7 @@ class plgProjectknifeProjects extends JPlugin
         );
 
         // Publishing state filter
-        if (!$state->get('restrict.published')) {
+        if (PKUserHelper::authProject('core.edit.state') || PKUserHelper::authProject('core.edit.own.state')) {
             $options = array_merge(
                 array(JHtml::_('select.option', '',  JText::_('JOPTION_SELECT_PUBLISHED'))),
                 JHtml::_('jgrid.publishedOptions')

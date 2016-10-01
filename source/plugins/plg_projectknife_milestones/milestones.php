@@ -759,8 +759,9 @@ class plgProjectknifeMilestones extends JPlugin
 
 
         // Get filter options from model
-        $model = JModelLegacy::getInstance('List', 'PKmilestonesModel');
+        $model = JModelLegacy::getInstance('List', 'PKMilestonesModel');
         $state = $model->getState();
+        $pid   = (int) $state->get('filter.project_id');
 
         // Project filter
         $options = array_merge(
@@ -793,7 +794,7 @@ class plgProjectknifeMilestones extends JPlugin
         );
 
         // Publishing state filter
-        if (!$state->get('restrict.published')) {
+        if (PKUserHelper::authProject('milestone.edit.state', $pid) || PKUserHelper::authProject('milestone.edit.own.state', $pid)) {
             $options = array_merge(
                 array(JHtml::_('select.option', '',  JText::_('JOPTION_SELECT_PUBLISHED'))),
                 JHtml::_('jgrid.publishedOptions')

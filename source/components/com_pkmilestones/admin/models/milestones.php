@@ -11,7 +11,7 @@
 defined('_JEXEC') or die;
 
 
-class PKmilestonesModelMilestones extends PKModelList
+class PKMilestonesModelMilestones extends PKModelList
 {
     /**
      * Constructor.
@@ -411,7 +411,7 @@ class PKmilestonesModelMilestones extends PKModelList
             $levels   = $this->getState('auth.levels', array(0));
             $projects = $this->getState('auth.projects', array(0));
 
-            $query->where('(p.access IN(' . implode(', ', $levels) . ') p.id IN(' . implode(', ', $projects) . '))');
+            $query->where('(p.access IN(' . implode(', ', $levels) . ') OR p.id IN(' . implode(', ', $projects) . '))');
         }
 
         $query->group('p.id, p.title')

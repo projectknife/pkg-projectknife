@@ -14,7 +14,7 @@ defined('_JEXEC') or die;
 use Joomla\Registry\Registry;
 
 
-class PKmilestonesModelItem extends JModelItem
+class PKMilestonesModelItem extends JModelItem
 {
     /**
      * Model context string.
