@@ -137,8 +137,8 @@ class PKmilestonesControllerMilestones extends JControllerAdmin
                 // Cache permissions
                 if (!isset($can[$pid])) {
                     $can[$pid]             = array();
-                    $can[$pid]['edit']     = PKUserHelper::authProject('core.edit.milestone', $pid);
-                    $can[$pid]['edit_own'] = PKUserHelper::authProject('core.edit.own.milestone', $pid);
+                    $can[$pid]['edit']     = PKUserHelper::authProject('milestone.edit', $pid);
+                    $can[$pid]['edit_own'] = PKUserHelper::authProject('milestone.edit.own', $pid);
                 }
 
                 // Check project viewing access

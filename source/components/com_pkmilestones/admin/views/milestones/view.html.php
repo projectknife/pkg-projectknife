@@ -146,7 +146,7 @@ class PKmilestonesViewMilestones extends JViewLegacy
         JHtml::_('bootstrap.modal', 'collapseModal');
         JToolbarHelper::title(JText::_('COM_PKMILESTONES_MILESTONES_TITLE'));
 
-        if (PKUserHelper::authProject('core.create.milestone', $project_id)) {
+        if (PKUserHelper::authProject('milestone.create', $project_id)) {
             JToolbarHelper::addNew('milestone.add');
             JToolbarHelper::custom('milestones.copy_dialog', 'copy', 'copy', JText::_('JLIB_HTML_BATCH_COPY'));
         }

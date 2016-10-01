@@ -70,7 +70,7 @@ class PKtasksModelTask extends PKModelAdmin
      */
     protected function canDelete($record)
     {
-        return PKUserHelper::authProject('core.delete.task', $record->project_id);
+        return PKUserHelper::authProject('task.delete', $record->project_id);
     }
 
 
@@ -83,7 +83,7 @@ class PKtasksModelTask extends PKModelAdmin
      */
     protected function canEditState($record)
     {
-        return PKUserHelper::authProject('core.edit.state.task', $record->project_id);
+        return PKUserHelper::authProject('task.edit.state', $record->project_id);
     }
 
 

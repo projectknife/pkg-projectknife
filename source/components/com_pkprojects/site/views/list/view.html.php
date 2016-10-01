@@ -17,7 +17,7 @@ use Joomla\Registry\Registry;
 JPluginHelper::importPlugin('content');
 
 
-class PKprojectsViewList extends JViewLegacy
+class PKProjectsViewList extends JViewLegacy
 {
     /**
      * Items loaded by the model
@@ -149,8 +149,8 @@ class PKprojectsViewList extends JViewLegacy
 
 
         // Check permissions
-        $can_create = PKUserHelper::authProject('core.create.project');
-        $can_change = PKUserHelper::authProject('core.edit.state.project');
+        $can_create = PKUserHelper::authProject('core.create');
+        $can_change = PKUserHelper::authProject('core.edit.state') || PKUserHelper::authProject('core.edit.own.state');
 
         // Get filters
         $filter_published = $this->state->get('filter.published', 1);
@@ -159,7 +159,7 @@ class PKprojectsViewList extends JViewLegacy
         // Main Menu
         PKToolbar::menu('main');
             if ($can_create) {
-                $link = PKprojectsHelperRoute::getFormRoute() . '&return='
+                $link = PKProjectsHelperRoute::getFormRoute() . '&return='
                       . base64_encode(JRoute::_('index.php?option=com_pkprojects&view=list&Itemid=' . PKRouteHelper::getMenuItemId('active')));
 
                 PKToolbar::btnURL(JRoute::_($link), JText::_('JNEW'), array('icon' => 'plus'));

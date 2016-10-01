@@ -62,7 +62,7 @@ class PKmilestonesModelMilestone extends PKModelAdmin
      */
     protected function canDelete($record)
     {
-        return PKUserHelper::authProject('core.delete.milestone', $record->project_id);
+        return PKUserHelper::authProject('milestone.delete', $record->project_id);
     }
 
 
@@ -75,7 +75,7 @@ class PKmilestonesModelMilestone extends PKModelAdmin
      */
     protected function canEditState($record)
     {
-        return PKUserHelper::authProject('core.edit.state.milestone', $record->project_id);
+        return PKUserHelper::authProject('milestone.edit.state', $record->project_id);
     }
 
 

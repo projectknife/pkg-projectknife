@@ -182,7 +182,7 @@ class PKtasksViewTasks extends JViewLegacy
         JHtml::_('bootstrap.modal', 'collapseModal');
         JToolbarHelper::title(JText::_('COM_PKTASKS_TASKS_TITLE'));
 
-        if (PKUserHelper::authProject('core.create.task', $project_id)) {
+        if (PKUserHelper::authProject('task.create', $project_id)) {
             JToolbarHelper::addNew('task.add');
             JToolbarHelper::custom('tasks.copy_dialog', 'copy', 'copy', JText::_('JLIB_HTML_BATCH_COPY'));
         }

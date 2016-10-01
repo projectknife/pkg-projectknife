@@ -30,7 +30,7 @@ class PKProjectsControllerForm extends JControllerForm
      */
     protected function allowAdd($data = array())
     {
-        return PKUserHelper::authProject('core.create.project');
+        return PKUserHelper::authProject('core.create');
     }
 
 
@@ -46,14 +46,15 @@ class PKProjectsControllerForm extends JControllerForm
     {
         $id = (isset($data[$key])) ? intval($data[$key]) : 0;
 
+        if (!$id) {
+            return PKUserHelper::authProject('core.create');
+        }
+
         // Check "edit" permission
-        if (PKUserHelper::authProject('core.edit.project', $id)) {
+        if (PKUserHelper::authProject('core.edit', $id)) {
             return true;
         }
 
-        if (!$id) {
-            return false;
-        }
 
         // Fall back to "edit.own" permission check
         $user  = JFactory::getUser();
@@ -67,7 +68,7 @@ class PKProjectsControllerForm extends JControllerForm
         $db->setQuery($query);
         $author = (int) $db->loadResult();
 
-        $can_edit_own = PKUserHelper::authProject('core.edit.own.project', $id);
+        $can_edit_own = PKUserHelper::authProject('core.edit.own');
 
         return ($can_edit_own && $user->id > 0 && $user->id == $author);
     }
@@ -120,7 +121,7 @@ class PKProjectsControllerForm extends JControllerForm
      *
      * @return    object               The model.
      */
-    public function getModel($name = 'Form', $prefix = 'PKprojectsModel', $config = array('ignore_request' => true))
+    public function getModel($name = 'Form', $prefix = 'PKProjectsModel', $config = array('ignore_request' => true))
     {
         return parent::getModel($name, $prefix, $config);
     }

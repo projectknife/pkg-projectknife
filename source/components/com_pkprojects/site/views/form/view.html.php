@@ -11,7 +11,7 @@
 defined('_JEXEC') or die;
 
 
-class PKprojectsViewForm extends JViewLegacy
+class PKProjectsViewForm extends JViewLegacy
 {
     /**
      * Instance of JForm
@@ -71,9 +71,24 @@ class PKprojectsViewForm extends JViewLegacy
         }
 
         // Double check form view access
-        if ($this->item->id == 0 && !PKUserHelper::authProject('core.create.project')) {
-            JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'warning');
-		    return;
+        if ($this->item->id == 0) {
+            if (!PKUserHelper::authProject('core.create')) {
+                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'warning');
+                return;
+            }
+        }
+        elseif (!PKUserHelper::authProject('core.edit', $this->item->id)) {
+            if (!PKUserHelper::authProject('core.edit.own')) {
+                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'warning');
+                return;
+            }
+
+            $user = JFactory::getUser();
+
+            if ($user->id != $this->item->created_by || $user->id <= 0) {
+                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'warning');
+                return;
+            }
         }
 
         parent::display($tpl);

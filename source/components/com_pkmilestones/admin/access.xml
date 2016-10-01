@@ -6,10 +6,10 @@
 		<action name="core.manage" title="JACTION_MANAGE" description="JACTION_MANAGE_COMPONENT_DESC" />
 	</section>
 	<section name="project">
-		<action name="core.create.milestone" title="JACTION_CREATE" description="COM_PKMILESTONES_ACTION_CREATE_MILESTONES_DESC" />
-		<action name="core.delete.milestone" title="JACTION_DELETE" description="COM_PKMILESTONES_ACTION_DELETE_MILESTONES_DESC" />
-		<action name="core.edit.milestone" title="JACTION_EDIT" description="COM_PKMILESTONES_ACTION_EDIT_MILESTONES_DESC" />
-		<action name="core.edit.state.milestone" title="JACTION_EDITSTATE" description="COM_PKMILESTONES_ACTION_EDITSTATE_MILESTONES_DESC" />
-		<action name="core.edit.own.milestone" title="JACTION_EDITOWN" description="COM_PKMILESTONES_ACTION_EDITOWN_MILESTONES_DESC" />
+		<action name="milestone.create" title="JACTION_CREATE" description="COM_PKMILESTONES_ACTION_CREATE_MILESTONES_DESC" />
+		<action name="milestone.edit" title="JACTION_EDIT" description="COM_PKMILESTONES_ACTION_EDIT_MILESTONES_DESC" />
+		<action name="milestone.edit.state" title="JACTION_EDITSTATE" description="COM_PKMILESTONES_ACTION_EDITSTATE_MILESTONES_DESC" />
+		<action name="milestone.edit.own" title="JACTION_EDITOWN" description="COM_PKMILESTONES_ACTION_EDITOWN_MILESTONES_DESC" />
+        <action name="milestone.delete" title="JACTION_DELETE" description="COM_PKMILESTONES_ACTION_DELETE_MILESTONES_DESC" />
 	</section>
 </access>

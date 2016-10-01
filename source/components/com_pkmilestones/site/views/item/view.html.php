@@ -138,8 +138,8 @@ class PKmilestonesViewItem extends JViewLegacy
     {
         $app          = JFactory::getApplication();
         $user         = JFactory::getUser();
-        $can_edit     = PKUserHelper::authProject('core.edit.milestone', $this->item->project_id);
-        $can_edit_own = (PKUserHelper::authProject('core.edit.own.milestone', $this->item->project_id) && $this->item->created_by == $user->id);
+        $can_edit     = PKUserHelper::authProject('milestone.edit', $this->item->project_id);
+        $can_edit_own = (PKUserHelper::authProject('milestone.edit.own', $this->item->project_id) && $this->item->created_by == $user->id);
         $url_back     = $app->input->get('return', null, 'default', 'base64');
 
         if (empty($url_back) || !JUri::isInternal(base64_decode($url_back))) {

@@ -100,7 +100,7 @@ class PKTasksControllerTasks extends JControllerLegacy
 
                 if (!isset($data[$id])
                     || (!in_array($data[$id]['access'], $levels) && !in_array($data[$id]['project'], $projects))
-                    || !PKUserHelper::authProject('core.edit.state.task', $data[$id]['project'])
+                    || !PKUserHelper::authProject('task.edit.state', $data[$id]['project'])
                 ) {
                     unset($pks[$i]);
                 }
@@ -176,7 +176,7 @@ class PKTasksControllerTasks extends JControllerLegacy
 
                 if (!isset($data[$id])
                     || (!in_array($data[$id]['access'], $levels) && !in_array($data[$id]['project'], $projects))
-                    || !PKUserHelper::authProject('core.edit.state.task', $data[$id]['project'])
+                    || !PKUserHelper::authProject('task.edit.state', $data[$id]['project'])
                 ) {
                     unset($pks[$i]);
                 }
