@@ -20,11 +20,8 @@ abstract class PKProjectsHelperRoute
      */
     public static function getListRoute()
     {
-        $link = 'index.php?option=com_pkprojects&view=list';
-
-        if ($item = PKRouteHelper::getMenuItemId('com_pkprojects', 'list')) {
-            $link .= '&Itemid=' . $item;
-        }
+        $link = 'index.php?option=com_pkprojects&view=list'
+              . '&Itemid=' . intval(PKRouteHelper::getMenuItemId('com_pkprojects', 'list'));
 
         return $link;
     }
@@ -39,11 +36,8 @@ abstract class PKProjectsHelperRoute
      */
     public static function getItemRoute($slug)
     {
-        $link = 'index.php?option=com_pkdashboard&&view=overview&id=' . $slug;
-
-        if ($item = PKRouteHelper::getMenuItemId('com_pkdashboard', 'overview')) {
-            $link .= '&Itemid=' . $item;
-        }
+        $link = 'index.php?option=com_pkdashboard&&view=overview&id=' . $slug
+              . '&Itemid=' . intval(PKRouteHelper::getMenuItemId('com_pkdashboard', 'overview'));
 
         return $link;
     }
@@ -64,9 +58,7 @@ abstract class PKProjectsHelperRoute
             $link .= "&id=" . $slug;
         }
 
-        if ($item = PKRouteHelper::getMenuItemId('com_pkprojects', 'form')) {
-            $link .= '&Itemid=' . $item;
-        }
+        $link .= '&Itemid=' . intval(PKRouteHelper::getMenuItemId('com_pkprojects', 'form'));
 
         return $link;
     }

@@ -41,6 +41,10 @@ class PKProjectsRouter extends JComponentRouterBase
             unset($query['Itemid']);
         }
 
+        if (!$menu_item_given) {
+            return $segments;
+        }
+
         if (isset($query['view'])) {
             $view = $query['view'];
         }
@@ -48,7 +52,6 @@ class PKProjectsRouter extends JComponentRouterBase
             // We need to have a view in the query or it is an invalid URL
             return $segments;
         }
-
 
         // Deal with the form view
         if ($view == 'form')
