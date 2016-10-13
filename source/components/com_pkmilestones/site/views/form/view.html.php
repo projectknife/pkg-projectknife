@@ -64,9 +64,17 @@ class PKmilestonesViewForm extends JViewLegacy
 
         // Double check form view access
         if ($this->item->id == 0) {
-            if (!PKUserHelper::authProject('milestone.create', $this->item->project_id)) {
-                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'warning');
-                return;
+            if ($this->item->project_id) {
+                if (!PKUserHelper::authProject('milestone.create', $this->item->project_id)) {
+                    JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'warning');
+                    return;
+                }
+            }
+            else {
+                if (!PKUserHelper::authProject('milestone.create', 'any')) {
+                    JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'warning');
+                    return;
+                }
             }
         }
         elseif (!PKUserHelper::authProject('milestone.edit', $this->item->project_id)) {

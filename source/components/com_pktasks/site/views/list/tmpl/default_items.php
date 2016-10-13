@@ -131,10 +131,10 @@ for ($i = 0; $i != $count; $i++)
     $item = $this->items[$i];
 
     // Check permissions
-    $can_create     = PKUserHelper::authProject('core.create.task', $item->project_id);
-    $can_edit       = PKUserHelper::authProject('core.edit.task', $item->project_id);
-    $can_edit_state = PKUserHelper::authProject('core.edit.state.task', $item->project_id);
-    $can_edit_own   = (PKUserHelper::authProject('core.edit.own.task', $item->project_id) && $item->created_by == $user->id);
+    $can_edit       = PKUserHelper::authProject('task.edit', $item->project_id);
+    $can_edit_own   = (PKUserHelper::authProject('task.edit.own', $item->project_id) && $item->created_by == $user->id);
+    $can_edit_state = PKUserHelper::authProject('task.edit.state', $item->project_id);
+    $can_edit_own_state = (PKUserHelper::authProject('task.edit.own.state', $item->project_id) && $item->created_by == $user->id);
     $can_checkin    = ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $user->id || $item->checked_out == 0);
     $can_change     = ($can_edit || $can_edit_own);
 
@@ -155,7 +155,7 @@ for ($i = 0; $i != $count; $i++)
     }
     elseif ($can_edit || $can_edit_own) {
         $btn_edit = '<a class="btn btn-small btn-link hasTooltip" title="' . $txt_edit . '" href="'
-                  . JRoute::_(PKtasksHelperRoute::getFormRoute($item->slug) . '&return=' . $url_return)  . '">'
+                  . JRoute::_(PKTasksHelperRoute::getFormRoute($item->slug) . '&return=' . $url_return)  . '">'
                   . '<span class="icon-edit"></span></a>';
     }
     else {

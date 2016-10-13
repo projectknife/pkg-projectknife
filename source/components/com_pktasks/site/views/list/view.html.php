@@ -176,48 +176,70 @@ class PKtasksViewList extends JViewLegacy
         }
 
         $filter_published = $this->state->get('filter.published');
+        $filter_project   = (int) $this->state->get('filter.project_id');
+
+        if (!$filter_project) {
+            $filter_project = 'any';
+        }
+
+        $can_create = PKUserHelper::authProject('task.create', $filter_project);
+        $can_change = PKUserHelper::authProject('task.edit.state', $filter_project) || PKUserHelper::authProject('task.edit.own.state', $filter_project);
 
         // Main Menu
         PKToolbar::menu('main');
-            PKToolbar::btnTask('form.add', JText::_('JNEW'), false, array('icon' => 'plus'));
-            PKToolbar::btnClick('PKToolbar.showMenu(\'edit\');PKGrid.show();', JText::_('JACTION_EDIT'), array('icon' => 'pencil'));
+            if ($can_create) {
+                PKToolbar::btnTask('form.add', JText::_('JNEW'), false, array('icon' => 'plus'));
+            }
+
+            if ($can_create || $can_change) {
+                PKToolbar::btnClick('PKToolbar.showMenu(\'edit\');PKGrid.show();', JText::_('JACTION_EDIT'), array('icon' => 'pencil'));
+            }
+
             PKToolbar::btnClick('PKToolbar.showMenu(\'page\');', $this->state->get('list.limit'), array('icon' => 'list', 'id' => 'pk-toolbar-page-btn'));
             PKToolbar::search($this->escape($this->state->get('filter.search')));
         PKToolbar::menu();
 
         // Edit Menu
-        PKToolbar::menu('edit', false);
-            PKToolbar::group();
-            PKToolbar::btnClick('PKToolbar.showMenu(\'main\');PKGrid.hide();', '', array('icon' => 'chevron-left'));
-            PKToolbar::custom(PKGrid::selectAll('normal'));
-            PKToolbar::group();
+        if ($can_change || $can_create) {
+            PKToolbar::menu('edit', false);
+                PKToolbar::group();
+                PKToolbar::btnClick('PKToolbar.showMenu(\'main\');PKGrid.hide();', '', array('icon' => 'chevron-left'));
+                PKToolbar::custom(PKGrid::selectAll('normal'));
+                PKToolbar::group();
 
-            // List publishing state actions group
-            PKToolbar::group();
-            if ($filter_published != "" && $filter_published != "1") {
-                PKToolbar::btnTask('list.publish', JText::_('PKGLOBAL_PUBLISH'), true, array('icon' => 'eye-open', 'class' => 'disabled disabled-list'));
-            }
+                // List publishing state actions group
+                if ($can_change) {
+                    PKToolbar::group();
+                    if ($filter_published != "" && $filter_published != "1") {
+                        PKToolbar::btnTask('list.publish', JText::_('PKGLOBAL_PUBLISH'), true, array('icon' => 'eye-open', 'class' => 'disabled disabled-list'));
+                    }
 
-            if ($filter_published != "0") {
-                PKToolbar::btnTask('list.unpublish', JText::_('PKGLOBAL_UNPUBLISH'), true, array('icon' => 'eye-close', 'class' => 'disabled disabled-list'));
-            }
+                    if ($filter_published != "0") {
+                        PKToolbar::btnTask('list.unpublish', JText::_('PKGLOBAL_UNPUBLISH'), true, array('icon' => 'eye-close', 'class' => 'disabled disabled-list'));
+                    }
 
-            if ($filter_published != "2") {
-                PKToolbar::btnTask('list.archive', JText::_('PKGLOBAL_ARCHIVE'), true, array('icon' => 'folder-open', 'class' => 'disabled disabled-list'));
-            }
+                    if ($filter_published != "2") {
+                        PKToolbar::btnTask('list.archive', JText::_('PKGLOBAL_ARCHIVE'), true, array('icon' => 'folder-open', 'class' => 'disabled disabled-list'));
+                    }
 
-            if ($filter_published != "-2") {
-                PKToolbar::btnTask('list.trash', JText::_('PKGLOBAL_TRASH'), true, array('icon' => 'trash', 'class' => 'disabled disabled-list'));
-            }
-            else {
-                PKToolbar::btnTask('list.delete', JText::_('JACTION_DELETE'), true, array('icon' => 'trash', 'class' => 'disabled disabled-list'));
-            }
-            PKToolbar::group();
+                    if ($filter_published != "-2") {
+                        PKToolbar::btnTask('list.trash', JText::_('PKGLOBAL_TRASH'), true, array('icon' => 'trash', 'class' => 'disabled disabled-list'));
+                    }
+                    else {
+                        PKToolbar::btnTask('list.delete', JText::_('JACTION_DELETE'), true, array('icon' => 'trash', 'class' => 'disabled disabled-list'));
+                    }
+                    PKToolbar::group();
+                }
 
-            PKToolbar::group();
-            PKToolbar::btnTask('list.copy_dialog', JText::_('JLIB_HTML_BATCH_COPY'), true, array('icon' => 'copy', 'class' => 'disabled disabled-list'));
-            PKToolbar::group();
-        PKToolbar::menu();
+                if ($can_create) {
+                    PKToolbar::group();
+                    PKToolbar::btnTask('list.copy_dialog', JText::_('JLIB_HTML_BATCH_COPY'), true, array('icon' => 'copy', 'class' => 'disabled disabled-list'));
+                    PKToolbar::group();
+                }
+
+            PKToolbar::menu();
+        }
+
 
         // Page menu
         PKToolbar::menu('page', false);

@@ -17,7 +17,7 @@ use Joomla\Registry\Registry;
 JPluginHelper::importPlugin('content');
 
 
-class PKmilestonesViewList extends JViewLegacy
+class PKMilestonesViewList extends JViewLegacy
 {
     /**
      * Items loaded by the model
@@ -177,6 +177,10 @@ class PKmilestonesViewList extends JViewLegacy
 
         $filter_published = $this->state->get('filter.published');
         $filter_project   = (int) $this->state->get('filter.project_id');
+
+        if (!$filter_project) {
+            $filter_project = 'any';
+        }
 
         $can_create = PKUserHelper::authProject('milestone.create', $filter_project);
         $can_change = PKUserHelper::authProject('milestone.edit.state', $filter_project) || PKUserHelper::authProject('milestone.edit.own.state', $filter_project);

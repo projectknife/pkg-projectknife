@@ -11,7 +11,7 @@
 defined('_JEXEC') or die;
 
 
-class PKmilestonesControllerForm extends JControllerForm
+class PKMilestonesControllerForm extends JControllerForm
 {
 	/**
 	 * The URL view list variable.

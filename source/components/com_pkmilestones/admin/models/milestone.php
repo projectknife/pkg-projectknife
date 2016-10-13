@@ -11,7 +11,7 @@
 defined('_JEXEC') or die;
 
 
-class PKmilestonesModelMilestone extends PKModelAdmin
+class PKMilestonesModelMilestone extends PKModelAdmin
 {
     /**
      * Method to get the data that should be injected in the form.
@@ -246,7 +246,12 @@ class PKmilestonesModelMilestone extends PKModelAdmin
             return false;
         }
 
+        $input  = JFactory::getApplication()->input;
         $params = JComponentHelper::getParams('com_pkmilestones');
+
+        // Get item id
+        $id  = $input->getUint('id', $this->getState('milestone.id', 0));
+        $pid = (isset($data['project_id']) ? intval($data['project_id']) : PKApplicationHelper::getProjectId());
 
         if ($params->get('auto_access', '1') == '1') {
             $form->setFieldAttribute('access', 'type', 'hidden');
@@ -261,6 +266,35 @@ class PKmilestonesModelMilestone extends PKModelAdmin
         // Disable some fields in the frontend form
         if ($is_site) {
             $form->setFieldAttribute('created_by', 'type', 'hidden');
+        }
+
+        // Check "edit state" permission
+        if (!PKUserHelper::authProject('milestone.edit.state', $pid)) {
+            $can_edit_state = false;
+
+            if ($id && $pid) {
+                // Check if owner
+                if (PKUserHelper::authProject('milestone.edit.own.state', $pid)) {
+                    $user  = JFactory::getUser();
+                    $query = $this->_db->getQuery(true);
+
+                    $query->select('created_by')
+                          ->from('#__pk_milestones')
+                          ->where('id = ' . $id);
+
+                    $this->_db->setQuery($query);
+                    $project_author = (int) $this->_db->loadResult();
+
+                    if ($user->id > 0 && $user->id == $project_author) {
+                        $can_edit_state = true;
+                    }
+                }
+            }
+
+            if (!$can_edit_state) {
+                $form->setFieldAttribute('published', 'type', 'hidden');
+                $form->setFieldAttribute('published', 'filter', 'unset');
+            }
         }
 
         return $form;

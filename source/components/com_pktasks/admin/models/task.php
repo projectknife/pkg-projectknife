@@ -14,7 +14,7 @@ defined('_JEXEC') or die;
 use Joomla\Registry\Registry;
 
 
-class PKtasksModelTask extends PKModelAdmin
+class PKTasksModelTask extends PKModelAdmin
 {
     protected $progress_changed;
     protected $priority_changed;
@@ -70,7 +70,14 @@ class PKtasksModelTask extends PKModelAdmin
      */
     protected function canDelete($record)
     {
-        return PKUserHelper::authProject('task.delete', $record->project_id);
+        if (PKUserHelper::authProject('task.delete', $record->project_id)) {
+            return true;
+        }
+
+        $delete_own = PKUserHelper::authProject('task.delete.own', $record->project_id);
+        $user       = JFactory::getUser();
+
+        return ($delete_own && $user->id > 0 && $user->id == $record->created_by);
     }
 
 
@@ -83,7 +90,14 @@ class PKtasksModelTask extends PKModelAdmin
      */
     protected function canEditState($record)
     {
-        return PKUserHelper::authProject('task.edit.state', $record->project_id);
+        if (PKUserHelper::authProject('task.edit.state', $record->project_id)) {
+            return true;
+        }
+
+        $edit_own = PKUserHelper::authProject('task.edit.own.state', $record->project_id);
+        $user     = JFactory::getUser();
+
+        return ($edit_own && $user->id > 0 && $user->id == $record->created_by);
     }
 
 
@@ -308,7 +322,12 @@ class PKtasksModelTask extends PKModelAdmin
             return false;
         }
 
+        $input  = JFactory::getApplication()->input;
         $params = JComponentHelper::getParams('com_pktasks');
+
+        // Get item id
+        $id  = $input->getUint('id', $this->getState('task.id', 0));
+        $pid = (isset($data['project_id']) ? intval($data['project_id']) : PKApplicationHelper::getProjectId());
 
         if ($params->get('auto_access', '1') == '1') {
             $form->setFieldAttribute('access', 'type', 'hidden');
@@ -323,6 +342,35 @@ class PKtasksModelTask extends PKModelAdmin
         // Disable some fields in the frontend form
         if ($is_site) {
             $form->setFieldAttribute('created_by', 'type', 'hidden');
+        }
+
+        // Check "edit state" permission
+        if (!PKUserHelper::authProject('task.edit.state', $pid)) {
+            $can_edit_state = false;
+
+            if ($id && $pid) {
+                // Check if owner
+                if (PKUserHelper::authProject('task.edit.own.state', $pid)) {
+                    $user  = JFactory::getUser();
+                    $query = $this->_db->getQuery(true);
+
+                    $query->select('created_by')
+                          ->from('#__pk_tasks')
+                          ->where('id = ' . $id);
+
+                    $this->_db->setQuery($query);
+                    $project_author = (int) $this->_db->loadResult();
+
+                    if ($user->id > 0 && $user->id == $project_author) {
+                        $can_edit_state = true;
+                    }
+                }
+            }
+
+            if (!$can_edit_state) {
+                $form->setFieldAttribute('published', 'type', 'hidden');
+                $form->setFieldAttribute('published', 'filter', 'unset');
+            }
         }
 
         return $form;

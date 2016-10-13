@@ -67,10 +67,10 @@ class JFormFieldPKproject extends JFormFieldList
         $projects = $db->loadObjectList();
         $count    = count($projects);
 
-
         if ($permission && !PKUserHelper::isSuperAdmin()) {
+
             // Check permission before adding option
-            for ($i = 0; $i != $count; $i++)
+            for ($i = 0; $i < $count; $i++)
             {
                 if (!PKUserHelper::authProject(strval($permission), intval($projects[$i]->value)) && $projects[$i]->value != $this->value) {
                     continue;
@@ -88,7 +88,7 @@ class JFormFieldPKproject extends JFormFieldList
         }
         else {
             // No permission check
-            for ($i = 0; $i != $count; $i++)
+            for ($i = 0; $i < $count; $i++)
             {
                 $options[] = JHtml::_(
                     'select.option',

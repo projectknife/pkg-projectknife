@@ -55,7 +55,10 @@ abstract class PKAccess
         $user_id = (int) $user_id;
         $item_id = (int) $item_id;
 
-        if ($item_id > 0) {
+        if ($context == 'project' && $item_id == 'any') {
+            $asset = 'com_pkprojects.' . $context . '.' . $item_id;
+        }
+        elseif ($item_id > 0) {
             $asset = 'com_pkprojects.' . $context . '.' . $item_id;
         }
         else {
@@ -73,6 +76,49 @@ abstract class PKAccess
         if (array_key_exists($action, $cache[$user_id][$asset])) {
             return $cache[$user_id][$asset][$action];
         }
+
+        // Check any project
+        if ($context == 'project' && $item_id == 'any') {
+            $db    = JFactory::getDbo();
+            $user  = JFactory::getUser();
+            $query = $db->getQuery(true);
+
+            $levels   = $user->getAuthorisedViewLevels();
+            $projects = PKUserHelper::getProjects();
+
+            $query->select('id')
+                  ->from('#__pk_projects')
+                  ->where('(access IN(' . implode(', ', $levels) . ') OR id IN(' . implode(', ', $projects) . '))')
+                  ->order('id ASC');
+
+            try {
+                $db->setQuery($query);
+                $list = $db->loadColumn();
+            }
+            catch (RuntimeException $e) {
+                throw new RuntimeException('Failed to retrieve authorised project list because of a database error.', 500, $e);
+            }
+
+            $result = null;
+
+            foreach ($list AS $project_id)
+            {
+                $result = self::checkItem($cache, $context, $user_id, $action, $project_id);
+
+                if ($result === true) {
+                    break;
+                }
+            }
+
+            if ($result !== true) {
+                $result = false;
+            }
+
+            $cache[$user_id][$asset][$action] = $result;
+
+            return $result;
+        }
+
 
         /*$result = null;
         $path   = explode('.', $action);
