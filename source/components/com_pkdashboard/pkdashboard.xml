@@ -20,6 +20,7 @@
         <folder>views</folder>
         <filename>pkdashboard.php</filename>
         <filename>controller.php</filename>
+        <filename>router.php</filename>
     </files>
 
     <administration>

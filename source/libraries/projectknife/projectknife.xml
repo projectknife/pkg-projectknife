@@ -20,6 +20,8 @@
         <folder>form</folder>
         <folder>grid</folder>
         <folder>model</folder>
+        <folder>plugin</folder>
+        <folder>route</folder>
         <folder>toolbar</folder>
         <folder>user</folder>
         <folder>version</folder>

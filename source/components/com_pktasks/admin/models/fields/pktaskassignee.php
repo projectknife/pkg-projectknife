@@ -38,8 +38,16 @@ class JFormFieldPKtaskAssignee extends JFormFieldList
      */
     protected function getInput()
     {
+        $app = JFactory::getApplication();
         // Setup ajax request for finding users
-        $url = JUri::root() . 'administrator/index.php?option=com_pkprojects&task=project.searchMember&tmpl=component&format=json';
+        if ($app->isSite()) {
+            $url = JUri::root();
+        }
+        else {
+            $url = JUri::root() . 'administrator/';
+        }
+
+        $url .= 'index.php?option=com_pkprojects&task=project.searchMember&tmpl=component&format=json';
 
         $chosenAjaxSettings = new Registry(
             array(
