@@ -99,6 +99,7 @@ $url_return = base64_encode($url_list);
 // Misc
 $count         = count($this->items);
 $user          = JFactory::getUser();
+$doc           = JFactory::getDocument();
 $db_nulldate   = JFactory::getDbo()->getNullDate();
 $time_now      = strtotime(JHtml::_('date'));
 $today         = floor($time_now / 86400) * 86400;
@@ -108,7 +109,7 @@ $progress_type = (int) $params->get('progress_type', 1);
 
 
 // JS for priority button
-JFactory::getDocument()->addScriptDeclaration('
+$doc->addScriptDeclaration('
     jQuery(document).ready(function()
     {
     	PKlistTasks.initPriorityAfterUpdate = function(el, state)
@@ -216,17 +217,15 @@ for ($i = 0; $i != $count; $i++)
     }
     else {
         // Slider
-        $progress_class = 'task-progress';
-
         if (!$can_edit_state) {
-            $progress_class .= ' disabled';
+            $doc->addScriptDeclaration('jQuery(document).ready(function(){jQuery("#progress-' . $i . '").slider("disable");});');
         }
 
         $progress = '<input id="progress-' . $i . '" data-slider-id="slider-' . $i . '" '
-                  . 'class="' . $progress_class . '" data-slider-ticks="[0, 50, 100]" '
+                  . 'class="task-progress" data-slider-ticks="[0, 50, 100]" '
                   . 'type="text" data-slider-min="0" data-slider-max="100" '
                   . 'data-progress="' . $item->progress . '" data-id="' . $item->id . '" '
-                  . 'data-slider-step="' . $progress_type . '" data-slider-value="' . $item->progress . '"/>';
+                  . 'data-slider-step="' . $progress_type . '" data-slider-value="' . $item->progress . '"' . $progress_style . '/>';
     }
 
 
