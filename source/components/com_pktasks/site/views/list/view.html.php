@@ -17,7 +17,7 @@ use Joomla\Registry\Registry;
 JPluginHelper::importPlugin('content');
 
 
-class PKtasksViewList extends JViewLegacy
+class PKTasksViewList extends JViewLegacy
 {
     /**
      * Items loaded by the model

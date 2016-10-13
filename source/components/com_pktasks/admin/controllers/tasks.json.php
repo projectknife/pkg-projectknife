@@ -77,10 +77,11 @@ class PKTasksControllerTasks extends JControllerLegacy
 
         // Check access
         if (!PKUserHelper::isSuperAdmin()) {
+            $user   = JFactory::getUser();
             $db     = JFactory::getDbo();
             $query  = $db->getQuery(true);
 
-            $query->select('id, access, project_id')
+            $query->select('id, created_by, access, project_id')
                   ->from('#__pk_tasks')
                   ->where('id IN(' . implode(', ', $pks) . ')');
 
@@ -97,12 +98,43 @@ class PKTasksControllerTasks extends JControllerLegacy
             for ($i = 0; $i != $count; $i++)
             {
                 $id = $pks[$i];
+                $do_unset = false;
 
-                if (!isset($data[$id])
-                    || (!in_array($data[$id]['access'], $levels) && !in_array($data[$id]['project'], $projects))
-                    || !PKUserHelper::authProject('task.edit.state', $data[$id]['project'])
-                ) {
+                if (!isset($data[$id])) {
                     unset($pks[$i]);
+                    continue;
+                }
+
+                // Viewing access check
+                if (!in_array($data[$id]['access'], $levels) && !in_array($data[$id]['project'], $projects)) {
+                    unset($pks[$i]);
+                    continue;
+                }
+
+                // Check edit permission
+                if (!PKUserHelper::authProject('task.edit.progress', $data[$id]['project_id'])) {
+                    // Check own permission
+                    if (!PKUserHelper::authProject('task.edit.own.progress', $data[$id]['project_id']) || $user->id != $data[$id]['created_by']) {
+                        // Lastly, check assigned permission
+                        if (PKUserHelper::authProject('task.edit.assigned.progress', $data[$id]['project_id'])) {
+                            $query->clear()
+                                  ->select('user_id')
+                                  ->from('#__pk_task_assignees')
+                                  ->where('task_id = ' . $id)
+                                  ->where('user_id = ' . $user->id);
+
+                            $db->setQuery($query);
+
+                            if ($db->loadResult() != $user->id || $user->id == 0) {
+                                unset($pks[$i]);
+                                continue;
+                            }
+                        }
+                        else {
+                            unset($pks[$i]);
+                            continue;
+                        }
+                    }
                 }
             }
         }

@@ -102,6 +102,37 @@ class PKTasksModelTask extends PKModelAdmin
 
 
     /**
+     * Method to test whether a record progress can be changed.
+     *
+     * @param     object     $record    A record object.
+     *
+     * @return    boolean               True if allowed to change the state of the record.
+     */
+    protected function canEditProgress($record)
+    {
+        if (PKUserHelper::authProject('task.edit.progress', $record->project_id)) {
+            return true;
+        }
+
+        $user = JFactory::getUser();
+
+        if (PKUserHelper::authProject('task.edit.own.progress', $record->project_id)) {
+            if ($edit_own && $user->id > 0 && $user->id == $record->created_by) {
+                return true;
+            }
+        }
+
+        if (PKUserHelper::authProject('task.edit.assigned.progress', $record->project_id)) {
+            if (in_array($user->id, $this->getAssignees($record->id))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
+    /**
      * Method to change the title & alias.
      *
      * @param     string     $title         The title.
@@ -346,12 +377,13 @@ class PKTasksModelTask extends PKModelAdmin
 
         // Check "edit state" permission
         if (!PKUserHelper::authProject('task.edit.state', $pid)) {
+            $user = JFactory::getUser();
+
             $can_edit_state = false;
 
             if ($id && $pid) {
                 // Check if owner
                 if (PKUserHelper::authProject('task.edit.own.state', $pid)) {
-                    $user  = JFactory::getUser();
                     $query = $this->_db->getQuery(true);
 
                     $query->select('created_by')
@@ -370,6 +402,40 @@ class PKTasksModelTask extends PKModelAdmin
             if (!$can_edit_state) {
                 $form->setFieldAttribute('published', 'type', 'hidden');
                 $form->setFieldAttribute('published', 'filter', 'unset');
+            }
+        }
+
+        // Check edit progress permission
+        if (!PKUserHelper::authProject('task.edit.progress', $pid)) {
+            $can_edit_progress = false;
+
+            if ($id && $pid) {
+                // Check if owner
+                if (PKUserHelper::authProject('task.edit.own.progress', $pid)) {
+                    $user  = JFactory::getUser();
+                    $query = $this->_db->getQuery(true);
+
+                    $query->select('created_by')
+                          ->from('#__pk_tasks')
+                          ->where('id = ' . $id);
+
+                    $this->_db->setQuery($query);
+                    $project_author = (int) $this->_db->loadResult();
+
+                    if ($user->id > 0 && $user->id == $project_author) {
+                        $can_edit_progress = true;
+                    }
+                }
+
+                // Check if assigned
+                if (!$can_edit_progress && PKUserHelper::authProject('task.edit.assigned.progress', $pid)) {
+                    $can_edit_progress = in_array($user->id, $this->getAssignees($id));
+                }
+            }
+
+            if (!$can_edit_progress) {
+                $form->setFieldAttribute('progress', 'type', 'hidden');
+                $form->setFieldAttribute('progress', 'filter', 'unset');
             }
         }
 

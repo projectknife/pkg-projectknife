@@ -131,13 +131,47 @@ for ($i = 0; $i != $count; $i++)
 {
     $item = $this->items[$i];
 
+    // Assignees
+    $assignees    = array();
+    $assignee_pks = array();
+
+    if ($item->assignee_count) {
+        foreach ($item->assignees AS $assignee)
+        {
+            $assignees[]    = $this->escape($assignee->name);
+            $assignee_pks[] = $assignee->id;
+        }
+
+        $assignees = implode(', ', $assignees);
+    }
+    else {
+        $assignees = $txt_unassigned;
+    }
+
     // Check permissions
-    $can_edit       = PKUserHelper::authProject('task.edit', $item->project_id);
-    $can_edit_own   = (PKUserHelper::authProject('task.edit.own', $item->project_id) && $item->created_by == $user->id);
+    $can_edit = PKUserHelper::authProject('task.edit', $item->project_id);
+
+    if (!$can_edit) {
+        $can_edit = (PKUserHelper::authProject('task.edit.own', $item->project_id) && $item->created_by == $user->id);
+    }
+
     $can_edit_state = PKUserHelper::authProject('task.edit.state', $item->project_id);
-    $can_edit_own_state = (PKUserHelper::authProject('task.edit.own.state', $item->project_id) && $item->created_by == $user->id);
-    $can_checkin    = ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $user->id || $item->checked_out == 0);
-    $can_change     = ($can_edit || $can_edit_own);
+
+    if (!$can_edit_state) {
+        $can_edit_state = (PKUserHelper::authProject('task.edit.own.state', $item->project_id) && $item->created_by == $user->id);
+    }
+
+    $can_edit_progress = PKUserHelper::authProject('task.edit.progress', $item->project_id);
+
+    if (!$can_edit_progress) {
+        $can_edit_progress = (PKUserHelper::authProject('task.edit.own.progress', $item->project_id) && $item->created_by == $user->id);
+
+        if (!$can_edit_progress) {
+            $can_edit_progress = (PKUserHelper::authProject('task.edit.assigned.progress', $item->project_id) && in_array($user->id, $assignee_pks));
+        }
+    }
+
+    $can_checkin = ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $user->id || $item->checked_out == 0);
 
 
     // Format title
@@ -154,7 +188,7 @@ for ($i = 0; $i != $count; $i++)
         $btn_edit = JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'list.', $can_checkin);
         $btn_edit = str_replace('btn-micro', 'btn-small btn-link', $btn_edit);
     }
-    elseif ($can_edit || $can_edit_own) {
+    elseif ($can_edit) {
         $btn_edit = '<a class="btn btn-small btn-link hasTooltip" title="' . $txt_edit . '" href="'
                   . JRoute::_(PKTasksHelperRoute::getFormRoute($item->slug) . '&return=' . $url_return)  . '">'
                   . '<span class="icon-edit"></span></a>';
@@ -206,7 +240,7 @@ for ($i = 0; $i != $count; $i++)
             }
         }
 
-        if (!$can_edit_state) {
+        if (!$can_edit_progress) {
             $progress_class .= ' disabled';
         }
 
@@ -217,7 +251,7 @@ for ($i = 0; $i != $count; $i++)
     }
     else {
         // Slider
-        if (!$can_edit_state) {
+        if (!$can_edit_progress) {
             $doc->addScriptDeclaration('jQuery(document).ready(function(){jQuery("#progress-' . $i . '").slider("disable");});');
         }
 
@@ -225,7 +259,7 @@ for ($i = 0; $i != $count; $i++)
                   . 'class="task-progress" data-slider-ticks="[0, 50, 100]" '
                   . 'type="text" data-slider-min="0" data-slider-max="100" '
                   . 'data-progress="' . $item->progress . '" data-id="' . $item->id . '" '
-                  . 'data-slider-step="' . $progress_type . '" data-slider-value="' . $item->progress . '"' . $progress_style . '/>';
+                  . 'data-slider-step="' . $progress_type . '" data-slider-value="' . $item->progress . '"/>';
     }
 
 
@@ -256,22 +290,6 @@ for ($i = 0; $i != $count; $i++)
     }
     else {
         $tags = '';
-    }
-
-
-    // Assignees
-    if ($item->assignee_count) {
-        $assignees = array();
-
-        foreach ($item->assignees AS $assignee)
-        {
-            $assignees[] = $this->escape($assignee->name);
-        }
-
-        $assignees = implode(', ', $assignees);
-    }
-    else {
-        $assignees = $txt_unassigned;
     }
 
 
