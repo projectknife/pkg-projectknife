@@ -159,8 +159,14 @@ class PKProjectsViewList extends JViewLegacy
         // Main Menu
         PKToolbar::menu('main');
             if ($can_create) {
-                $link = PKProjectsHelperRoute::getFormRoute() . '&return='
-                      . base64_encode(JRoute::_('index.php?option=com_pkprojects&view=list&Itemid=' . PKRouteHelper::getMenuItemId('active')));
+                $return = '';
+
+                if (PKRouteHelper::getMenuItemCount('com_pkprojects', 'list') > 1) {
+                    $return = '&return='
+                            . base64_encode(JRoute::_('index.php?option=com_pkprojects&view=list&Itemid=' . PKRouteHelper::getMenuItemId('active')));
+                }
+
+                $link = PKProjectsHelperRoute::getFormRoute() . $return;
 
                 PKToolbar::btnURL(JRoute::_($link), JText::_('JNEW'), array('icon' => 'plus'));
             }
