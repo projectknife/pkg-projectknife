@@ -2,9 +2,9 @@
 <extension type="package" version="3.5" method="install">
     <name>Projectknife</name>
     <packagename>projectknife</packagename>
-    <version>5.0.0.alpha.1</version>
+    <version>5.0.0.alpha.2</version>
     <url>http://projectknife.net</url>
-    <creationDate>August 2016</creationDate>
+    <creationDate>October 2016</creationDate>
     <copyright>(C) 2015 - 2016 Tobias Kuhn. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later.</license>
     <authorEmail>support@projectknife.net</authorEmail>

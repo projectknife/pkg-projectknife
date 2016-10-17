@@ -30,13 +30,13 @@ final class PKVersion
     public $DEV_STATUS = 'Alpha';
 
     /** @var  string  Build number. */
-    public $BUILD = '1';
+    public $BUILD = '2';
 
     /** @var  string  Code name. */
     public $CODENAME = 'Ash';
 
     /** @var  string  Release date. */
-    public $RELDATE = '31-August-2016';
+    public $RELDATE = '17-October-2016';
 
     /** @var  string  Release time. */
     public $RELTIME = '21:00';

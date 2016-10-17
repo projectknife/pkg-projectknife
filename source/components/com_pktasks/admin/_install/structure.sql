@@ -31,7 +31,8 @@ CREATE TABLE IF NOT EXISTS `#__pk_tasks` (
   KEY `idx_access` (`access`),
   KEY `idx_created_by` (`created_by`),
   KEY `idx_milestone_id` (`milestone_id`),
-  KEY `completed_by` (`completed_by`)
+  KEY `idx_completed_by` (`completed_by`) USING BTREE,
+  KEY `idx_checked_out` (`checked_out`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `#__pk_task_assignees` (
