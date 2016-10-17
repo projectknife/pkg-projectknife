@@ -273,7 +273,7 @@ class PKprojectsModelProject extends PKModelAdmin
         $id = $input->getUint('id', $this->getState('project.id', 0));
 
 
-        if ($params->get('auto_access', '1') == '1') {
+        if ($params->get('auto_access', '0') == '1') {
             $form->setFieldAttribute('access', 'type', 'hidden');
             $form->setFieldAttribute('access', 'filter', 'unset');
         }

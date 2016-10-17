@@ -60,7 +60,7 @@
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
-        <field name="auto_access" type="radio" class="btn-group btn-group-yesno" default="1" label="PKGLOBAL_AUTO_ACCESS_LABEL" description="PKGLOBAL_AUTO_ACCESS_DESC">
+        <field name="auto_access" type="radio" class="btn-group btn-group-yesno" default="0" label="PKGLOBAL_AUTO_ACCESS_LABEL" description="PKGLOBAL_AUTO_ACCESS_DESC">
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
