@@ -70,6 +70,102 @@ class plgProjectknifeTasks extends JPlugin
 
 
     /**
+     * "onContentChangeState" event handler
+     *
+     * @param     string     $context
+     * @param     array      $pks
+     * @param     integer    $state
+     *
+     * @return    boolean
+     */
+    public function onContentChangeState($context, $pks, $state)
+    {
+        switch ($context)
+        {
+            case 'com_pkprojects.project':
+            case 'com_pkprojects.form':
+                return $this->onContentChangeStateProject($context, $pks, $state);
+                break;
+
+            case 'com_pkmilestones.milestone':
+            case 'com_pkmilestones.form':
+                return $this->onContentChangeStateMilestone($context, $pks, $state);
+                break;
+        }
+
+        return true;
+    }
+
+
+    /**
+     * Updates the task state when the parent project state has changed
+     *
+     * @param     string     $context
+     * @param     array      $pks
+     * @param     integer    $state
+     *
+     * @return    boolean
+     */
+    protected function onContentChangeStateProject($context, $pks, $state)
+    {
+        if ($state == 1) {
+            return true;
+        }
+
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->update('#__pk_tasks')
+              ->set('published = ' . intval($state))
+              ->where('project_id IN(' . implode(', ', $pks) . ')');
+
+        if ($state == 0) {
+            $query->where('published NOT IN(-2, 0, 2)');
+        }
+        else {
+            $query->where('published <> -2');
+        }
+
+        $db->setQuery($query);
+        $db->execute();
+    }
+
+
+    /**
+     * Updates the task state when the parent project milestone has changed
+     *
+     * @param     string     $context
+     * @param     array      $pks
+     * @param     integer    $state
+     *
+     * @return    boolean
+     */
+    protected function onContentChangeStateMilestone($context, $pks, $state)
+    {
+        if ($state == 1) {
+            return true;
+        }
+
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->update('#__pk_tasks')
+              ->set('published = ' . intval($state))
+              ->where('milestone_id IN(' . implode(', ', $pks) . ')');
+
+        if ($state == 0) {
+            $query->where('published NOT IN(-2, 0, 2)');
+        }
+        else {
+            $query->where('published <> -2');
+        }
+
+        $db->setQuery($query);
+        $db->execute();
+    }
+
+
+    /**
      * "onContentAfterDelete" event handler
      *
      * @param     string     $context    The model context
