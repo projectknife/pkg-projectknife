@@ -16,7 +16,7 @@ class PKTasksControllerForm extends JControllerForm
     /**
      * The URL view list variable.
      *
-     * @var    string    
+     * @var    string
      */
     protected $view_list = 'list';
 
@@ -26,7 +26,7 @@ class PKTasksControllerForm extends JControllerForm
      *
      * @param     array      $data    An array of input data.
      *
-     * @return    boolean             
+     * @return    boolean
      */
     protected function allowAdd($data = array())
     {
@@ -42,7 +42,7 @@ class PKTasksControllerForm extends JControllerForm
      * @param     array      $data    An array of input data.
      * @param     string     $key     The name of the key for the primary key; default is id.
      *
-     * @return    boolean             
+     * @return    boolean
      */
     protected function allowEdit($data = array(), $key = 'id')
     {
@@ -161,7 +161,7 @@ class PKTasksControllerForm extends JControllerForm
         $result = parent::save($key, $urlVar);
 
         // If ok, redirect to the return page.
-        if ($result) {
+        if ($result && $this->getTask() != 'save2new') {
             $this->setRedirect($this->getReturnPage());
         }
 

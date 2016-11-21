@@ -176,7 +176,7 @@ class PKProjectsControllerForm extends JControllerForm
         $result = parent::save($key, $urlVar);
 
         // If ok, redirect to the return page.
-        if ($result) {
+        if ($result && $this->getTask() != 'save2new') {
             $this->setRedirect($this->getReturnPage());
         }
 
