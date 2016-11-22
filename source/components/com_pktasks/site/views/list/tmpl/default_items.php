@@ -175,7 +175,7 @@ for ($i = 0; $i != $count; $i++)
 
 
     // Format title
-    $link  = PKtasksHelperRoute::getItemRoute($item->slug). '&return=' . $url_return;
+    $link  = PKtasksHelperRoute::getItemRoute($item->slug, $item->project_slug). '&return=' . $url_return;
     $title = '<a href="' . JRoute::_($link) . '" class="item-title">' . $this->escape($item->title) . '</a>';
 
 

@@ -229,7 +229,7 @@ class PKtasksModelTasks extends PKModelList
               ->join('LEFT', '#__users AS ua ON ua.id = a.created_by');
 
         // Join over the projects for the title
-        $query->select('p.title AS project_title')
+        $query->select('p.title AS project_title, p.alias AS project_alias')
               ->join('LEFT', '#__pk_projects AS p ON p.id = a.project_id');
 
         // Join over the milestones for the title
@@ -420,6 +420,9 @@ class PKtasksModelTasks extends PKModelList
 
             // Create slug
             $items[$i]->slug = $items[$i]->id . ':' . $items[$i]->alias;
+
+            // Create project slug
+            $items[$i]->project_slug = $items[$i]->project_id . ':' . $items[$i]->project_alias;
 
             // Add tag details
             if (isset($total_tags[$id])) {

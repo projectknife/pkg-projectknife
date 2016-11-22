@@ -1,182 +1,196 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Dashboard
+ * @package      pkg_projectknife
+ * @subpackage   com_pktasks
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
- * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
+ * @copyright    Copyright (C) 2015-2016 Tobias Kuhn. All rights reserved.
+ * @license      GNU General Public License version 2 or later.
  */
 
-defined('_JEXEC') or die();
+defined('_JEXEC') or die;
 
 
-/**
- * Build the route for the com_projectfork component
- *
- * @param     array    $query    An array of URL arguments
- *
- * @return    array              The URL arguments to use to assemble the subsequent URL.
- */
-function PKtasksBuildRoute(&$query)
+class PKTasksRouter extends JComponentRouterBase
 {
-    // We need to have a view in the query or it is an invalid URL
-    if (!isset($query['view'])) {
-        return array();
-    }
+    /**
+     * Build the route for the  component
+     *
+     * @param     array    $query    An array of URL arguments
+     *
+     * @return    array              The URL arguments to use to assemble the subsequent URL.
+     */
+    public function build(&$query)
+    {
+        $segments = array();
+        $view     = '';
 
-    // Setup vars
-    $segments = array();
-    $view     = $query['view'];
-
-    // We need a menu item.  Either the one specified in the query, or the current active one if none specified
-    if (empty($query['Itemid'])) {
-        $menu_item_given = false;
-    }
-    else {
-        $menu_item_given = true;
-    }
-
-    // Handle dashboard query
-    if ($view == 'dashboard') {
-        if (!$menu_item_given) $segments[] = $view;
-        unset($query['view']);
-
-        // Get project filter
-        if (isset($query['id'])) {
-            if (strpos($query['id'], ':') === false) {
-                $query['id'] = PKtasksMakeSlug($query['id'], '#__pf_projects');
-            }
+        // We need a menu item. Either the one specified in the query, or the current active one if none specified
+        if (empty($query['Itemid'])) {
+            $menu_item = $this->menu->getActive();
+            $menu_item_given = false;
         }
         else {
-            $query['id'] = PKtasksMakeSlug('0', '#__pf_projects');
+            $menu_item = $this->menu->getItem($query['Itemid']);
+            $menu_item_given = true;
         }
 
-        $segments[] = $query['id'];
-        unset($query['id']);
+        // Check again
+        if ($menu_item_given && isset($menu_item) && $menu_item->component != 'com_pktasks') {
+            $menu_item_given = false;
+            unset($query['Itemid']);
+        }
 
+        if (!$menu_item_given) {
+            return $segments;
+        }
+
+        if (isset($query['view'])) {
+            $view = $query['view'];
+        }
+        else {
+            // We need to have a view in the query or it is an invalid URL
+            return $segments;
+        }
+
+        // Handle the item view
+        if ($view == 'item')
+        {
+            unset($query['view']);
+
+            if (isset($query['filter_project_id'])) {
+                // Check if we have the alias as part of the slug. If not, load it.
+                if (strpos($query['filter_project_id'], ':') === false) {
+                    $db  = JFactory::getDbo();
+                    $dbq = $db->getQuery(true);
+
+    				$dbq->select('alias')
+                        ->from('#__pk_projects')
+                        ->where('id = ' . (int) $query['filter_project_id']);
+
+    				$db->setQuery($dbq);
+    				$query['id'] = $query['id'] . ':' . $db->loadResult();
+                }
+
+                // Add the alias to the URL
+                list($tmp, $id) = explode(':', $query['filter_project_id'], 2);
+
+                $segments[] = $id;
+                unset($query['filter_project_id']);
+            }
+            else {
+                $segments[] = '0';
+            }
+
+            if (isset($query['id'])) {
+                // Check if we have the alias as part of the slug. If not, load it.
+                if (strpos($query['id'], ':') === false) {
+                    $db  = JFactory::getDbo();
+                    $dbq = $db->getQuery(true);
+
+    				$dbq->select('alias')
+                        ->from('#__pk_tasks')
+                        ->where('id = ' . (int) $query['id']);
+
+    				$db->setQuery($dbq);
+    				$query['id'] = $query['id'] . ':' . $db->loadResult();
+                }
+
+                // Add the alias to the URL
+                list($tmp, $id) = explode(':', $query['id'], 2);
+
+                $segments[] = $id;
+                unset($query['id']);
+            }
+
+            if (isset($query['layout'])) {
+                unset($query['layout']);
+            }
+
+            return $segments;
+        }
 
         return $segments;
     }
 
-    // Handle the layout
-    if (isset($query['layout'])) {
-        if ($menu_item_given && isset($menuItem->query['layout'])) {
-            if ($query['layout'] == $menuItem->query['layout']) {
-                unset($query['layout']);
+
+    /**
+     * Parse the segments of a URL.
+     *
+     * @param     array  $segments    The segments of the URL to parse.
+     *
+     * @return    array               The URL attributes to be used by the application.
+     */
+    public function parse(&$segments)
+    {
+        $total = count($segments);
+        $vars  = array();
+
+        // 2 segments = item view
+        if ($total == 2) {
+            $vars['view'] = 'item';
+
+            if (strval(intval($segments[0])) === strval($segments[0])) {
+                $vars['filter_project_id'] = intval($segments[0]);
             }
-        }
-        else {
-            if ($query['layout'] == 'default') {
-                unset($query['layout']);
+            else {
+                $db  = JFactory::getDbo();
+                $dbq = $db->getQuery(true);
+
+				$dbq->select('id')
+				    ->from('#__pk_projects')
+				    ->where('alias = ' . $db->quote($segments[0]));
+
+				$db->setQuery($dbq);
+				$vars['filter_project_id'] = intval($db->loadResult());
             }
-        }
-    }
 
-    return $segments;
-}
+            if (strval(intval($segments[1])) === strval($segments[1])) {
+                $vars['id'] = intval($segments[1]);
+            }
+            else {
+                $db  = JFactory::getDbo();
+                $dbq = $db->getQuery(true);
 
+				$dbq->select('id')
+				    ->from('#__pk_tasks')
+				    ->where('alias = ' . $db->quote($segments[1]));
 
-
-/**
- * Parse the segments of a URL.
- *
- * @param     array    The segments of the URL to parse.
- *
- * @return    array    The URL attributes to be used by the application.
- */
-function PKtasksParseRoute($segments)
-{
-    // Setup vars
-    $vars  = array();
-    $count = count($segments);
-    $menu  = JFactory::getApplication()->getMenu();
-    $item  = $menu->getActive();
-
-
-    // Standard routing.  If we don't pick up an Itemid then we get the view from the segments
-    // the first segment is the view and the last segment is the id of the item.
-    if (!isset($item)) {
-        $vars['view'] = $segments[0];
-        $vars['id']   = $segments[$count - 1];
-
-        return $vars;
-    }
-
-
-    // Set the view var
-    $vars['view'] = $item->query['view'];
-
-
-    // Handle Dashboard
-    if ($vars['view'] == 'dashboard') {
-        if ($count == 1) {
-            $vars['id'] = PKtasksParseSlug($segments[0]);
+				$db->setQuery($dbq);
+				$vars['id'] = intval($db->loadResult());
+            }
         }
 
         return $vars;
     }
-
-    return $vars;
 }
 
 
 /**
- * Parses a slug segment and extracts the ID of the item
+ * Proxy for the new router interface for old SEF extensions.
  *
- * @param     string    $segment    The slug segment
+ * @param     array  $query    An array of URL arguments
  *
- * @return    int                   The item id
+ * @return    array            The URL arguments to use to assemble the subsequent URL.
  */
-function PKtasksParseSlug($segment)
+function pktasksBuildRoute(&$query)
 {
-    if (strpos($segment, ':') === false) {
-        return (int) $segment;
-    }
-    else {
-        list($id, $alias) = explode(':', $segment, 2);
-        return (int) $id;
-    }
+    $router = new PKTasksRouter();
+
+    return $router->build($query);
 }
 
 
 /**
- * Creates a slug segment
+ * Proxy for the new router interface for old SEF extensions.
  *
- * @param     int       $id       The item id
- * @param     string    $table    The item table
- * @param     string    $alt      Alternative alias if the id is 0
- * @param     string    $field    The field to query
+ * @param     array    $segments    The segments of the URL to parse.
  *
- * @return    string              The slug
+ * @return    array                 The URL attributes to be used by the application.
  */
-function PKtasksMakeSlug($id, $table, $alt = 'all', $field = 'alias')
+function pktasksParseRoute($segments)
 {
-    if ($id == '' || $id == '0') {
-        if ($table == '#__pf_projects') {
-            $app   = JFactory::getApplication();
-            $id    = (int) $app->getUserState('com_projectfork.project.active.id', 0);
-            $alias = $app->getUserState('com_projectfork.project.active.title', 'all-projects');
-            $alias = JApplication::stringURLSafe($alias);
+    $router = new PKTasksRouter();
 
-            return $id . ':' . $alias;
-        }
-        else {
-            return '0:' . $alt;
-        }
-    }
-
-    $db    = JFactory::getDbo();
-    $query = $db->getQuery(true);
-
-    $query->select($db->quoteName($field))
-          ->from($db->quoteName($table))
-          ->where('id = ' . (int) $id);
-
-    $db->setQuery($query->__toString());
-
-    $alias = $db->loadResult();
-    $slug  = $id . ':' . $alias;
-
-    return $slug;
+    return $router->parse($segments);
 }
