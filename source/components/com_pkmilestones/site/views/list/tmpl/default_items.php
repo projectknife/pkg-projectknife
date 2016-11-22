@@ -118,7 +118,7 @@ for ($i = 0; $i != $count; $i++)
 
 
     // Format title
-    $link  = PKmilestonesHelperRoute::getItemRoute($item->slug). '&return=' . $url_return;
+    $link  = PKmilestonesHelperRoute::getItemRoute($item->slug, $item->project_slug). '&return=' . $url_return;
     $title = '<a href="' . JRoute::_($link) . '" class="item-title">' . $this->escape($item->title) . '</a>';
 
 
@@ -133,7 +133,7 @@ for ($i = 0; $i != $count; $i++)
     }
     elseif ($can_edit || $can_edit_own) {
         $btn_edit = '<a class="btn btn-small btn-link hasTooltip" title="' . $txt_edit . '" href="'
-                  . JRoute::_(PKmilestonesHelperRoute::getFormRoute($item->slug) . '&return=' . $url_return)  . '">'
+                  . JRoute::_(PKmilestonesHelperRoute::getFormRoute($item->slug, $item->project_slug) . '&return=' . $url_return)  . '">'
                   . '<span class="icon-edit"></span></a>';
     }
     else {

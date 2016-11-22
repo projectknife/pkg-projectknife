@@ -192,8 +192,8 @@ class PKMilestonesModelMilestones extends PKModelList
         $query->select('ua.' . $display_name_field . ' AS author_name')
               ->join('LEFT', '#__users AS ua ON ua.id = a.created_by');
 
-        // Join over the projects for the title
-        $query->select('p.title AS project_title')
+        // Join over the projects for the title and alias
+        $query->select('p.title AS project_title, p.alias AS project_alias')
               ->join('LEFT', '#__pk_projects AS p ON p.id = a.project_id');
 
         // Join over the tasks for the actual start date task title
@@ -732,6 +732,9 @@ class PKMilestonesModelMilestones extends PKModelList
 
             // Create slug
             $items[$i]->slug = $items[$i]->id . ':' . $items[$i]->alias;
+
+            // Create project slug
+            $items[$i]->project_slug = $items[$i]->project_id . ':' . $items[$i]->project_alias;
 
             // Inject task count
             if (isset($total_tasks[$id])) {

@@ -89,7 +89,7 @@ class PKMilestonesControllerForm extends JControllerForm
         $return = $app->input->get('return', null, 'default', 'base64');
 
         if (empty($return) || !JUri::isInternal(base64_decode($return))) {
-            return JRoute::_(PKmilestonesHelperRoute::getListRoute(), false);
+            return JRoute::_(PKMilestonesHelperRoute::getListRoute(), false);
         }
         else {
             return base64_decode($return);
@@ -181,6 +181,11 @@ class PKMilestonesControllerForm extends JControllerForm
     {
         $append = parent::getRedirectToItemAppend($recordId, $urlVar);
         $return = $this->input->get('return', null, 'default', 'base64');
+        $filter_project = $this->input->get('filter_project_id', '', 'string');
+
+        if ($filter_project) {
+            $append .= '&filter_project_id=' . $filter_project;
+        }
 
         if (!empty($return) && JUri::isInternal(base64_decode($return))) {
             $append .= '&return=' . $return;
