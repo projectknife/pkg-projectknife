@@ -64,8 +64,32 @@ class PKtasksViewItem extends JViewLegacy
         $this->params  = $app->getParams();
         $this->toolbar = $this->getToolbar();
 
+
+        // Check for errors
+        $errors = $this->get('Errors');
+
+        if (count($errors)) {
+            JError::raiseError(500, implode("\n", $errors));
+            return false;
+        }
+
+
+        // Check viewing access
+        if (!PKUserHelper::isSuperAdmin()) {
+            $user     = JFactory::getUser();
+            $levels   = $user->getAuthorisedViewLevels();
+            $projects = PKUserHelper::getProjects();
+
+            if (!in_array($this->item->access, $levels) && !in_array($this->item->project_id, $projects)) {
+                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'warning');
+                return;
+            }
+        }
+
+
         // Prepare doc
         $this->prepareDocument();
+
 
         // Display
         parent::display($tpl);
