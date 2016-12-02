@@ -68,6 +68,20 @@ class PKmilestonesViewItem extends JViewLegacy
             return false;
         }
 
+
+        // Check viewing access
+        if (!PKUserHelper::isSuperAdmin()) {
+            $user     = JFactory::getUser();
+            $levels   = $user->getAuthorisedViewLevels();
+            $projects = PKUserHelper::getProjects();
+
+            if (!in_array($this->item->access, $levels) && !in_array($this->item->project_id, $projects)) {
+                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'warning');
+                return;
+            }
+        }
+
+
         $this->params  = JFactory::getApplication()->getParams();
         $this->toolbar = $this->getToolbar();
 
