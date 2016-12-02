@@ -70,7 +70,21 @@ class PKTasksViewForm extends JViewLegacy
             return false;
         }
 
-        // Double check form view access
+
+        // Check viewing access
+        if ($this->item->id > 0 && !PKUserHelper::isSuperAdmin()) {
+            $user     = JFactory::getUser();
+            $levels   = $user->getAuthorisedViewLevels();
+            $projects = PKUserHelper::getProjects();
+
+            if (!in_array($this->item->access, $levels) && !in_array($this->item->project_id, $projects)) {
+                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'warning');
+                return;
+            }
+        }
+
+
+        // Check create/edit permission
         if ($this->item->id == 0) {
             if ($this->item->project_id) {
                 if (!PKUserHelper::authProject('task.create', $this->item->project_id)) {
