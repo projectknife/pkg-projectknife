@@ -147,28 +147,6 @@ class PKMilestonesViewList extends JViewLegacy
     }
 
 
-    public function getSortFields()
-    {
-        $fields = array(
-            'a.ordering'          => JText::_('JGRID_HEADING_ORDERING'),
-            'project_title'       => JText::_('COM_PKPROJECTS_PROJECT'),
-            'a.title'             => JText::_('JGLOBAL_TITLE'),
-            'a.published'         => JText::_('PKGLOBAL_PUBLISHING_STATE'),
-            'a.created'           => JText::_('JDATE'),
-            'a.start_date'        => JText::_('PKGLOBAL_START_DATE'),
-            'a.due_date'          => JText::_('PKGLOBAL_DUE_DATE'),
-            'author_name'         => JText::_('JAUTHOR'),
-            'access_level'        => JText::_('JGRID_HEADING_ACCESS'),
-            'a.id'                => JText::_('JGRID_HEADING_ID'),
-            'a.progress'          => JText::_('PKGLOBAL_PROGRESS')
-        );
-
-        asort($fields);
-
-        return $fields;
-    }
-
-
     protected function getToolbar()
     {
         if ((int) $this->params->get('show_toolbar', 1) == 0) {
@@ -249,14 +227,14 @@ class PKMilestonesViewList extends JViewLegacy
                 <span class="label hasTooltip" style="cursor: help;" title="' . JText::_('PKGLOBAL_PRIMARY_SORT_AND_ORDER') . '">' . JText::_('J1') . '</span>
             </div>'
             );
-            PKToolbar::selectSortBy($this->getSortFields(), $this->escape($this->state->get('list.ordering', 'a.due_date')));
+            PKToolbar::selectSortBy($this->get('SortOptions'), $this->escape($this->state->get('list.ordering', 'a.due_date')));
             PKToolbar::selectOrderBy($this->escape($this->state->get('list.direction', 'asc')));
             PKToolbar::custom('
                 <div class="btn-group hidden-phone">
                 <span class="label hasTooltip" style="cursor: help;" title="' . JText::_('PKGLOBAL_SECONDARY_SORT_AND_ORDER') . '">' . JText::_('J2') . '</span>
             </div>'
             );
-            PKToolbar::selectSortBy($this->getSortFields(), $this->escape($this->state->get('list.ordering_sec', 'a.progress')), '_sec');
+            PKToolbar::selectSortBy($this->get('SortOptions'), $this->escape($this->state->get('list.ordering_sec', 'a.progress')), '_sec');
             PKToolbar::selectOrderBy($this->escape($this->state->get('list.direction_sec', 'asc')), '_sec');
             PKToolbar::custom('
                 <div class="btn-group hidden-phone">

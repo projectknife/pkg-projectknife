@@ -32,7 +32,6 @@ $date_dynamic = $this->params->get('date_dynamic', 1);
 $date_default = $this->params->get('date_default', 'due_date');
 $date_format  = $this->params->get('date_format', JText::_('DATE_FORMAT_LC4'));
 
-
 $date_pos_d = strpos(strtolower($date_format), 'd');
 $date_pos_m = strpos(strtolower($date_format), 'm');
 $date_pos_y = strpos(strtolower($date_format), 'y');

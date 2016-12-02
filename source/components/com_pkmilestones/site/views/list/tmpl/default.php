@@ -68,7 +68,7 @@ JFactory::getDocument()->addScriptDeclaration('
         <?php endif; ?>
         <input type="hidden" id="boxchecked" name="boxchecked" value="0" />
         <input type="hidden" name="task" value="" />
-        <input type="hidden" name="filter_order" id="filter_order" value="<?php echo $this->escape($this->state->get('list.ordering', 'a.actual_due_date')); ?>" />
+        <input type="hidden" name="filter_order" id="filter_order" value="<?php echo $this->escape($this->state->get('list.ordering', 'a.due_date')); ?>" />
         <input type="hidden" name="filter_order_Dir" id="filter_order_Dir" value="<?php echo $this->escape($this->state->get('list.direction', 'asc')); ?>" />
         <input type="hidden" name="filter_order_sec" id="filter_order_sec" value="<?php echo $this->escape($this->state->get('list.ordering_sec', 'a.progress')); ?>" />
         <input type="hidden" name="filter_order_sec_Dir" id="filter_order_sec_Dir" value="<?php echo $this->escape($this->state->get('list.direction_sec', 'asc')); ?>" />
