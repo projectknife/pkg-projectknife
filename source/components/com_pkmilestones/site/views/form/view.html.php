@@ -56,13 +56,27 @@ class PKmilestonesViewForm extends JViewLegacy
         $this->state   = $this->get('State');
         $this->toolbar = $this->getToolbar();
 
+
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
             JError::raiseError(500, implode("\n", $errors));
             return false;
         }
 
-        // Double check form view access
+
+        // Check viewing access
+        if ($this->item->id > 0 && !PKUserHelper::isSuperAdmin()) {
+            $user     = JFactory::getUser();
+            $levels   = $user->getAuthorisedViewLevels();
+            $projects = PKUserHelper::getProjects();
+
+            if (!in_array($this->item->access, $levels) && !in_array($this->item->project_id, $projects)) {
+                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'warning');
+                return;
+            }
+        }
+
+        // Check create/edit permission
         if ($this->item->id == 0) {
             if ($this->item->project_id) {
                 if (!PKUserHelper::authProject('milestone.create', $this->item->project_id)) {
