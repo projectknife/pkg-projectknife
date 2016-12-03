@@ -211,7 +211,7 @@ class PKprojectsModelProject extends PKModelAdmin
      *
      * @param     jtable    $table    A JTable object.
      *
-     * @return    void
+     * @return    void                
      */
     protected function prepareTable($table)
     {
@@ -223,12 +223,12 @@ class PKprojectsModelProject extends PKModelAdmin
 
 
     /**
-	 * Method to get a single record.
-	 *
-	 * @param   integer  $pk  The id of the primary key.
-	 *
-	 * @return  mixed    Object on success, false on failure.
-	 */
+     * Method to get a single record.
+     *
+     * @param     integer    $pk    The id of the primary key.
+     *
+     * @return    mixed             Object on success, false on failure.
+     */
     public function getItem($pk = null)
     {
         $item = parent::getItem($pk);
@@ -237,9 +237,173 @@ class PKprojectsModelProject extends PKModelAdmin
         if (is_object($item) && !empty($item->id)) {
             $item->tags = new JHelperTags();
             $item->tags->getTagIds($item->id, 'com_pkprojects.project');
+
+            // Get author name
+            $sys_params = PKPluginHelper::getParams('system', 'projectknife');
+            $db         = JFactory::getDbo();
+            $query      = $db->getQuery(true);
+
+            switch ($sys_params->get('user_display_name'))
+            {
+                case '1':
+                    $query->select('name');
+                    break;
+
+                default:
+                    $query->select('username');
+                    break;
+            }
+
+            $query->from('#__users')
+                  ->where('id = ' . $item->created_by);
+
+            $db->setQuery($query);
+            $item->author_name = $db->loadResult();
+
+            // Get task count
+            $item->tasks_count     = $this->getTasksCount($item->id);
+            $item->tasks_completed = 0;
+
+            if ($item->tasks_count) {
+                $item->tasks_completed = $this->getTasksCompletedCount($item->id);
+            }
+
+            // Get milestones count
+            $item->milestones_count     = $this->getMilestonesCount($item->id);
+            $item->milestones_completed = 0;
+
+            if ($item->milestones_count) {
+                $item->milestones_completed = $this->getMilestonesCompletedCount($item->id);
+            }
         }
 
         return $item;
+    }
+
+
+    /**
+     * Returns the total number of active tasks for the given project
+     *
+     * @param     integer    $pk       The project id
+     *
+     * @return    integer    $count    The number of tasks
+     */
+    public function getTasksCount($pk = null)
+    {
+        $pk = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
+
+        if (!$pk) {
+            return 0;
+        }
+
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->clear()
+              ->select('COUNT(*)')
+              ->from('#__pk_tasks')
+              ->where('project_id = ' . intval($pk))
+              ->where('published > 0');
+
+        $db->setQuery($query);
+        $count = (int) $db->loadResult();
+
+        return $count;
+    }
+
+
+    /**
+     * Returns the total number of completed tasks for the given project
+     *
+     * @param     array    $pk       The project id
+     *
+     * @return    array    $count    The number of tasks
+     */
+    public function getTasksCompletedCount($pk = null)
+    {
+        $pk = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
+
+        if (!$pk) {
+            return 0;
+        }
+
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->clear()
+              ->select('COUNT(*)')
+              ->from('#__pk_tasks')
+              ->where('project_id = ' . intval($pk))
+              ->where('published > 0')
+              ->where('progress = 100');
+
+        $db->setQuery($query);
+        $count = (int) $db->loadResult();
+
+        return $count;
+    }
+
+
+    /**
+     * Returns the total number of active milestones for the given project
+     *
+     * @param     integer    $pk       The project ids
+     *
+     * @return    integer    $count    The number of milestones
+     */
+    public function getMilestonesCount($pk = null)
+    {
+        $pk = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
+
+        if (!$pk) {
+            return 0;
+        }
+
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->clear()
+              ->select('COUNT(*)')
+              ->from('#__pk_milestones')
+              ->where('project_id = ' . intval($pk))
+              ->where('published > 0');
+
+        $db->setQuery($query);
+        $count = (int) $db->loadResult();
+
+        return $count;
+    }
+
+
+    /**
+     * Returns the total number of completed milestones for the given project
+     *
+     * @param     array    $pk       The project id
+     *
+     * @return    array    $count    The number of milestones
+     */
+    public function getMilestonesCompletedCount($pk = null)
+    {
+        $pk = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
+
+        if (!$pk) {
+            return 0;
+        }
+
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->clear()
+              ->select('COUNT(*)')
+              ->from('#__pk_milestones')
+              ->where('project_id = ' . intval($pk))
+              ->where('published > 0')
+              ->where('progress = 100');
+
+        $db->setQuery($query);
+        $count = (int) $db->loadResult();
+
+        return $count;
     }
 
 
@@ -350,7 +514,7 @@ class PKprojectsModelProject extends PKModelAdmin
      * @param     array    $data      The data to save
      * @param     bool     $is_new    Indicated whether this is a new item or not
      *
-     * @return    void
+     * @return    void                
      */
     protected function prepareSaveData(&$data, $is_new)
     {
@@ -515,7 +679,7 @@ class PKprojectsModelProject extends PKModelAdmin
      * @param     integer    $pks        The projects to copy.
      * @param     array      $options    Config options
      *
-     * @return    boolean
+     * @return    boolean                
      */
     public function copy($pks, $options = array())
     {
@@ -638,7 +802,7 @@ class PKprojectsModelProject extends PKModelAdmin
      *
      * @param     array      $pks    The project ids
      *
-     * @return    boolean
+     * @return    boolean            
      */
     public function progress($pks)
     {
@@ -727,7 +891,7 @@ class PKprojectsModelProject extends PKModelAdmin
      *
      * @param     array      $pks    The project ids
      *
-     * @return    boolean
+     * @return    boolean            
      */
     public function schedule($pks)
     {
