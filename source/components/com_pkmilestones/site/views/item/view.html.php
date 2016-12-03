@@ -57,8 +57,10 @@ class PKmilestonesViewItem extends JViewLegacy
      */
     public function display($tpl = null)
     {
-        $this->state = $this->get('State');
-        $this->item  = $this->get('Item');
+        $this->state  = $this->get('State');
+        $this->item   = $this->get('Item');
+        $this->params = JFactory::getApplication()->getParams();
+
 
         // Check for errors
         $errors = $this->get('Errors');
@@ -82,11 +84,37 @@ class PKmilestonesViewItem extends JViewLegacy
         }
 
 
-        $this->params  = JFactory::getApplication()->getParams();
+        // Setup toolbar
         $this->toolbar = $this->getToolbar();
+
+
+        //
+        $this->item->text = '';
+
+        // Process the content plugins.
+		JPluginHelper::importPlugin('content');
+        $dispatcher	= JDispatcher::getInstance();
+
+        $offset  = 0;
+		$results = $dispatcher->trigger('onContentPrepare', array ('com_pkmilestones.item', &$this->item, &$this->params, $offset));
+
+		$this->item->event = new stdClass();
+		$results = $dispatcher->trigger('onContentAfterTitle', array('com_pkmilestones.item', &$this->item, &$this->params, $offset));
+		$this->item->event->afterDisplayTitle = trim(implode("\n", $results));
+
+		$results = $dispatcher->trigger('onContentBeforeDisplay', array('com_pkmilestones.item', &$this->item, &$this->params, $offset));
+		$this->item->event->beforeDisplayContent = trim(implode("\n", $results));
+
+		$results = $dispatcher->trigger('onContentAfterDisplay', array('com_pkmilestones.item', &$this->item, &$this->params, $offset));
+		$this->item->event->afterDisplayContent = trim(implode("\n", $results));
+
+		// Escape strings for HTML output
+		// $this->pageclass_sfx = htmlspecialchars($item->params->get('pageclass_sfx'));
+
 
         // Prepare doc
         $this->prepareDocument();
+
 
         // Display
         parent::display($tpl);
