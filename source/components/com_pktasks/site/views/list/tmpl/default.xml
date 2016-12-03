@@ -51,7 +51,6 @@
     			<option value="desc">PKGLOBAL_ORDER_BY_ZA</option>
             </field>
             <field name="filter_published" type="list" label="PKGLOBAL_FILTER_PUBLISHED_LABEL" description="PKGLOBAL_FILTER_PUBLISHED_DESC">
-                <option value="">PKGLOBAL_DEFAULT_FILTER</option>
                 <option value="1">JPUBLISHED</option>
                 <option value="0">JUNPUBLISHED</option>
                 <option value="2">JARCHIVED</option>
