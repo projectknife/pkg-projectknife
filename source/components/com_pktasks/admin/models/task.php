@@ -481,10 +481,50 @@ class PKTasksModelTask extends PKModelAdmin
             return $item;
         }
 
-        // Get tags
+        // Get additional data
         if (is_object($item) && !empty($item->id)) {
             $item->tags = new JHelperTags;
             $item->tags->getTagIds($item->id, 'com_pktasks.task');
+
+            // Get author name
+            $sys_params = PKPluginHelper::getParams('system', 'projectknife');
+            $db         = JFactory::getDbo();
+            $query      = $db->getQuery(true);
+
+            switch ($sys_params->get('user_display_name'))
+            {
+                case '1':
+                    $query->select('name');
+                    break;
+
+                default:
+                    $query->select('username');
+                    break;
+            }
+
+            $query->from('#__users')
+                  ->where('id = ' . $item->created_by);
+
+            $db->setQuery($query);
+            $item->author_name = $db->loadResult();
+
+            // Get project title
+            $query->clear()
+                  ->select('title')
+                  ->from('#__pk_projects')
+                  ->where('id = ' . (int) $item->project_id);
+
+            $db->setQuery($query);
+            $item->project_title = $db->loadResult();
+
+            // Get milestone title
+            $query->clear()
+                  ->select('title')
+                  ->from('#__pk_milestones')
+                  ->where('id = ' . (int) $item->milestone_id);
+
+            $db->setQuery($query);
+            $item->milestone_title = $db->loadResult();
         }
 
         // Load assigned users

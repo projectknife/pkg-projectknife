@@ -90,6 +90,25 @@ class PKtasksViewItem extends JViewLegacy
         // Prepare doc
         $this->prepareDocument();
 
+        $this->item->text = '';
+
+        // Process the content plugins.
+		JPluginHelper::importPlugin('content');
+        $dispatcher	= JDispatcher::getInstance();
+
+        $offset  = 0;
+		$results = $dispatcher->trigger('onContentPrepare', array ('com_pktasks.item', &$this->item, &$this->params, $offset));
+
+		$this->item->event = new stdClass();
+		$results = $dispatcher->trigger('onContentAfterTitle', array('com_pktasks.item', &$this->item, &$this->params, $offset));
+		$this->item->event->afterDisplayTitle = trim(implode("\n", $results));
+
+		$results = $dispatcher->trigger('onContentBeforeDisplay', array('com_pktasks.item', &$this->item, &$this->params, $offset));
+		$this->item->event->beforeDisplayContent = trim(implode("\n", $results));
+
+		$results = $dispatcher->trigger('onContentAfterDisplay', array('com_pktasks.item', &$this->item, &$this->params, $offset));
+		$this->item->event->afterDisplayContent = trim(implode("\n", $results));
+
 
         // Display
         parent::display($tpl);

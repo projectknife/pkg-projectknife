@@ -89,7 +89,7 @@ JFactory::getDocument()->addScriptDeclaration('
                     <?php
                     if ($show_project) {
                         echo '<li class="pkdetail-project">'
-                        . JText::_('JCATEGORY') . ': '
+                        . JText::_('COM_PKPROJECTS_PROJECT') . ': '
                         . $item->project_title
                         . '</li>';
                     }
