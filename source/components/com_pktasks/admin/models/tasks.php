@@ -500,9 +500,23 @@ class PKtasksModelTasks extends PKModelList
      */
     protected function getAssignees($id)
     {
+        // Get system plugin settings
+        $sys_params = PKPluginHelper::getParams('system', 'projectknife');
+
+        switch ($sys_params->get('user_display_name'))
+        {
+            case '1':
+                $display_name_field = 'name';
+                break;
+
+            default:
+                $display_name_field = 'username';
+                break;
+        }
+
         $query = $this->_db->getQuery(true);
 
-        $query->select('u.id, u.name, u.username')
+        $query->select('u.id, u.' . $display_name_field . ' as assignee_name')
               ->from('#__users AS u')
               ->join('INNER', '#__pk_task_assignees AS a ON a.user_id = u.id')
               ->where('a.task_id = ' . (int) $id)

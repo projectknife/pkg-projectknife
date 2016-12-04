@@ -31,6 +31,8 @@ $txt_priority   = JText::_('COM_PKTASKS_PRIORITY');
 $txt_priority_n = JText::_('COM_PKTASKS_PRIORITY_NORMAL');
 $txt_priority_h = JText::_('COM_PKTASKS_PRIORITY_HIGH');
 $txt_unassigned = JText::_('COM_PKTASKS_UNASSIGNED');
+$txt_project    = JText::_('COM_PKPROJECTS_PROJECT');
+$txt_milestone  = JText::_('COM_PKMILESTONES_MILESTONE');
 $txt_tags       = JText::_('JTAG');
 
 
@@ -90,7 +92,6 @@ if ($date_dynamic && $heading_by_date) {
 }
 
 
-
 // Setup URL related vars
 $url_list   = 'index.php?option=com_pktasks&view=list&Itemid=' . PKRouteHelper::getMenuItemId('active');
 $url_return = base64_encode($url_list);
@@ -107,6 +108,8 @@ $view_levels   = JAccess::getAuthorisedViewLevels(JFactory::getUser()->get('id')
 $params        = JComponentHelper::getParams('com_pktasks');
 $progress_type = (int) $params->get('progress_type', 1);
 
+$filter_project = (int) $this->state->get('filter.project_id');
+$filter_ms      = (int) $this->state->get('filter.milestone_id');
 
 // JS for priority button
 $doc->addScriptDeclaration('
@@ -138,7 +141,7 @@ for ($i = 0; $i != $count; $i++)
     if ($item->assignee_count) {
         foreach ($item->assignees AS $assignee)
         {
-            $assignees[]    = $this->escape($assignee->name);
+            $assignees[]    = $this->escape($assignee->assignee_name);
             $assignee_pks[] = $assignee->id;
         }
 
@@ -195,6 +198,24 @@ for ($i = 0; $i != $count; $i++)
     }
     else {
         $btn_edit = '';
+    }
+
+
+    // Format Project
+    if ($filter_project) {
+        $project = '';
+    }
+    else {
+        $project = '<span class="label">' . $txt_project . ': ' . $this->escape($item->project_title) . '</span> ';
+    }
+
+
+    // Format Milestone
+    if ($filter_ms || $item->milestone_title == '') {
+        $milestone = '';
+    }
+    else {
+        $milestone = '<span class="label">' . $txt_milestone . ': ' . $this->escape($item->milestone_title) . '</span> ';
     }
 
 
@@ -331,7 +352,7 @@ for ($i = 0; $i != $count; $i++)
             </div>
             <div class="row-fluid">
                 <div class="span12">
-                    <p><i class="icon-bookmark muted hasTooltip pk-minfo" title="<?php echo $txt_tags; ?>"></i> <?php echo $priority . ' ' . $tags; ?></p>
+                    <p><i class="icon-bookmark muted hasTooltip pk-minfo" title="<?php echo $txt_tags; ?>"></i> <?php echo $project . $milestone . $priority . ' ' . $tags; ?></p>
                     <p><i class="icon-user muted hasTooltip pk-minfo"></i> <?php echo $assignees; ?></p>
                 </div>
             </div>
