@@ -211,7 +211,7 @@ class PKprojectsModelProject extends PKModelAdmin
      *
      * @param     jtable    $table    A JTable object.
      *
-     * @return    void                
+     * @return    void
      */
     protected function prepareTable($table)
     {
@@ -233,7 +233,7 @@ class PKprojectsModelProject extends PKModelAdmin
     {
         $item = parent::getItem($pk);
 
-        // Get tags
+        // Get additional data
         if (is_object($item) && !empty($item->id)) {
             $item->tags = new JHelperTags();
             $item->tags->getTagIds($item->id, 'com_pkprojects.project');
@@ -514,7 +514,7 @@ class PKprojectsModelProject extends PKModelAdmin
      * @param     array    $data      The data to save
      * @param     bool     $is_new    Indicated whether this is a new item or not
      *
-     * @return    void                
+     * @return    void
      */
     protected function prepareSaveData(&$data, $is_new)
     {
@@ -679,7 +679,7 @@ class PKprojectsModelProject extends PKModelAdmin
      * @param     integer    $pks        The projects to copy.
      * @param     array      $options    Config options
      *
-     * @return    boolean                
+     * @return    boolean
      */
     public function copy($pks, $options = array())
     {
@@ -802,7 +802,7 @@ class PKprojectsModelProject extends PKModelAdmin
      *
      * @param     array      $pks    The project ids
      *
-     * @return    boolean            
+     * @return    boolean
      */
     public function progress($pks)
     {
@@ -891,7 +891,7 @@ class PKprojectsModelProject extends PKModelAdmin
      *
      * @param     array      $pks    The project ids
      *
-     * @return    boolean            
+     * @return    boolean
      */
     public function schedule($pks)
     {

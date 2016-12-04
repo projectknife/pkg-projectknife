@@ -1,6 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <metadata>
-    <layout title="COM_PKMILESTONES_MILESTONES_VIEW_LIST_DEFAULT_TITLE">
-        <message><![CDATA[COM_PKMILESTONES_MILESTONES_VIEW_LIST_DEFAULT_DESC]]></message>
+    <layout title="COM_PKMILESTONES_MILESTONES_VIEW_ITEM_DEFAULT_TITLE">
+        <message><![CDATA[COM_PKMILESTONES_MILESTONES_VIEW_ITEM_DEFAULT_DESC]]></message>
     </layout>
+    <fields name="request">
+		<fieldset name="request">
+			<field name="id" type="pkmilestone" label="COM_PKMILESTONES_MILESTONE" required="true" modal="true"/>
+		</fieldset>
+	</fields>
+    <fields name="params">
+        <fieldset name="advanced" label="PKGLOBAL_ITEM_LAYOUT_OPTIONS">
+            <field name="show_toolbar" type="list" label="PKGLOBAL_TOOLBAR_LABEL" default="1">
+                <option value="0">JHIDE</option>
+				<option value="1">JSHOW</option>
+			</field>
+            <field name="date_format" type="text" description="PKGLOBAL_DATE_FORMAT_LC4_DESCRIPTION" label="JGLOBAL_DATE_FORMAT_LABEL" size="15"/>
+            <field name="show_description" type="list" label="JGLOBAL_DESCRIPTION" default="1">
+                <option value="0">JHIDE</option>
+				<option value="1">JSHOW</option>
+			</field>
+            <field name="show_project" type="list" label="COM_PKPROJECTS_PROJECT" default="1">
+                <option value="0">JHIDE</option>
+				<option value="1">JSHOW</option>
+			</field>
+            <field name="show_author" type="list" label="JAUTHOR" default="0">
+                <option value="0">JHIDE</option>
+				<option value="1">JSHOW</option>
+			</field>
+            <field name="show_date" type="list" label="JDATE" default="0">
+                <option value="0">JHIDE</option>
+				<option value="1">JSHOW</option>
+			</field>
+            <field name="show_start" type="list" label="PKGLOBAL_START_DATE" default="1">
+                <option value="0">JHIDE</option>
+				<option value="1">JSHOW</option>
+			</field>
+            <field name="show_due" type="list" label="PKGLOBAL_DUE_DATE" default="1">
+                <option value="0">JHIDE</option>
+				<option value="1">JSHOW</option>
+			</field>
+            <field name="show_tasks" type="list" label="COM_PKTASKS_SUBMENU_TASKS" default="1">
+                <option value="0">JHIDE</option>
+				<option value="1">JSHOW</option>
+			</field>
+            <field name="show_tags" type="list" label="JTAG" default="1">
+                <option value="0">JHIDE</option>
+				<option value="1">JSHOW</option>
+			</field>
+        </fieldset>
+    </fields>
 </metadata>

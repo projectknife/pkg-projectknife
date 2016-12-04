@@ -339,13 +339,117 @@ class PKMilestonesModelMilestone extends PKModelAdmin
             return $item;
         }
 
-        // Get tags
+        // Get additional data
         if (is_object($item) && !empty($item->id)) {
-            $item->tags = new JHelperTags;
+            $item->tags = new JHelperTags();
             $item->tags->getTagIds($item->id, 'com_pkmilestones.milestone');
+
+            // Get author name
+            $sys_params = PKPluginHelper::getParams('system', 'projectknife');
+            $db         = JFactory::getDbo();
+            $query      = $db->getQuery(true);
+
+            switch ($sys_params->get('user_display_name'))
+            {
+                case '1':
+                    $query->select('name');
+                    break;
+
+                default:
+                    $query->select('username');
+                    break;
+            }
+
+            $query->from('#__users')
+                  ->where('id = ' . $item->created_by);
+
+            $db->setQuery($query);
+            $item->author_name = $db->loadResult();
+
+
+            // Get project title
+            $query->clear()
+                  ->select('title')
+                  ->from('#__pk_projects')
+                  ->where('id = ' . (int) $item->project_id);
+
+            $db->setQuery($query);
+            $item->project_title = $db->loadResult();
+
+
+            // Get task count
+            $item->tasks_count     = $this->getTasksCount($item->id);
+            $item->tasks_completed = 0;
+
+            if ($item->tasks_count) {
+                $item->tasks_completed = $this->getTasksCompletedCount($item->id);
+            }
         }
 
         return $item;
+    }
+
+
+    /**
+     * Returns the total number of active tasks for the given milestone
+     *
+     * @param     integer    $pk       The milestone id
+     *
+     * @return    integer    $count    The number of tasks
+     */
+    public function getTasksCount($pk = null)
+    {
+        $pk = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
+
+        if (!$pk) {
+            return 0;
+        }
+
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->clear()
+              ->select('COUNT(*)')
+              ->from('#__pk_tasks')
+              ->where('milestone_id = ' . intval($pk))
+              ->where('published > 0');
+
+        $db->setQuery($query);
+        $count = (int) $db->loadResult();
+
+        return $count;
+    }
+
+
+    /**
+     * Returns the total number of completed tasks for the given milestone
+     *
+     * @param     array    $pk       The milestone id
+     *
+     * @return    array    $count    The number of tasks
+     */
+    public function getTasksCompletedCount($pk = null)
+    {
+        $pk = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
+
+        if (!$pk) {
+            return 0;
+        }
+
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->clear()
+              ->select('COUNT(*)')
+              ->from('#__pk_tasks')
+              ->where('milestone_id = ' . intval($pk))
+              ->where('published > 0')
+              ->where('progress = 100');
+
+        $db->setQuery($query);
+        $count = (int) $db->loadResult();
+
+        return $count;
     }
 
 

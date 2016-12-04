@@ -67,7 +67,16 @@ class PKMilestonesModelItem extends JModelItem
 
         try
         {
-            $db    = $this->getDbo();
+            $form = $this->getInstance('Form', 'PKMilestonesModel');
+
+            if (!$form) {
+                $data = null;
+            }
+            else {
+                $data = $form->getItem($pk);
+            }
+
+            /*$db    = $this->getDbo();
             $query = $db->getQuery(true);
 
             $query->select($this->getState('item.select', 'a.*'));
@@ -101,9 +110,9 @@ class PKMilestonesModelItem extends JModelItem
             $query->where('a.id = ' . $pk);
 
             $db->setQuery($query);
-            $data = $db->loadObject();
+            $data = $db->loadObject();*/
 
-            if (empty($data)) {
+            if (empty($data) || empty($data->id)) {
 				return JError::raiseError(404, JText::_('COM_PKMILESTONES_ERROR_MILESTONE_NOT_FOUND'));
 			}
 
