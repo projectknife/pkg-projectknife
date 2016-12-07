@@ -27,5 +27,6 @@ CREATE TABLE IF NOT EXISTS `#__pk_milestones` (
   KEY `idx_project_id` (`project_id`),
   KEY `idx_published` (`published`),
   KEY `idx_access` (`access`),
-  KEY `idx_created_by` (`created_by`)
+  KEY `idx_created_by` (`created_by`),
+  KEY `idx_checked_out` (`checked_out`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
