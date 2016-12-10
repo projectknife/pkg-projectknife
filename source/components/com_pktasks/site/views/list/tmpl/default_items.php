@@ -174,6 +174,11 @@ for ($i = 0; $i != $count; $i++)
         }
     }
 
+    // Check edit progress permission based on predecessor progress
+    if ($can_edit_progress && !$item->can_progress) {
+        $can_edit_progress = false;
+    }
+
     $can_checkin = ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $user->id || $item->checked_out == 0);
 
 

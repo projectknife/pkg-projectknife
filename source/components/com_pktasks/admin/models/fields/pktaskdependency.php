@@ -17,17 +17,17 @@ JFormHelper::loadFieldClass('list');
 
 
 /**
- * Form Field class for assigning users to a task.
+ * Form Field class for selecting task precedessors.
  *
  */
-class JFormFieldPKtaskAssignee extends JFormFieldList
+class JFormFieldPKTaskDependency extends JFormFieldList
 {
     /**
      * The form field type.
      *
      * @var    string
      */
-    public $type = 'PKtaskAssignee';
+    public $type = 'PKTaskDependency';
 
 
     /**
@@ -46,10 +46,10 @@ class JFormFieldPKtaskAssignee extends JFormFieldList
         }
         else {
             $url  = JUri::root() . 'administrator/';
-            $task = 'project';
+            $task = 'task';
         }
 
-        $url .= 'index.php?option=com_pkprojects&task=' . $task . '.searchMember&tmpl=component&format=json';
+        $url .= 'index.php?option=com_pktasks&task=' . $task . '.searchDependency&tmpl=component&format=json';
 
         $chosenAjaxSettings = new Registry(
             array(
@@ -95,34 +95,20 @@ class JFormFieldPKtaskAssignee extends JFormFieldList
 
         JArrayHelper::toInteger($this->value);
 
-        // Get system plugin settings
-        $sys_params = PKPluginHelper::getParams('system', 'projectknife');
-
-        switch ($sys_params->get('user_display_name'))
-        {
-            case '1':
-                $display_name_field = 'name';
-                break;
-
-            default:
-                $display_name_field = 'username';
-                break;
-        }
-
         $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        $query->select('id AS value, ' . $display_name_field . ' AS text')
-              ->from('#__users')
+        $query->select('id AS value, title AS text')
+              ->from('#__pk_tasks')
               ->where('id IN(' . implode(', ', $this->value) . ')')
-              ->order('' . $display_name_field . ' ASC');
+              ->order('title ASC');
 
         $db->setQuery($query);
-        $users = $db->loadObjectList();
+        $tasks = $db->loadObjectList();
 
-        foreach ($users AS $user)
+        foreach ($tasks AS $task)
         {
-            $options[] = JHtml::_('select.option', $user->value, $user->text, 'value', 'text', false);
+            $options[] = JHtml::_('select.option', $task->value, $task->text, 'value', 'text', false);
         }
 
         return $options;

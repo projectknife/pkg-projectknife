@@ -12,6 +12,7 @@ defined('_JEXEC') or die;
 
 
 $user  = JFactory::getUser();
+$doc   = JFactory::getDocument();
 $count = count($this->items);
 
 $params = JComponentHelper::getParams('com_pktasks');
@@ -186,7 +187,7 @@ for ($i = 0; $i != $count; $i++)
             }
         }
 
-        if (!$can_edit_state) {
+        if (!$can_edit_state || !$item->can_progress) {
             $progress_class .= ' disabled';
         }
 
@@ -199,8 +200,9 @@ for ($i = 0; $i != $count; $i++)
         // Progress percentage
         $progress_class = 'task-progress';
 
-        if (!$can_edit_state) {
-            $progress_class .= ' disabled';
+        if (!$can_edit_state || !$item->can_progress) {
+            // $progress_class .= ' disabled hidden';
+            $doc->addScriptDeclaration('jQuery(document).ready(function(){jQuery("#progress-' . $i . '").slider("disable");});');
         }
 
         $progress = '<input id="progress-' . $i . '" data-slider-id="slider-' . $i . '" '

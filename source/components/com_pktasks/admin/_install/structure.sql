@@ -42,3 +42,10 @@ CREATE TABLE IF NOT EXISTS `#__pk_task_assignees` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `idx_task_user` (`task_id`,`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `#__pk_task_dependencies` (
+  `predecessor_id` int(11) UNSIGNED NOT NULL DEFAULT '0',
+  `successor_id` int(11) UNSIGNED NOT NULL DEFAULT '0',
+  UNIQUE KEY `idx_successor` (`successor_id`,`predecessor_id`) USING BTREE,
+  UNIQUE KEY `idx_predecessor` (`predecessor_id`,`successor_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

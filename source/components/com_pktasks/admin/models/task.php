@@ -262,6 +262,7 @@ class PKTasksModelTask extends PKModelAdmin
         }
         catch (RuntimeException $e) {
             $this->setError($e->getMessage());
+            die($e->getMessage());
             return false;
         }
 
@@ -291,6 +292,82 @@ class PKTasksModelTask extends PKModelAdmin
 
         if (count($assign)) {
             $this->assign($pk, $assign);
+        }
+
+        return true;
+    }
+
+
+    /**
+     * Saves task predecessors, coming from the form
+     *
+     * @param     integer    $pk              The task id
+     * @param     array      $predecessors    The predecessor tasks
+     *
+     * @return    boolean
+     */
+    protected function savePredecessors($pk, $predecessors)
+    {
+        $pk = (int) $pk;
+
+        // Sanitize ids.
+        $predecessors = array_unique($predecessors);
+        JArrayHelper::toInteger($predecessors);
+
+        // Remove any values of zero.
+        if (array_search(0, $predecessors, true)) {
+            unset($predecessors[array_search(0, $predecessors, true)]);
+        }
+
+        // Remove self
+        if (array_search($pk, $predecessors, true)) {
+            unset($predecessors[array_search($pk, $predecessors, true)]);
+        }
+
+
+        $query = $this->_db->getQuery(true);
+
+        // Load currently predecessors
+        $query->select('predecessor_id')
+              ->from('#__pk_task_dependencies')
+              ->where('successor_id = ' . $pk);
+
+        try {
+            $this->_db->setQuery($query);
+            $current = $this->_db->loadColumn();
+        }
+        catch (RuntimeException $e) {
+            $this->setError($e->getMessage());
+            return false;
+        }
+
+
+        $delete = array();
+        $add    = array();
+
+        // Determine the tasks which are no longer selected as predecessor
+        foreach ($current AS $tid)
+        {
+            if (!in_array($tid, $predecessors)) {
+                $delete[] = $tid;
+            }
+        }
+
+        if (count($delete)) {
+            $this->removePredecessors($pk, $delete);
+        }
+
+
+        // Determine tasks which are newly set as predecessor
+        foreach ($predecessors AS $tid)
+        {
+            if (!in_array($tid, $current)) {
+                $add[] = $tid;
+            }
+        }
+
+        if (count($add)) {
+            $this->addPredecessors($pk, $add);
         }
 
         return true;
@@ -438,6 +515,39 @@ class PKTasksModelTask extends PKModelAdmin
                 $form->setFieldAttribute('progress', 'filter', 'unset');
             }
         }
+        elseif ($id) {
+            // Check predecessor progress
+            $predecessors = $this->getPredecessors($id);
+
+            if (count($predecessors)) {
+                $query = $this->_db->getQuery(true);
+
+                $query->select('id, published, progress')
+                      ->from('#__pk_tasks WHERE id IN(' . implode(', ', $predecessors) . ')');
+
+                $this->_db->setQuery($query);
+                $tasks = $this->_db->loadObjectList();
+
+                $can_edit_progress = true;
+
+                foreach ($tasks AS $task)
+                {
+                    if (!$task->published) {
+                        continue;
+                    }
+
+                    if ($task->progress != '100') {
+                        $can_edit_progress = false;
+                        break;
+                    }
+                }
+
+                if (!$can_edit_progress) {
+                    $form->setFieldAttribute('progress', 'type', 'hidden');
+                    $form->setFieldAttribute('progress', 'filter', 'unset');
+                }
+            }
+        }
 
         return $form;
     }
@@ -530,6 +640,9 @@ class PKTasksModelTask extends PKModelAdmin
         // Load assigned users
         $item->assignees = $this->getAssignees($pk);
 
+        // Load predecessors
+        $item->predecessors = $this->getPredecessors($pk);
+
         return $item;
     }
 
@@ -552,6 +665,30 @@ class PKTasksModelTask extends PKModelAdmin
         $query->select('user_id')
               ->from('#__pk_task_assignees')
               ->where('task_id = ' . $pk);
+
+        $this->_db->setQuery($query);
+        return $this->_db->loadColumn();
+    }
+
+
+    /**
+     * Method to get the predecessors of a given task
+     *
+     * @param     integer    $pk    The task id
+     *
+     * @return    array
+     */
+    public function getPredecessors($pk = null)
+    {
+        $pk = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
+
+        if (!$pk) return array();
+
+        $query = $this->_db->getQuery(true);
+
+        $query->select('predecessor_id')
+              ->from('#__pk_task_dependencies')
+              ->where('successor_id = ' . $pk);
 
         $this->_db->setQuery($query);
         return $this->_db->loadColumn();
@@ -682,6 +819,11 @@ class PKTasksModelTask extends PKModelAdmin
         // Save assigned users
         if (isset($data['assignees'])) {
             $this->saveAssignees($this->getState($this->getName() . '.id'), $data['assignees']);
+        }
+
+        // Save predecessors
+        if (isset($data['predecessors'])) {
+            $this->savePredecessors($this->getState($this->getName() . '.id'), $data['predecessors']);
         }
 
         // Trigger progress change event
@@ -1089,6 +1231,57 @@ class PKTasksModelTask extends PKModelAdmin
      * Assigns users to a given task
      *
      * @param     integer    $pk       The task id
+     * @param     array      $tasks    The users
+     *
+     * @return    boolean
+     */
+    public function addPredecessors($pk, $tasks)
+    {
+        // Sanitize user ids.
+        $tasks = array_unique($tasks);
+        JArrayHelper::toInteger($tasks);
+
+        // Remove any values of zero.
+        if (array_search(0, $tasks, true)) {
+            unset($tasks[array_search(0, $tasks, true)]);
+        }
+
+        if (empty($tasks)) {
+            return true;
+        }
+
+        $query = $this->_db->getQuery(true);
+
+        foreach ($tasks AS $tid)
+        {
+            $query->clear()
+                  ->insert('#__pk_task_dependencies')
+                  ->values($tid . ', ' . $pk);
+
+            try {
+                $this->_db->setQuery($query);
+                $this->_db->execute();
+            }
+            catch (RuntimeException $e) {
+                $this->setError($e->getMessage());
+                return false;
+            }
+        }
+
+        // Load Projectknife plugins
+        $dispatcher = JEventDispatcher::getInstance();
+        JPluginHelper::importPlugin('projectknife');
+
+        $dispatcher->trigger('onProjectknifeAfterAddPredecessors', array('com_pktasks.task', $pk, $tasks));
+
+        return true;
+    }
+
+
+    /**
+     * Assigns users to a given task
+     *
+     * @param     integer    $pk       The task id
      * @param     array      $users    The users
      *
      * @return    boolean
@@ -1159,6 +1352,55 @@ class PKTasksModelTask extends PKModelAdmin
         JPluginHelper::importPlugin('projectknife');
 
         $dispatcher->trigger('onProjectknifeAfterUnassign', array('com_pktasks.task', $pk, $users));
+
+        return true;
+    }
+
+
+    /**
+     * Removes task predecessor connections
+     *
+     * @param     integer    $pk       The task id
+     * @param     array      $tasks    The predecessor tasks
+     *
+     * @return    boolean
+     */
+    public function removePredecessors($pk, $tasks)
+    {
+        // Sanitize user ids.
+        $tasks = array_unique($tasks);
+        JArrayHelper::toInteger($tasks);
+
+        // Remove any values of zero.
+        if (array_search(0, $tasks, true)) {
+            unset($tasks[array_search(0, $tasks, true)]);
+        }
+
+        if (empty($tasks)) {
+            return true;
+        }
+
+        $query = $this->_db->getQuery(true);
+
+        $query->delete('#__pk_task_dependencies')
+              ->where('successor_id = ' . $pk)
+              ->where('predecessor_id IN(' . implode(', ', $tasks) . ')');
+
+        try {
+            $this->_db->setQuery($query);
+            $this->_db->execute();
+        }
+        catch (RuntimeException $e) {
+            $this->setError($e->getMessage());
+            return false;
+        }
+
+
+        // Load Projectknife plugins
+        $dispatcher = JEventDispatcher::getInstance();
+        JPluginHelper::importPlugin('projectknife');
+
+        $dispatcher->trigger('onProjectknifeAfterRemovePredecessors', array('com_pktasks.task', $pk, $tasks));
 
         return true;
     }

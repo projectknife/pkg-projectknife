@@ -408,15 +408,20 @@ class PKtasksModelTasks extends PKModelList
         $count = count($pks);
         $id    = 0;
 
-        $total_tags = $this->getTagsCount($pks);
+        $total_tags         = $this->getTagsCount($pks);
+        $total_predecessors = $this->getPredecessorCount($pks);
 
         for ($i = 0; $i < $count; $i++)
         {
             $id = $items[$i]->id;
 
-            $items[$i]->tags_count = 0;
-            $items[$i]->tags       = null;
-            $items[$i]->assignees  = array();
+            $items[$i]->tags_count   = 0;
+            $items[$i]->tags         = null;
+            $items[$i]->assignees    = array();
+
+            $items[$i]->predecessors      = array();
+            $items[$i]->predecessor_count = 0;
+            $items[$i]->can_progress      = true;
 
             // Create slug
             $items[$i]->slug = $items[$i]->id . ':' . $items[$i]->alias;
@@ -431,6 +436,27 @@ class PKtasksModelTasks extends PKModelList
                 // Load the actual tags
                 $items[$i]->tags = new JHelperTags();
                 $items[$i]->tags->getItemTags('com_pktasks.task', $id);
+            }
+
+            // Add predecessor dependencies
+            if (isset($total_predecessors[$id])) {
+                $items[$i]->predecessor_count = $total_predecessors[$id];
+                $items[$i]->predecessors      = $this->getPredecessors($id);
+
+                // Determine whether the task can be progressed
+                foreach ($items[$i]->predecessors AS $predecessor)
+                {
+                    // Ignore tasks that are not published.
+                    if ($predecessor->published != '1') {
+                        continue;
+                    }
+
+                    // If at least 1 precedeeding task is not complete, this task cannot be completed either.
+                    if ($predecessor->progress != '100') {
+                        $items[$i]->can_progress = false;
+                        break;
+                    }
+                }
             }
 
             // Add assignee details
@@ -488,6 +514,70 @@ class PKtasksModelTasks extends PKModelList
         }
 
         return $count;
+    }
+
+
+    /**
+     * Returns the total number of predecessors for the given tasks
+     *
+     * @param     array    $pks      The task ids
+     *
+     * @return    array    $count    The number of predecessors
+     */
+    public function getPredecessorCount($pks)
+    {
+        JArrayHelper::toInteger($pks);
+
+        if (!count($pks)) {
+            return array();
+        }
+
+        $query = $this->_db->getQuery(true);
+
+        $query->select('successor_id, COUNT(predecessor_id) AS total')
+              ->from('#__pk_task_dependencies')
+              ->where('successor_id IN(' . implode(', ', $pks) . ')')
+              ->group('successor_id');
+
+        try {
+            $this->_db->setQuery($query);
+            $count = (array) $this->_db->loadAssocList('successor_id', 'total');
+        }
+        catch (RuntimeException $e) {
+            $this->setError($e->getMessage());
+            return array();
+        }
+
+        return $count;
+    }
+
+
+    /**
+     * Returns the predecessors for a given task
+     *
+     * @param     array    $pk      The task ids
+     *
+     * @return    array    $tasks   A list of predecessors
+     */
+    public function getPredecessors($pk)
+    {
+        $query = $this->_db->getQuery(true);
+
+        $query->select('a.id, a.title, a.alias, a.published, a.progress, a.access')
+              ->from('#__pk_tasks AS a')
+              ->join('INNER', '#__pk_task_dependencies AS d ON d.predecessor_id = a.id')
+              ->where('successor_id = ' . (int) $pk);
+
+        try {
+            $this->_db->setQuery($query);
+            $tasks = $this->_db->loadObjectList();
+        }
+        catch (RuntimeException $e) {
+            $this->setError($e->getMessage());
+            return array();
+        }
+
+        return $tasks;
     }
 
 

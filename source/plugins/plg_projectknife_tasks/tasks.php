@@ -186,6 +186,11 @@ class plgProjectknifeTasks extends JPlugin
             case 'com_pkmilestones.form':
                 $this->onContentAfterDeleteMilestone($context, $table);
                 break;
+
+            case 'com_pktasks.task':
+            case 'com_pktasks.form':
+                $this->onContentAfterDeleteTask($context, $table);
+                break;
         }
 
         return true;
@@ -244,6 +249,45 @@ class plgProjectknifeTasks extends JPlugin
             $model = JModelLegacy::getInstance('Task', 'PKtasksModel', $config = array('ignore_request' => true));
             $model->delete($pks);
         }
+    }
+
+
+    /**
+     * Deletes task meta data to clean up
+     *
+     * @param     string    $context    The model context
+     * @param     object    $table      The table object instance
+     *
+     * @return    void
+     */
+    protected function onContentAfterDeleteTask($context, $table)
+    {
+        $db = JFactory::getDbo();
+        $query->getQuery(true);
+
+
+        // Remove all dependencies
+        $query->delete('#__pk_task_dependencies')
+              ->where('predecessor_id = ' . (int) $table->id);
+
+        $db->setQuery($query);
+        $db->execute();
+
+        $query->clear();
+        $query->delete('#__pk_task_dependencies')
+              ->where('successor_id = ' . (int) $table->id);
+
+        $db->setQuery($query);
+        $db->execute();
+
+
+        // Remove all assigned users
+        $query->clear();
+        $query->delete('#__pk_task_assignees')
+              ->where('task_id = ' . (int) $table->id);
+
+        $db->setQuery($query);
+        $db->execute();
     }
 
 
