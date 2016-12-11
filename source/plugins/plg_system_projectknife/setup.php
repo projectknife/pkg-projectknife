@@ -106,11 +106,22 @@ class plgSystemProjectknifeInstallerScript
 
                         // Display on all pages
                         if ($module_id && $menu_id) {
-                            $record           = new stdClass();
-                            $record->moduleid = $module_id;
-                            $record->menuid   = 0;
+                            // Double check if entry exists
+                            $query->clear()
+                                  ->select('moduleid')
+                                  ->from('#__modules_menu')
+                                  ->where('moduleid = ' . $module_id);
 
-                            $db->insertObject('#__modules_menu', $record);
+                            $db->setQuery($query);
+                            $exists = (int) $db->loadResult();
+
+                            if (!$exists) {
+                                $record           = new stdClass();
+                                $record->moduleid = $module_id;
+                                $record->menuid   = 0;
+
+                                $db->insertObject('#__modules_menu', $record);
+                            }
                         }
                     }
                 }
