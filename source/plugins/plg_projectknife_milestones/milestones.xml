@@ -2,13 +2,13 @@
 <extension version="3.5" type="plugin" group="projectknife" method="install">
     <!-- Extension info -->
     <name>plg_projectknife_milestones</name>
-    <creationDate>October 2016</creationDate>
+    <creationDate>December 2016</creationDate>
     <author>Tobias Kuhn</author>
     <copyright>Copyright (C) 2015-2016 Tobias Kuhn. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later.</license>
     <authorEmail>support@projectknife.net</authorEmail>
     <authorUrl>http://projectknife.net</authorUrl>
-    <version>5.0.0.alpha.2</version>
+    <version>5.0.0.beta.1</version>
     <description>PLG_PROJECTKNIFE_MILESTONES_XML_DESCRIPTION</description>
 
     <!-- Install script -->

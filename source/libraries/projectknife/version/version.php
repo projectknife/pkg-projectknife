@@ -27,19 +27,19 @@ final class PKVersion
     public $DEV_LEVEL = '0';
 
     /** @var  string  Development status. */
-    public $DEV_STATUS = 'Alpha';
+    public $DEV_STATUS = 'Beta';
 
     /** @var  string  Build number. */
-    public $BUILD = '2';
+    public $BUILD = '1';
 
     /** @var  string  Code name. */
-    public $CODENAME = 'Ash';
+    public $CODENAME = 'Gnosh';
 
     /** @var  string  Release date. */
-    public $RELDATE = '17-October-2016';
+    public $RELDATE = '11-December-2016';
 
     /** @var  string  Release time. */
-    public $RELTIME = '21:00';
+    public $RELTIME = '10:00';
 
     /** @var  string  Release timezone. */
     public $RELTZ = 'CET';
