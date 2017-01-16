@@ -38,7 +38,7 @@ $txt_tags       = JText::_('JTAG');
 
 // Determine heading and item date formats
 $date_dynamic = $this->params->get('date_dynamic', 1);
-$date_default = $this->params->get('date_default', 'actual_due_date');
+$date_default = $this->params->get('date_default', 'due_date');
 $date_format  = $this->params->get('date_format', JText::_('DATE_FORMAT_LC4'));
 
 
@@ -60,7 +60,7 @@ $date_item_medium    = ($date_pos_m > $date_pos_d) ? 'M'   : 'd';
 $heading_date_fields   = array('start_date', 'due_date', 'created');
 $heading_string_fields = array('author_name', 'project_title');
 
-$list_order      = str_replace('a.', '', $this->escape($this->state->get('list.ordering', 'a.actual_due_date')));
+$list_order      = str_replace('a.', '', $this->escape($this->state->get('list.ordering', 'a.due_date')));
 $heading_show    = false;
 $heading_by_date = false;
 $heading_prefix  = '';
