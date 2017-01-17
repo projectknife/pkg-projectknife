@@ -58,7 +58,7 @@ class JFormFieldPKTaskDependency extends JFormFieldList
                 'url'           => $url . "&project_id=' + jQuery('#jform_project_id').val() + '",
                 'dataType'      => 'json',
                 'jsonTermKey'   => 'like',
-                'minTermLength' => 3
+                'minTermLength' => 0
             )
         );
 
@@ -71,12 +71,7 @@ class JFormFieldPKTaskDependency extends JFormFieldList
         $html[] = JHtml::_('select.genericlist', $this->getOptions(), $this->name, trim($attr), 'value', 'text', $this->value, $this->id);
         $html[] = '<input type="hidden" name="' . $this->name . '" value=""/>';
 
-        /*
-        $html[] = '<select id="' . $this->fieldname . '_search" name="' . $this->name . '" class="span12" multiple>';
-        $html[] = implode('', $this->getOptions());
-        $html[] = '</select>';
-*/
-        return implode(',', $html);
+        return implode("\n", $html);
     }
 
 
