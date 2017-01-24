@@ -826,6 +826,8 @@ class PKMilestonesModelMilestone extends PKModelAdmin
         $id         = 0;
         $start_task = null;
         $due_task   = null;
+        $start_time = 0;
+        $due_time   = 0;
 
         for ($i = 0; $i < $count; $i++)
         {
@@ -863,22 +865,40 @@ class PKMilestonesModelMilestone extends PKModelAdmin
 
             // Update start date
             if (empty($start_task) || $start_task->id == null) {
+                $start_time = strtotime($dates[$id]['start_date']);
+
                 $query->set('start_date = ' . $this->_db->quote($dates[$id]['start_date']))
                       ->set('start_date_task_id = 0');
             }
             else {
+                $start_time = strtotime($start_task->start_date);
+
                 $query->set('start_date = ' . $this->_db->quote($start_task->start_date))
                       ->set('start_date_task_id = ' . (int) $start_task->id);
             }
 
             // Update due date
             if (empty($due_task) || $due_task->id == null) {
+                $due_time = strtotime($dates[$i]['due_date']);
+
                 $query->set('due_date = ' . $this->_db->quote($dates[$id]['due_date']))
                       ->set('due_date_task_id = 0');
             }
             else {
+                $due_time = strtotime($due_task->due_date);
+
                 $query->set('due_date = ' . $this->_db->quote($due_task->due_date))
                       ->set('due_date_task_id = ' . (int) $due_task->id);
+            }
+
+            // Update the duration
+            $duration = 1;
+            $delta    = $due_time - $start_time;
+
+            if ($delta > 0) {
+                $duration += ceil($delta / 86400) - 1;
+
+                $query->set('duration = ' . $duration);
             }
 
             $query->where('id = ' . (int) $id);
