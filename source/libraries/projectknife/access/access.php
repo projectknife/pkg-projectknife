@@ -52,10 +52,11 @@ abstract class PKAccess
      */
     protected static function checkItem(&$cache, $context, $user_id, $action, $item_id = 0)
     {
+        $str_id  = strval($item_id);
         $user_id = (int) $user_id;
         $item_id = (int) $item_id;
 
-        if ($context == 'project' && $item_id == 'any') {
+        if ($context == "project" && $str_id == "any") {
             $asset = 'com_pkprojects.' . $context . '.' . $item_id;
         }
         elseif ($item_id > 0) {
@@ -78,7 +79,7 @@ abstract class PKAccess
         }
 
         // Check any project
-        if ($context == 'project' && $item_id == 'any') {
+        if ($context == 'project' && $str_id == 'any') {
             $db    = JFactory::getDbo();
             $user  = JFactory::getUser();
             $query = $db->getQuery(true);
@@ -118,43 +119,6 @@ abstract class PKAccess
 
             return $result;
         }
-
-
-        /*$result = null;
-        $path   = explode('.', $action);
-        $count  = count($path);
-        $check  = '';
-
-        if ($count < 2) {
-            $cache[$user_id][$asset][$action] = false;
-
-            return false;
-        }
-        else if ($count == 2) {
-            $result = JAccess::check($user_id, $action, $asset);
-        }
-        else {
-            $check = $path[0];
-            $allow = false;
-
-            for ($i = 1; $i < $count; $i++)
-            {
-                $check .= '.' . $path[$i];
-
-                $result = JAccess::check($user_id, $check, $asset);
-
-                if ($result === false) {
-                    break;
-                }
-                elseif ($result === true) {
-                    $allow = true;
-                }
-            }
-
-            if (is_null($result) && $allow) {
-                $result = $allow;
-            }
-        }*/
 
         $result = JAccess::check($user_id, $action, $asset);
 
