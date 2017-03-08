@@ -38,9 +38,7 @@ $show_milestones = (int) $this->params->get('show_milestones', 1);
 $show_tasks      = (int) $this->params->get('show_tasks', 1);
 $show_tags       = (int) $this->params->get('show_tags', 1);
 $show_details    = ($show_category || $show_date || $show_author || $show_start || $show_due || $show_milestones || $show_tasks || $show_tags);
-
-$desc_span = $show_details ? '8' : '12';
-$mod_span  = (count(JModuleHelper::getModules('pk-dashboard-right')) > 0 ? '8' : '12');
+$desc_span       = $show_details ? '8' : '12';
 ?>
 <?php if ($this->params->get('show_page_heading', 1) == '1') : ?>
     <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
@@ -64,9 +62,8 @@ $mod_span  = (count(JModuleHelper::getModules('pk-dashboard-right')) > 0 ? '8' :
         }
     ?>
 </form>
-<?php if ($item->id) : ?>
-
-    <div class="item-page pkdashboard-project-page">
+<div class="item-page pkdashboard-project-page">
+    <?php if ($item->id) : ?>
         <?php
         if ($this->params->get('show_title', 1)) {
             echo '<div class="page-header"><h2>' . $this->escape($item->title) . '</h2></div>';
@@ -176,42 +173,29 @@ $mod_span  = (count(JModuleHelper::getModules('pk-dashboard-right')) > 0 ? '8' :
         </div>
 
         <?php echo $item->event->afterDisplayContent; ?>
+    <?php endif; ?>
 
-        <!-- Begin Dashboard Modules -->
-        <?php if (count(JModuleHelper::getModules('pk-dashboard-top'))) : ?>
-            <div class="row-fluid">
-            	<div class="span12">
-            		<?php echo $modules->render('pk-dashboard-top', array('style' => 'xhtml'), null); ?>
-            	</div>
-            </div>
-        <?php
-        endif;
-
-        if (count(JModuleHelper::getModules('pk-dashboard-left')) || count(JModuleHelper::getModules('pk-dashboard-right'))) : ?>
-            <div class="row-fluid">
-            	<div class="span<?php echo $mod_span; ?>">
-            		<?php echo $modules->render('pk-dashboard-left', array('style' => 'xhtml'), null); ?>
-            	</div>
-                <?php if (count(JModuleHelper::getModules('pk-dashboard-right'))) : ?>
-                    <div class="span4">
-                        <div class="hidden-phone">
-                		  <?php echo $modules->render('pk-dashboard-right', array('style' => 'xhtml'), null); ?>
-                        </div>
-                	</div>
-                <?php endif; ?>
-            </div>
-        <?php
-        endif;
-
-        if (count(JModuleHelper::getModules('pk-dashboard-bottom'))) : ?>
-            <div class="row-fluid">
-            	<div class="span12">
-            		<?php echo $modules->render('pk-dashboard-bottom', array('style' => 'xhtml'), null); ?>
-            	</div>
-            </div>
-        <?php endif; ?>
-        <!-- End Dashboard Modules -->
+    <!-- Begin Dashboard Modules -->
+    <div class="row-fluid">
+        <div class="span12">
+            <?php echo $modules->render('pk-dashboard-top', array('style' => 'xhtml'), null); ?>
+        </div>
     </div>
-<?php endif; ?>
-
-
+    <div class="row-fluid">
+        <div class="span4">
+            <?php echo $modules->render('pk-dashboard-middle-left', array('style' => 'xhtml'), null); ?>
+        </div>
+        <div class="span4">
+            <?php echo $modules->render('pk-dashboard-middle-center', array('style' => 'xhtml'), null); ?>
+        </div>
+        <div class="span4">
+            <?php echo $modules->render('pk-dashboard-middle-right', array('style' => 'xhtml'), null); ?>
+        </div>
+    </div>
+    <div class="row-fluid">
+        <div class="span12">
+            <?php echo $modules->render('pk-dashboard-bottom', array('style' => 'xhtml'), null); ?>
+        </div>
+    </div>
+    <!-- End Dashboard Modules -->
+</div>
