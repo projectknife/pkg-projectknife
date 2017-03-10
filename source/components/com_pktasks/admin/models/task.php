@@ -4,7 +4,7 @@
  * @subpackage   com_pktasks
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2015-2016 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2015-2017 Tobias Kuhn. All rights reserved.
  * @license      GNU General Public License version 2 or later.
  */
 
@@ -458,22 +458,32 @@ class PKTasksModelTask extends PKModelAdmin
 
             $can_edit_state = false;
 
-            if ($id && $pid) {
+            if ($pid) {
                 // Check if owner
                 if (PKUserHelper::authProject('task.edit.own.state', $pid)) {
-                    $query = $this->_db->getQuery(true);
+                    if ($id) {
+                        $query = $this->_db->getQuery(true);
 
-                    $query->select('created_by')
-                          ->from('#__pk_tasks')
-                          ->where('id = ' . $id);
+                        $query->select('created_by')
+                              ->from('#__pk_tasks')
+                              ->where('id = ' . $id);
 
-                    $this->_db->setQuery($query);
-                    $project_author = (int) $this->_db->loadResult();
+                        $this->_db->setQuery($query);
+                        $project_author = (int) $this->_db->loadResult();
 
-                    if ($user->id > 0 && $user->id == $project_author) {
+                        if ($user->id > 0 && $user->id == $project_author) {
+                            $can_edit_state = true;
+                        }
+                    }
+                    else {
+                        // This is a new item - Allow change state bc the user will be the owner upon creation.
                         $can_edit_state = true;
                     }
                 }
+            }
+            elseif (!$id && PKUserHelper::authProject('task.edit.own.state', 'any')) {
+                // This is a new item, and no project is selected. Allow edit state if the user is allowed on any projects.
+                $can_edit_state = true;
             }
 
             if (!$can_edit_state) {
@@ -745,6 +755,10 @@ class PKTasksModelTask extends PKModelAdmin
         // Generate unqiue title and alias
         list($data['title'], $data['alias']) = $this->uniqueTitleAlias($data['title'], $data['alias'], $data['project_id'], $pk);
 
+        // Set default publishing state to 1 for new items
+        if ($is_new && !array_key_exists('published', $data)) {
+            $data['published'] = 1;
+        }
 
         // Handle viewing access
         if ($data['milestone_id'] > 0 ) {
