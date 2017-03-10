@@ -547,6 +547,11 @@ class PKprojectsModelProject extends PKModelAdmin
         // Generate unique title and alias
         list($data['title'], $data['alias']) = $this->uniqueTitleAlias($data['title'], $data['alias'], $pk);
 
+        // Set default publishing state to 1 for new items
+        if ($is_new && !array_key_exists('published', $data)) {
+            $data['published'] = 1;
+        }
+
         // Handle viewing access
         $category_access = 0;
         $access_inherit  = 1;
