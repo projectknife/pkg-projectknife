@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension type="module" version="3.5" client="site" method="install">
+<extension type="module" version="3.5" client="site" method="upgrade">
 	<!-- Extension info -->
     <name>mod_pkfilters</name>
 	<author>Tobias Kuhn</author>

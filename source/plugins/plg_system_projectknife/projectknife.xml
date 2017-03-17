@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension version="3.5" type="plugin" group="system" method="install">
+<extension version="3.5" type="plugin" group="system" method="upgrade">
     <!-- Extension info -->
     <name>PLG_SYSTEM_PROJECTKNIFE</name>
     <author>Tobias Kuhn</author>

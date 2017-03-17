@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension type="library" method="install" version="3.5">
+<extension type="library" method="upgrade" version="3.5">
     <!-- Extension info -->
     <name>Projectknife</name>
     <libraryname>projectknife</libraryname>

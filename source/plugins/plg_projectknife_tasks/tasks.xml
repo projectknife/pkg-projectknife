@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension version="3.5" type="plugin" group="projectknife" method="install">
+<extension version="3.5" type="plugin" group="projectknife" method="upgrade">
     <!-- Extension info -->
     <name>plg_projectknife_tasks</name>
     <creationDate>December 2016</creationDate>
