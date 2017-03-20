@@ -321,13 +321,11 @@ class PKtasksModelTasks extends PKModelList
         // Filter by assignee
         if (!empty($assignee_id)) {
             if (is_numeric($assignee_id)) {
-                $query->join('inner', '#__pk_task_assignees AS ta ON ta.task_id = a.id');
-                $query->where('ta.user_id = ' . (int) $assignee_id);
+                $query->join('inner', '#__pk_task_assignees AS ta ON (ta.task_id = a.id AND ta.user_id = ' . (int) $assignee_id . ')');
             }
             else if (strcmp($assignee_id, 'me') === 0) {
                 $user = JFactory::getUser();
-                $query->join('inner', '#__pk_task_assignees AS ta ON ta.task_id = a.id');
-                $query->where('ta.user_id = ' . (int) $user->id);
+                $query->join('inner', '#__pk_task_assignees AS ta ON (ta.task_id = a.id AND ta.user_id = ' . (int) $user->id . ')');
             }
             else if (strcmp($assignee_id, 'notme') === 0) {
                 $user   = JFactory::getUser();
