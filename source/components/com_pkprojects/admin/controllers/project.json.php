@@ -68,10 +68,46 @@ class PKprojectsControllerProject extends JControllerLegacy
         $rules = $db->loadResult();
 
         if (empty($rules)) {
-            $groups = array();
+            $rule_groups = array();
         }
         else {
-            $groups = json_decode($rules);
+            $rule_groups = json_decode($rules);
+        }
+
+        $groups = array();
+
+        // Check sub-groups
+        foreach ($rule_groups AS $parent_group)
+        {
+            $groups[] = (int) $parent_group;
+
+            $query->clear()
+                  ->select('id, lft, rgt')
+                  ->from('#__usergroups')
+                  ->where('id = ' . (int) $parent_group);
+
+            $db->setQuery($query);
+            $group = $db->loadObject();
+
+            if (is_object($group)) {
+                $query->clear()
+                      ->select('id')
+                      ->from('#__usergroups')
+                      ->where('lft > ' . $group->lft)
+                      ->where('rgt < ' . $group->rgt);
+
+                $db->setQuery($query);
+                $subgroups = $db->loadColumn();
+
+                foreach ($subgroups AS $subgroup)
+                {
+                    if (in_array((int) $subgroup, $groups)) {
+                        continue;
+                    }
+
+                    $groups[] = $subgroup;
+                }
+            }
         }
 
         // Get manually added users
