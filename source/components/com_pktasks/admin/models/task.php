@@ -244,7 +244,8 @@ class PKTasksModelTask extends PKModelAdmin
         JArrayHelper::toInteger($users);
 
         // Remove any values of zero.
-        if (array_search(0, $users, true)) {
+        while (array_search(0, $users, true) !== false)
+        {
             unset($users[array_search(0, $users, true)]);
         }
 
@@ -315,7 +316,8 @@ class PKTasksModelTask extends PKModelAdmin
         JArrayHelper::toInteger($predecessors);
 
         // Remove any values of zero.
-        if (array_search(0, $predecessors, true)) {
+        while (array_search(0, $predecessors, true) !== false)
+        {
             unset($predecessors[array_search(0, $predecessors, true)]);
         }
 
