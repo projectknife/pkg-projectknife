@@ -87,6 +87,10 @@ class PKtasksViewItem extends JViewLegacy
         }
 
 
+        // Set active project
+        PKApplicationHelper::setProjectId($this->item->project_id);
+
+
         // Prepare doc
         $this->prepareDocument();
 

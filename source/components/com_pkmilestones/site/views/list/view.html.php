@@ -80,9 +80,13 @@ class PKMilestonesViewList extends JViewLegacy
     {
         $app = JFactory::getApplication();
 
+        $this->state = $this->get('State');
+
+        // Set active project
+        PKApplicationHelper::setProjectId($this->state->get('filter.project_id'));
+
         $this->items      = $this->get('Items');
         $this->pagination = $this->get('Pagination');
-        $this->state      = $this->get('State');
         $this->params     = $app->getParams();
         $this->toolbar    = $this->getToolbar();
 
