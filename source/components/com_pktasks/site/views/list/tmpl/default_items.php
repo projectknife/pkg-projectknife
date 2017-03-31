@@ -227,15 +227,15 @@ for ($i = 0; $i != $count; $i++)
     // Priority
     if ($item->priority == '1') {
         $prio_txt   = $txt_priority . ': ' . $txt_priority_h;
-        $prio_class = ' label-important' . ($can_edit_state ? '' : ' disabled');
+        $prio_class = ' label-important' . ($can_edit_state ? ' priority' : ' disabled');
     }
     else {
         $prio_txt   = $txt_priority . ': ' . $txt_priority_n;
-        $prio_class = $can_edit_state ? '' : ' disabled';
+        $prio_class = $can_edit_state ? ' priority' : ' disabled';
     }
 
     $priority = '<span id="prio-' . $item->id . '"'
-              . 'class="label priority prio-' . $item->priority . $prio_class . '"'
+              . 'class="label prio-' . $item->priority . $prio_class . '"'
               . 'data-id="' . $item->id. '" data-value="' . intval($item->priority) . '">'
               . $prio_txt
               . '</span>';
