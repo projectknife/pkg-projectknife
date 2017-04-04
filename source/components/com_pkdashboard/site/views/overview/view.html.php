@@ -65,6 +65,9 @@ class PKdashboardViewOverview extends JViewLegacy
         $this->params  = $app->getParams();
         $this->toolbar = $this->getToolbar();
 
+        // Set active project
+        PKApplicationHelper::setProjectId($this->state->get($this->get('Name') . '.id'));
+
         // Check viewing access
         if ($this->item && $this->item->id > 0) {
             $user      = JFactory::getUser();
