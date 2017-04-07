@@ -84,11 +84,11 @@ if ($date_dynamic && $heading_by_date) {
 
 
 // Setup URL related vars
-$url_list   = 'index.php?option=com_pkprojects&view=list&Itemid=' . PKApplicationHelper::getMenuItemId('active');
-$url_ms     = 'index.php?option=com_pkmilestones&view=list&Itemid=' . PKApplicationHelper::getMenuItemId('com_pkmilestones', 'list');
-$url_tasks  = 'index.php?option=com_pktasks&view=list&Itemid=' . PKApplicationHelper::getMenuItemId('com_pktasks', 'list');
+$url_list   = 'index.php?option=com_pkprojects&view=list&Itemid=' . PKRouteHelper::getMenuItemId('active');
+$url_ms     = 'index.php?option=com_pkmilestones&view=list&Itemid=' . PKRouteHelper::getMenuItemId('com_pkmilestones', 'list');
+$url_tasks  = 'index.php?option=com_pktasks&view=list&Itemid=' . PKRouteHelper::getMenuItemId('com_pktasks', 'list');
 $url_return = base64_encode($url_list);
-$db_itemid  = PKApplicationHelper::getMenuItemId('com_pkdashboard', 'overview');
+
 
 
 // Misc
@@ -98,6 +98,12 @@ $db_nulldate    = JFactory::getDbo()->getNullDate();
 $time_now       = strtotime(JHtml::_('date'));
 $view_levels    = JAccess::getAuthorisedViewLevels($user->get('id'));
 $sorting_manual = ($list_order == 'ordering');
+
+
+// Menu item id's
+$itemid_active   = PKRouteHelper::getMenuItemId('active');
+$itemid_overview = PKRouteHelper::getMenuItemId('com_pkdashboard', 'overview', array('id' => 0));
+$itemid_form     = PKRouteHelper::getMenuItemId('com_pkprojects', 'form');
 
 
 // Enable popups for date buttons
@@ -114,16 +120,23 @@ for ($i = 0; $i != $count; $i++)
     $item = $this->items[$i];
 
     // Check permissions
-    $can_create   = PKUserHelper::authProject('core.create.project', $item->id);
-    $can_edit     = PKUserHelper::authProject('core.edit.project', $item->id);
-    $can_edit_own = (PKUserHelper::authProject('core.edit.own.project', $item->id) && $item->created_by == $user->id);
-    $can_checkin  = ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0);
+    $can_edit     = PKUserHelper::authProject('core.edit', $item->id);
+    $can_edit_own = (PKUserHelper::authProject('core.edit.own', $item->id) && $item->created_by == $user->id);
+    $can_checkin  = ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $user->id || $item->checked_out == 0);
     $can_change   = ($can_edit || $can_edit_own);
 
 
+    // Get the correct menu item id for this project
+    $itemid = PKRouteHelper::getMenuItemId('com_pkdashboard', 'overview', array('id' => $item->id));
+
+    if (!$itemid) {
+        $itemid = $itemid_overview;
+    }
+
+
     // Format title
-    $link  = 'index.php?option=com_pkdashboard&view=overview&id=' . $item->slug . '&Itemid=' . $db_itemid . '&return=' . $url_return;
-    $title = '<a href="' . JRoute::_($link) . '" class="item-title">' . $this->escape($item->title) . '</a>';
+    $link   = 'index.php?option=com_pkdashboard&view=overview&id=' . $item->slug . '&Itemid=' . $itemid . '&return=' . $url_return;
+    $title  = '<a href="' . JRoute::_($link) . '" class="item-title">' . $this->escape($item->title) . '</a>';
 
 
     // Grid select button
@@ -135,9 +148,10 @@ for ($i = 0; $i != $count; $i++)
         $btn_edit = JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'list.', $can_checkin);
         $btn_edit = str_replace('btn-micro', 'btn-small btn-link', $btn_edit);
     }
-    elseif ($can_edit || $can_edit_own) {
+    elseif ($can_change) {
+        $link_edit = 'index.php?option=com_pkprojects&task=form.edit&id=' . $item->slug . '&Itemid=' . $itemid_form . '&return=' . $url_return;
         $btn_edit = '<a class="btn btn-small btn-link hasTooltip" title="' . $txt_edit . '" href="'
-                  . JRoute::_(PKprojectsHelperRoute::getFormRoute($item->slug) . '&return=' . $url_return)  . '">'
+                  . JRoute::_($link_edit)  . '">'
                   . '<span class="icon-edit"></span></a>';
     }
     else {

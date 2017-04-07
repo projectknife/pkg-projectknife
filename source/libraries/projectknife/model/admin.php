@@ -17,23 +17,22 @@ class PKModelAdmin extends JModelAdmin
 
 
     /**
-	 * Constructor.
-	 *
-	 * @param   array  $config  An optional associative array of configuration settings.
-	 *
-	 * @see     JModelLegacy
-	 */
-	public function __construct($config = array())
-	{
-		parent::__construct($config);
+     * Constructor.
+     *
+     * @param    array    $config    An optional associative array of configuration settings.
+     *
+     */
+    public function __construct($config = array())
+    {
+        parent::__construct($config);
 
-		if (isset($config['event_prepare_save_data'])) {
-			$this->event_prepare_save_data = $config['event_prepare_save_data'];
-		}
-		elseif (empty($this->event_prepare_save_data)) {
-			$this->event_prepare_save_data = 'onProjectknifePrepareSaveData';
-		}
-	}
+        if (isset($config['event_prepare_save_data'])) {
+            $this->event_prepare_save_data = $config['event_prepare_save_data'];
+        }
+        elseif (empty($this->event_prepare_save_data)) {
+            $this->event_prepare_save_data = 'onProjectknifePrepareSaveData';
+        }
+    }
 
 
     /**

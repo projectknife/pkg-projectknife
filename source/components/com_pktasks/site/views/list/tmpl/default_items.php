@@ -31,12 +31,14 @@ $txt_priority   = JText::_('COM_PKTASKS_PRIORITY');
 $txt_priority_n = JText::_('COM_PKTASKS_PRIORITY_NORMAL');
 $txt_priority_h = JText::_('COM_PKTASKS_PRIORITY_HIGH');
 $txt_unassigned = JText::_('COM_PKTASKS_UNASSIGNED');
+$txt_project    = JText::_('COM_PKPROJECTS_PROJECT');
+$txt_milestone  = JText::_('COM_PKMILESTONES_MILESTONE');
 $txt_tags       = JText::_('JTAG');
 
 
 // Determine heading and item date formats
 $date_dynamic = $this->params->get('date_dynamic', 1);
-$date_default = $this->params->get('date_default', 'actual_due_date');
+$date_default = $this->params->get('date_default', 'due_date');
 $date_format  = $this->params->get('date_format', JText::_('DATE_FORMAT_LC4'));
 
 
@@ -58,7 +60,7 @@ $date_item_medium    = ($date_pos_m > $date_pos_d) ? 'M'   : 'd';
 $heading_date_fields   = array('start_date', 'due_date', 'created');
 $heading_string_fields = array('author_name', 'project_title');
 
-$list_order      = str_replace('a.', '', $this->escape($this->state->get('list.ordering', 'a.actual_due_date')));
+$list_order      = str_replace('a.', '', $this->escape($this->state->get('list.ordering', 'a.due_date')));
 $heading_show    = false;
 $heading_by_date = false;
 $heading_prefix  = '';
@@ -90,15 +92,15 @@ if ($date_dynamic && $heading_by_date) {
 }
 
 
-
 // Setup URL related vars
-$url_list   = 'index.php?option=com_pktasks&view=list&Itemid=' . PKApplicationHelper::getMenuItemId('active');
+$url_list   = 'index.php?option=com_pktasks&view=list&Itemid=' . PKRouteHelper::getMenuItemId('active');
 $url_return = base64_encode($url_list);
 
 
 // Misc
 $count         = count($this->items);
 $user          = JFactory::getUser();
+$doc           = JFactory::getDocument();
 $db_nulldate   = JFactory::getDbo()->getNullDate();
 $time_now      = strtotime(JHtml::_('date'));
 $today         = floor($time_now / 86400) * 86400;
@@ -106,9 +108,11 @@ $view_levels   = JAccess::getAuthorisedViewLevels(JFactory::getUser()->get('id')
 $params        = JComponentHelper::getParams('com_pktasks');
 $progress_type = (int) $params->get('progress_type', 1);
 
+$filter_project = (int) $this->state->get('filter.project_id');
+$filter_ms      = (int) $this->state->get('filter.milestone_id');
 
 // JS for priority button
-JFactory::getDocument()->addScriptDeclaration('
+$doc->addScriptDeclaration('
     jQuery(document).ready(function()
     {
     	PKlistTasks.initPriorityAfterUpdate = function(el, state)
@@ -130,17 +134,56 @@ for ($i = 0; $i != $count; $i++)
 {
     $item = $this->items[$i];
 
+    // Assignees
+    $assignees    = array();
+    $assignee_pks = array();
+
+    if ($item->assignee_count) {
+        foreach ($item->assignees AS $assignee)
+        {
+            $assignees[]    = $this->escape($assignee->assignee_name);
+            $assignee_pks[] = $assignee->id;
+        }
+
+        $assignees = implode(', ', $assignees);
+    }
+    else {
+        $assignees = $txt_unassigned;
+    }
+
     // Check permissions
-    $can_create     = PKUserHelper::authProject('core.create.task', $item->project_id);
-    $can_edit       = PKUserHelper::authProject('core.edit.task', $item->project_id);
-    $can_edit_state = PKUserHelper::authProject('core.edit.state.task', $item->project_id);
-    $can_edit_own   = (PKUserHelper::authProject('core.edit.own.task', $item->project_id) && $item->created_by == $user->id);
-    $can_checkin    = ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0);
-    $can_change     = ($can_edit || $can_edit_own);
+    $can_edit = PKUserHelper::authProject('task.edit', $item->project_id);
+
+    if (!$can_edit) {
+        $can_edit = (PKUserHelper::authProject('task.edit.own', $item->project_id) && $item->created_by == $user->id);
+    }
+
+    $can_edit_state = PKUserHelper::authProject('task.edit.state', $item->project_id);
+
+    if (!$can_edit_state) {
+        $can_edit_state = (PKUserHelper::authProject('task.edit.own.state', $item->project_id) && $item->created_by == $user->id);
+    }
+
+    $can_edit_progress = PKUserHelper::authProject('task.edit.progress', $item->project_id);
+
+    if (!$can_edit_progress) {
+        $can_edit_progress = (PKUserHelper::authProject('task.edit.own.progress', $item->project_id) && $item->created_by == $user->id);
+
+        if (!$can_edit_progress) {
+            $can_edit_progress = (PKUserHelper::authProject('task.edit.assigned.progress', $item->project_id) && in_array($user->id, $assignee_pks));
+        }
+    }
+
+    // Check edit progress permission based on predecessor progress
+    if ($can_edit_progress && !$item->can_progress) {
+        $can_edit_progress = false;
+    }
+
+    $can_checkin = ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $user->id || $item->checked_out == 0);
 
 
     // Format title
-    $link  = PKtasksHelperRoute::getItemRoute($item->slug). '&return=' . $url_return;
+    $link  = PKtasksHelperRoute::getItemRoute($item->slug, $item->project_slug). '&return=' . $url_return;
     $title = '<a href="' . JRoute::_($link) . '" class="item-title">' . $this->escape($item->title) . '</a>';
 
 
@@ -153,9 +196,9 @@ for ($i = 0; $i != $count; $i++)
         $btn_edit = JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'list.', $can_checkin);
         $btn_edit = str_replace('btn-micro', 'btn-small btn-link', $btn_edit);
     }
-    elseif ($can_edit || $can_edit_own) {
+    elseif ($can_edit) {
         $btn_edit = '<a class="btn btn-small btn-link hasTooltip" title="' . $txt_edit . '" href="'
-                  . JRoute::_(PKtasksHelperRoute::getFormRoute($item->slug) . '&return=' . $url_return)  . '">'
+                  . JRoute::_(PKTasksHelperRoute::getFormRoute($item->slug) . '&return=' . $url_return)  . '">'
                   . '<span class="icon-edit"></span></a>';
     }
     else {
@@ -163,18 +206,36 @@ for ($i = 0; $i != $count; $i++)
     }
 
 
+    // Format Project
+    if ($filter_project) {
+        $project = '';
+    }
+    else {
+        $project = '<span class="label">' . $txt_project . ': ' . $this->escape($item->project_title) . '</span> ';
+    }
+
+
+    // Format Milestone
+    if ($filter_ms || $item->milestone_title == '') {
+        $milestone = '';
+    }
+    else {
+        $milestone = '<span class="label">' . $txt_milestone . ': ' . $this->escape($item->milestone_title) . '</span> ';
+    }
+
+
     // Priority
     if ($item->priority == '1') {
         $prio_txt   = $txt_priority . ': ' . $txt_priority_h;
-        $prio_class = ' label-important' . ($can_edit_state ? '' : ' disabled');
+        $prio_class = ' label-important' . ($can_edit_state ? ' priority' : ' disabled');
     }
     else {
         $prio_txt   = $txt_priority . ': ' . $txt_priority_n;
-        $prio_class = $can_edit_state ? '' : ' disabled';
+        $prio_class = $can_edit_state ? ' priority' : ' disabled';
     }
 
     $priority = '<span id="prio-' . $item->id . '"'
-              . 'class="label priority prio-' . $item->priority . $prio_class . '"'
+              . 'class="label prio-' . $item->priority . $prio_class . '"'
               . 'data-id="' . $item->id. '" data-value="' . intval($item->priority) . '">'
               . $prio_txt
               . '</span>';
@@ -205,7 +266,7 @@ for ($i = 0; $i != $count; $i++)
             }
         }
 
-        if (!$can_edit_state) {
+        if (!$can_edit_progress) {
             $progress_class .= ' disabled';
         }
 
@@ -216,14 +277,12 @@ for ($i = 0; $i != $count; $i++)
     }
     else {
         // Slider
-        $progress_class = 'task-progress';
-
-        if (!$can_edit_state) {
-            $progress_class .= ' disabled';
+        if (!$can_edit_progress) {
+            $doc->addScriptDeclaration('jQuery(document).ready(function(){jQuery("#progress-' . $i . '").slider("disable");});');
         }
 
         $progress = '<input id="progress-' . $i . '" data-slider-id="slider-' . $i . '" '
-                  . 'class="' . $progress_class . '" data-slider-ticks="[0, 50, 100]" '
+                  . 'class="task-progress" data-slider-ticks="[0, 50, 100]" '
                   . 'type="text" data-slider-min="0" data-slider-max="100" '
                   . 'data-progress="' . $item->progress . '" data-id="' . $item->id . '" '
                   . 'data-slider-step="' . $progress_type . '" data-slider-value="' . $item->progress . '"/>';
@@ -257,22 +316,6 @@ for ($i = 0; $i != $count; $i++)
     }
     else {
         $tags = '';
-    }
-
-
-    // Assignees
-    if ($item->assignee_count) {
-        $assignees = array();
-
-        foreach ($item->assignees AS $assignee)
-        {
-            $assignees[] = $this->escape($assignee->name);
-        }
-
-        $assignees = implode(', ', $assignees);
-    }
-    else {
-        $assignees = $txt_unassigned;
     }
 
 
@@ -314,7 +357,7 @@ for ($i = 0; $i != $count; $i++)
             </div>
             <div class="row-fluid">
                 <div class="span12">
-                    <p><i class="icon-bookmark muted hasTooltip pk-minfo" title="<?php echo $txt_tags; ?>"></i> <?php echo $priority . ' ' . $tags; ?></p>
+                    <p><i class="icon-bookmark muted hasTooltip pk-minfo" title="<?php echo $txt_tags; ?>"></i> <?php echo $project . $milestone . $priority . ' ' . $tags; ?></p>
                     <p><i class="icon-user muted hasTooltip pk-minfo"></i> <?php echo $assignees; ?></p>
                 </div>
             </div>

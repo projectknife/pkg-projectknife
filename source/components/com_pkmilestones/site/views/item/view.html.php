@@ -57,8 +57,10 @@ class PKmilestonesViewItem extends JViewLegacy
      */
     public function display($tpl = null)
     {
-        $this->state = $this->get('State');
-        $this->item  = $this->get('Item');
+        $this->state  = $this->get('State');
+        $this->item   = $this->get('Item');
+        $this->params = JFactory::getApplication()->getParams();
+
 
         // Check for errors
         $errors = $this->get('Errors');
@@ -68,11 +70,55 @@ class PKmilestonesViewItem extends JViewLegacy
             return false;
         }
 
-        $this->params  = JFactory::getApplication()->getParams();
+
+        // Check viewing access
+        if (!PKUserHelper::isSuperAdmin()) {
+            $user     = JFactory::getUser();
+            $levels   = $user->getAuthorisedViewLevels();
+            $projects = PKUserHelper::getProjects();
+
+            if (!in_array($this->item->access, $levels) && !in_array($this->item->project_id, $projects)) {
+                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'warning');
+                return;
+            }
+        }
+
+
+        // Set active project
+        PKApplicationHelper::setProjectId($this->item->project_id);
+
+
+        // Setup toolbar
         $this->toolbar = $this->getToolbar();
+
+
+        //
+        $this->item->text = '';
+
+        // Process the content plugins.
+		JPluginHelper::importPlugin('content');
+        $dispatcher	= JDispatcher::getInstance();
+
+        $offset  = 0;
+		$results = $dispatcher->trigger('onContentPrepare', array ('com_pkmilestones.item', &$this->item, &$this->params, $offset));
+
+		$this->item->event = new stdClass();
+		$results = $dispatcher->trigger('onContentAfterTitle', array('com_pkmilestones.item', &$this->item, &$this->params, $offset));
+		$this->item->event->afterDisplayTitle = trim(implode("\n", $results));
+
+		$results = $dispatcher->trigger('onContentBeforeDisplay', array('com_pkmilestones.item', &$this->item, &$this->params, $offset));
+		$this->item->event->beforeDisplayContent = trim(implode("\n", $results));
+
+		$results = $dispatcher->trigger('onContentAfterDisplay', array('com_pkmilestones.item', &$this->item, &$this->params, $offset));
+		$this->item->event->afterDisplayContent = trim(implode("\n", $results));
+
+		// Escape strings for HTML output
+		// $this->pageclass_sfx = htmlspecialchars($item->params->get('pageclass_sfx'));
+
 
         // Prepare doc
         $this->prepareDocument();
+
 
         // Display
         parent::display($tpl);
@@ -138,8 +184,8 @@ class PKmilestonesViewItem extends JViewLegacy
     {
         $app          = JFactory::getApplication();
         $user         = JFactory::getUser();
-        $can_edit     = PKUserHelper::authProject('core.edit.milestone', $this->item->project_id);
-        $can_edit_own = (PKUserHelper::authProject('core.edit.own.milestone', $this->item->project_id) && $this->item->created_by == $user->id);
+        $can_edit     = PKUserHelper::authProject('milestone.edit', $this->item->project_id);
+        $can_edit_own = (PKUserHelper::authProject('milestone.edit.own', $this->item->project_id) && $this->item->created_by == $user->id);
         $url_back     = $app->input->get('return', null, 'default', 'base64');
 
         if (empty($url_back) || !JUri::isInternal(base64_decode($url_back))) {
@@ -155,8 +201,8 @@ class PKmilestonesViewItem extends JViewLegacy
             // Edit button
             if ($can_edit || $can_edit_own) {
                 $slug       = $this->item->id . ':' . $this->item->alias;
-                $url_return = base64_encode('index.php?option=com_pkmilestones&view=item&id=' . $slug . '&Itemid=' . PKApplicationHelper::getMenuItemId('active'));
-                $item_form  = PKApplicationHelper::getMenuItemId('com_pkmilestones', 'form');
+                $url_return = base64_encode('index.php?option=com_pkmilestones&view=item&id=' . $slug . '&Itemid=' . PKRouteHelper::getMenuItemId('active'));
+                $item_form  = PKRouteHelper::getMenuItemId('com_pkmilestones', 'form');
                 $url_edit   = JRoute::_('index.php?option=com_pkmilestones&task=form.edit&id=' . $slug . '&Itemid=' . $item_form . '&return=' . $url_return);
 
                 PKToolbar::btnURL($url_edit, JText::_('JACTION_EDIT'), array('icon' => 'pencil'));

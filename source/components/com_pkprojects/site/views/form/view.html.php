@@ -11,7 +11,7 @@
 defined('_JEXEC') or die;
 
 
-class PKprojectsViewForm extends JViewLegacy
+class PKProjectsViewForm extends JViewLegacy
 {
     /**
      * Instance of JForm
@@ -64,11 +64,46 @@ class PKprojectsViewForm extends JViewLegacy
         $this->toolbar = $this->getToolbar();
         $this->return  = $this->get('ReturnPage');
 
-        // Check for errors.
+
+        // Check for errors
         if (count($errors = $this->get('Errors'))) {
             JError::raiseError(500, implode("\n", $errors));
             return false;
         }
+
+
+        // Check viewing access
+        if ($this->item->id > 0 && !PKUserHelper::isSuperAdmin()) {
+            $user     = JFactory::getUser();
+            $levels   = $user->getAuthorisedViewLevels();
+            $projects = PKUserHelper::getProjects();
+
+            if (!in_array($this->item->access, $levels) && !in_array($this->item->id, $projects)) {
+                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'warning');
+                return;
+            }
+        }
+
+
+        // Check create/edit permission
+        if ($this->item->id == 0) {
+            if (!PKUserHelper::authProject('core.create')) {
+                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'warning');
+                return;
+            }
+        }
+        elseif (!PKUserHelper::authProject('core.edit', $this->item->id)) {
+            if (!PKUserHelper::authProject('core.edit.own')) {
+                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'warning');
+                return;
+            }
+
+            if ($user->id != $this->item->created_by || $user->id <= 0) {
+                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'warning');
+                return;
+            }
+        }
+
 
         parent::display($tpl);
     }

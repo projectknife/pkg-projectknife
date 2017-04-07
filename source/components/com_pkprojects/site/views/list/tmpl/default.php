@@ -14,11 +14,10 @@ defined('_JEXEC') or die;
 use Joomla\Registry\Registry;
 
 
-JHtml::_('stylesheet', 'projectknife/lib_projectknife/core.css', false, true, false, false, true);
-JHtml::_('stylesheet', 'projectknife/com_pkprojects/projects.css', false, true, false, false, true);
+JHtml::_('stylesheet', 'lib_projectknife/core.css', false, true, false, false, true);
+JHtml::_('stylesheet', 'com_pkprojects/projects.css', false, true, false, false, true);
 JHtml::_('behavior.multiselect');
 JHtml::_('bootstrap.tooltip');
-JHtml::_('formbehavior.chosen', 'select');
 PKGrid::script();
 
 
@@ -50,13 +49,12 @@ JFactory::getDocument()->addScriptDeclaration('
         <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
     <?php endif; ?>
 
-    <form name="adminForm" id="adminForm" action="<?php echo JRoute::_('index.php?option=com_pkprojects&view=list&Itemid=' . PKApplicationHelper::getMenuItemId('active')); ?>" method="post">
+    <form name="adminForm" id="adminForm" action="<?php echo JRoute::_('index.php?option=com_pkprojects&view=list&Itemid=' . PKRouteHelper::getMenuItemId('active')); ?>" method="post">
         <?php
         // Toolbar
         echo $this->toolbar;
 
         // Items
-
         echo '<div id="projectList">' . $this->loadTemplate('items') . '</div>';
 
         // Copy options

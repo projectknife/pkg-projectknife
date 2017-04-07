@@ -12,7 +12,7 @@ defined('_JEXEC') or die();
 
 
 
-class PKtasksControllerTask extends JControllerLegacy
+class PKTasksControllerTask extends JControllerLegacy
 {
     protected $text_prefix = 'COM_PKTASKS';
 
@@ -34,14 +34,19 @@ class PKtasksControllerTask extends JControllerLegacy
     }
 
 
-    public function searchUser()
+    /**
+     * Prints out a json string of tasks.
+     *
+     */
+    public function searchDependency()
     {
         $app   = JFactory::getApplication();
         $input = $app->input;
 
         $project_id = $input->get('project_id', 0, 'integer');
+        $like       = trim($input->get('like', ''));
 
-        if (!$project_id) {
+        if (!$project_id || empty($like)) {
             echo json_encode(array());
             $app->close();
         }
@@ -49,36 +54,38 @@ class PKtasksControllerTask extends JControllerLegacy
         $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        // Get project access
-        $query->select('access')
-              ->from('#__pk_projects')
-              ->where('id = ' . $project_id);
+        // Check access to the project
+        if (!PKUserHelper::isSuperAdmin()) {
+            // Get project access
+            $query->select('access')
+                  ->from('#__pk_projects')
+                  ->where('id = ' . $project_id);
 
-        $db->setQuery($query);
-        $access = $db->loadResult();
+            $db->setQuery($query);
+            $access = $db->loadResult();
 
-        // Get user groups assigned to this level
+            $levels   = PKUserHelper::getAccessLevels();
+            $projects = PKUserHelper::getProjects();
+
+            if (!in_array($access, $levels) && !in_array($project_id, $projects)) {
+                // Access denied. Fail silently.
+                echo json_encode(array());
+                $app->close();
+            }
+        }
+
+        // Search query
         $query->clear()
-              ->select('rules')
-              ->from('#__viewlevels')
-              ->where('id = ' . $access);
+              ->select('a.id AS value, a.title AS text')
+              ->from('#__pk_tasks AS a')
+              ->where('a.project_id = ' . $project_id)
+              ->where('a.title LIKE ' . $db->quote('%' . $like . '%'))
+              ->group('a.id, a.title');
 
         $db->setQuery($query);
-        $rules = $db->loadResult();
+        $items = $db->loadObjectList();
 
-        if (empty($rules)) {
-            $groups = array();
-        }
-        else {
-            $groups = json_decode($rules);
-        }
-
-
-        $obj = new stdClass();
-        $obj->value = $project_id;
-        $obj->text = 'Test';
-
-        echo json_encode(array($obj));
+        echo json_encode($items);
         JFactory::getApplication()->close();
     }
 }

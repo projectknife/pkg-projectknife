@@ -152,15 +152,20 @@ class PKprojectsViewProjects extends JViewLegacy
         }
 
         // Publishing actions
-        if (!$this->state->get('restrict.published')) {
+        if (PKUserHelper::authProject('core.edit.state') || PKUserHelper::authProject('core.edit.state.own')) {
             JToolbarHelper::publish('projects.publish', 'JTOOLBAR_PUBLISH', true);
             JToolbarHelper::unpublish('projects.unpublish', 'JTOOLBAR_UNPUBLISH', true);
             JToolbarHelper::archiveList('projects.archive');
+        }
 
-            if ($this->state->get('filter.published') == -2) {
+
+        if ($this->state->get('filter.published') == -2) {
+            if (PKUserHelper::authProject('core.delete') || PKUserHelper::authProject('core.delete.own')) {
                 JToolbarHelper::deleteList('', 'projects.delete', 'JTOOLBAR_EMPTY_TRASH');
             }
-            else {
+        }
+        else {
+            if (PKUserHelper::authProject('core.edit.state') || PKUserHelper::authProject('core.edit.state.own')) {
                 JToolbarHelper::trash('projects.trash');
             }
         }

@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension version="3.5" type="plugin" group="system" method="install">
+<extension version="3.5" type="plugin" group="system" method="upgrade">
     <!-- Extension info -->
     <name>PLG_SYSTEM_PROJECTKNIFE</name>
     <author>Tobias Kuhn</author>
-    <creationDate>July 2016</creationDate>
-    <copyright>Copyright (C) 2015-2016 Tobias Kuhn. All rights reserved.</copyright>
+    <creationDate>April 2017</creationDate>
+    <copyright>Copyright (C) 2015-2017 Tobias Kuhn. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later.</license>
     <authorEmail>support@projectknife.net</authorEmail>
     <authorUrl>http://projectknife.net</authorUrl>
-    <version>5.0.0.alpha.1</version>
-    <description>PLG_SYSTEM_PROJECTKNIFE_DESC</description>
+    <version>5.0.0.beta.2</version>
+    <description>PLG_SYSTEM_PROJECTKNIFE_XML_DESCRIPTION</description>
 
     <!-- Install script -->
     <scriptfile>setup.php</scriptfile>
 
     <!-- Files -->
     <files>
+        <folder>_install</folder>
+        <folder>_uninstall</folder>
         <filename plugin="projectknife">projectknife.php</filename>
         <filename>setup.php</filename>
     </files>
@@ -25,4 +27,29 @@
         <language tag="en-GB">language/en-GB/en-GB.plg_system_projectknife.ini</language>
         <language tag="en-GB">language/en-GB/en-GB.plg_system_projectknife.sys.ini</language>
     </languages>
+
+    <!-- Install SQL -->
+    <install>
+        <sql>
+            <file driver="mysql" charset="utf8">_install/structure.sql</file>
+        </sql>
+    </install>
+
+    <!-- Uninstall SQL -->
+    <uninstall>
+        <sql>
+            <file driver="mysql" charset="utf8">_uninstall/structure.sql</file>
+        </sql>
+    </uninstall>
+
+    <config>
+		<fields name="params">
+			<fieldset name="basic">
+                <field type="list" name="user_display_name" label="PLG_SYSTEM_PROJECTKNIFE_CONFIG_USER_DISPLAY_NAME_LABEL" description="PLG_SYSTEM_PROJECTKNIFE_CONFIG_USER_DISPLAY_NAME_DESC">
+                    <option value="0">PLG_SYSTEM_PROJECTKNIFE_CONFIG_USERNAME_OPTION</option>
+                    <option value="1">PLG_SYSTEM_PROJECTKNIFE_CONFIG_NAME_OPTION</option>
+                </field>
+            </fieldset>
+        </fields>
+    </config>
 </extension>

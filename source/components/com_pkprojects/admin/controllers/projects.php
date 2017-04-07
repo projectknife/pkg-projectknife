@@ -133,8 +133,8 @@ class PKProjectsControllerProjects extends JControllerAdmin
                 // Cache permissions
                 if (!isset($can[$pid])) {
                     $can[$pid]             = array();
-                    $can[$pid]['edit']     = PKUserHelper::authProject('core.edit.project', $pid);
-                    $can[$pid]['edit_own'] = PKUserHelper::authProject('core.edit.own.project', $pid) && $items[$i]->created_by == $user->id;
+                    $can[$pid]['edit']     = PKUserHelper::authProject('core.edit', $pid);
+                    $can[$pid]['edit_own'] = PKUserHelper::authProject('core.edit.own', $pid) && $items[$i]->created_by == $user->id;
                 }
 
                 if ((!$can[$pid]['edit'] && !$can[$pid]['edit_own']) || !in_array($items[$id]->access, $levels)) {

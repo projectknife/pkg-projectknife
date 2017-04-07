@@ -32,7 +32,6 @@ $date_dynamic = $this->params->get('date_dynamic', 1);
 $date_default = $this->params->get('date_default', 'due_date');
 $date_format  = $this->params->get('date_format', JText::_('DATE_FORMAT_LC4'));
 
-
 $date_pos_d = strpos(strtolower($date_format), 'd');
 $date_pos_m = strpos(strtolower($date_format), 'm');
 $date_pos_y = strpos(strtolower($date_format), 'y');
@@ -82,8 +81,8 @@ if ($date_dynamic && $heading_by_date) {
 
 
 // Setup URL related vars
-$url_list   = 'index.php?option=com_pkmilestones&view=list&Itemid=' . PKApplicationHelper::getMenuItemId('active');
-$url_tasks  = 'index.php?option=com_pktasks&view=list&Itemid=' . PKApplicationHelper::getMenuItemId('com_pktasks', 'list');
+$url_list   = 'index.php?option=com_pkmilestones&view=list&Itemid=' . PKRouteHelper::getMenuItemId('active');
+$url_tasks  = 'index.php?option=com_pktasks&view=list&Itemid=' . PKRouteHelper::getMenuItemId('com_pktasks', 'list');
 $url_return = base64_encode($url_list);
 
 
@@ -110,15 +109,15 @@ for ($i = 0; $i != $count; $i++)
     $item = $this->items[$i];
 
     // Check permissions
-    $can_create   = PKUserHelper::authProject('core.create.milestone', $item->id);
-    $can_edit     = PKUserHelper::authProject('core.edit.milestone', $item->id);
-    $can_edit_own = (PKUserHelper::authProject('core.edit.own.milestone', $item->id) && $item->created_by == $user->id);
-    $can_checkin  = ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0);
+    $can_create   = PKUserHelper::authProject('milestone.create', $item->project_id);
+    $can_edit     = PKUserHelper::authProject('milestone.edit', $item->project_id);
+    $can_edit_own = (PKUserHelper::authProject('milestone.edit.own', $item->project_id) && $item->created_by == $user->id);
+    $can_checkin  = ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $user->id || $item->checked_out == 0);
     $can_change   = ($can_edit || $can_edit_own);
 
 
     // Format title
-    $link  = PKmilestonesHelperRoute::getItemRoute($item->slug). '&return=' . $url_return;
+    $link  = PKmilestonesHelperRoute::getItemRoute($item->slug, $item->project_slug). '&return=' . $url_return;
     $title = '<a href="' . JRoute::_($link) . '" class="item-title">' . $this->escape($item->title) . '</a>';
 
 
@@ -133,7 +132,7 @@ for ($i = 0; $i != $count; $i++)
     }
     elseif ($can_edit || $can_edit_own) {
         $btn_edit = '<a class="btn btn-small btn-link hasTooltip" title="' . $txt_edit . '" href="'
-                  . JRoute::_(PKmilestonesHelperRoute::getFormRoute($item->slug) . '&return=' . $url_return)  . '">'
+                  . JRoute::_(PKmilestonesHelperRoute::getFormRoute($item->slug, $item->project_slug) . '&return=' . $url_return)  . '">'
                   . '<span class="icon-edit"></span></a>';
     }
     else {

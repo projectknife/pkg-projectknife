@@ -4,7 +4,7 @@
  * @subpackage   com_pktasks
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2015-2016 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2015-2017 Tobias Kuhn. All rights reserved.
  * @license      GNU General Public License version 2 or later.
  */
 
@@ -14,7 +14,7 @@ defined('_JEXEC') or die;
 use Joomla\Registry\Registry;
 
 
-class PKtasksModelTask extends PKModelAdmin
+class PKTasksModelTask extends PKModelAdmin
 {
     protected $progress_changed;
     protected $priority_changed;
@@ -70,7 +70,14 @@ class PKtasksModelTask extends PKModelAdmin
      */
     protected function canDelete($record)
     {
-        return PKUserHelper::authProject('core.delete.task', $record->project_id);
+        if (PKUserHelper::authProject('task.delete', $record->project_id)) {
+            return true;
+        }
+
+        $delete_own = PKUserHelper::authProject('task.delete.own', $record->project_id);
+        $user       = JFactory::getUser();
+
+        return ($delete_own && $user->id > 0 && $user->id == $record->created_by);
     }
 
 
@@ -83,7 +90,45 @@ class PKtasksModelTask extends PKModelAdmin
      */
     protected function canEditState($record)
     {
-        return PKUserHelper::authProject('core.edit.state.task', $record->project_id);
+        if (PKUserHelper::authProject('task.edit.state', $record->project_id)) {
+            return true;
+        }
+
+        $edit_own = PKUserHelper::authProject('task.edit.own.state', $record->project_id);
+        $user     = JFactory::getUser();
+
+        return ($edit_own && $user->id > 0 && $user->id == $record->created_by);
+    }
+
+
+    /**
+     * Method to test whether a record progress can be changed.
+     *
+     * @param     object     $record    A record object.
+     *
+     * @return    boolean               True if allowed to change the state of the record.
+     */
+    protected function canEditProgress($record)
+    {
+        if (PKUserHelper::authProject('task.edit.progress', $record->project_id)) {
+            return true;
+        }
+
+        $user = JFactory::getUser();
+
+        if (PKUserHelper::authProject('task.edit.own.progress', $record->project_id)) {
+            if ($edit_own && $user->id > 0 && $user->id == $record->created_by) {
+                return true;
+            }
+        }
+
+        if (PKUserHelper::authProject('task.edit.assigned.progress', $record->project_id)) {
+            if (in_array($user->id, $this->getAssignees($record->id))) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 
@@ -199,7 +244,8 @@ class PKtasksModelTask extends PKModelAdmin
         JArrayHelper::toInteger($users);
 
         // Remove any values of zero.
-        if (array_search(0, $users, true)) {
+        while (array_search(0, $users, true) !== false)
+        {
             unset($users[array_search(0, $users, true)]);
         }
 
@@ -217,6 +263,7 @@ class PKtasksModelTask extends PKModelAdmin
         }
         catch (RuntimeException $e) {
             $this->setError($e->getMessage());
+            die($e->getMessage());
             return false;
         }
 
@@ -246,6 +293,83 @@ class PKtasksModelTask extends PKModelAdmin
 
         if (count($assign)) {
             $this->assign($pk, $assign);
+        }
+
+        return true;
+    }
+
+
+    /**
+     * Saves task predecessors, coming from the form
+     *
+     * @param     integer    $pk              The task id
+     * @param     array      $predecessors    The predecessor tasks
+     *
+     * @return    boolean
+     */
+    protected function savePredecessors($pk, $predecessors)
+    {
+        $pk = (int) $pk;
+
+        // Sanitize ids.
+        $predecessors = array_unique($predecessors);
+        JArrayHelper::toInteger($predecessors);
+
+        // Remove any values of zero.
+        while (array_search(0, $predecessors, true) !== false)
+        {
+            unset($predecessors[array_search(0, $predecessors, true)]);
+        }
+
+        // Remove self
+        if (array_search($pk, $predecessors, true)) {
+            unset($predecessors[array_search($pk, $predecessors, true)]);
+        }
+
+
+        $query = $this->_db->getQuery(true);
+
+        // Load currently predecessors
+        $query->select('predecessor_id')
+              ->from('#__pk_task_dependencies')
+              ->where('successor_id = ' . $pk);
+
+        try {
+            $this->_db->setQuery($query);
+            $current = $this->_db->loadColumn();
+        }
+        catch (RuntimeException $e) {
+            $this->setError($e->getMessage());
+            return false;
+        }
+
+
+        $delete = array();
+        $add    = array();
+
+        // Determine the tasks which are no longer selected as predecessor
+        foreach ($current AS $tid)
+        {
+            if (!in_array($tid, $predecessors)) {
+                $delete[] = $tid;
+            }
+        }
+
+        if (count($delete)) {
+            $this->removePredecessors($pk, $delete);
+        }
+
+
+        // Determine tasks which are newly set as predecessor
+        foreach ($predecessors AS $tid)
+        {
+            if (!in_array($tid, $current)) {
+                $add[] = $tid;
+            }
+        }
+
+        if (count($add)) {
+            $this->addPredecessors($pk, $add);
         }
 
         return true;
@@ -308,7 +432,12 @@ class PKtasksModelTask extends PKModelAdmin
             return false;
         }
 
+        $input  = JFactory::getApplication()->input;
         $params = JComponentHelper::getParams('com_pktasks');
+
+        // Get item id
+        $id  = $input->getUint('id', $this->getState('task.id', 0));
+        $pid = (isset($data['project_id']) ? intval($data['project_id']) : PKApplicationHelper::getProjectId());
 
         if ($params->get('auto_access', '1') == '1') {
             $form->setFieldAttribute('access', 'type', 'hidden');
@@ -323,6 +452,113 @@ class PKtasksModelTask extends PKModelAdmin
         // Disable some fields in the frontend form
         if ($is_site) {
             $form->setFieldAttribute('created_by', 'type', 'hidden');
+        }
+
+        // Check "edit state" permission
+        if (!PKUserHelper::authProject('task.edit.state', $pid)) {
+            $user = JFactory::getUser();
+
+            $can_edit_state = false;
+
+            if ($pid) {
+                // Check if owner
+                if (PKUserHelper::authProject('task.edit.own.state', $pid)) {
+                    if ($id) {
+                        $query = $this->_db->getQuery(true);
+
+                        $query->select('created_by')
+                              ->from('#__pk_tasks')
+                              ->where('id = ' . $id);
+
+                        $this->_db->setQuery($query);
+                        $project_author = (int) $this->_db->loadResult();
+
+                        if ($user->id > 0 && $user->id == $project_author) {
+                            $can_edit_state = true;
+                        }
+                    }
+                    else {
+                        // This is a new item - Allow change state bc the user will be the owner upon creation.
+                        $can_edit_state = true;
+                    }
+                }
+            }
+            elseif (!$id && PKUserHelper::authProject('task.edit.own.state', 'any')) {
+                // This is a new item, and no project is selected. Allow edit state if the user is allowed on any projects.
+                $can_edit_state = true;
+            }
+
+            if (!$can_edit_state) {
+                $form->setFieldAttribute('published', 'type', 'hidden');
+                $form->setFieldAttribute('published', 'filter', 'unset');
+            }
+        }
+
+        // Check edit progress permission
+        if (!PKUserHelper::authProject('task.edit.progress', $pid)) {
+            $can_edit_progress = false;
+
+            if ($id && $pid) {
+                // Check if owner
+                if (PKUserHelper::authProject('task.edit.own.progress', $pid)) {
+                    $user  = JFactory::getUser();
+                    $query = $this->_db->getQuery(true);
+
+                    $query->select('created_by')
+                          ->from('#__pk_tasks')
+                          ->where('id = ' . $id);
+
+                    $this->_db->setQuery($query);
+                    $project_author = (int) $this->_db->loadResult();
+
+                    if ($user->id > 0 && $user->id == $project_author) {
+                        $can_edit_progress = true;
+                    }
+                }
+
+                // Check if assigned
+                if (!$can_edit_progress && PKUserHelper::authProject('task.edit.assigned.progress', $pid)) {
+                    $can_edit_progress = in_array($user->id, $this->getAssignees($id));
+                }
+            }
+
+            if (!$can_edit_progress) {
+                $form->setFieldAttribute('progress', 'type', 'hidden');
+                $form->setFieldAttribute('progress', 'filter', 'unset');
+            }
+        }
+        elseif ($id) {
+            // Check predecessor progress
+            $predecessors = $this->getPredecessors($id);
+
+            if (count($predecessors)) {
+                $query = $this->_db->getQuery(true);
+
+                $query->select('id, published, progress')
+                      ->from('#__pk_tasks WHERE id IN(' . implode(', ', $predecessors) . ')');
+
+                $this->_db->setQuery($query);
+                $tasks = $this->_db->loadObjectList();
+
+                $can_edit_progress = true;
+
+                foreach ($tasks AS $task)
+                {
+                    if (!$task->published) {
+                        continue;
+                    }
+
+                    if ($task->progress != '100') {
+                        $can_edit_progress = false;
+                        break;
+                    }
+                }
+
+                if (!$can_edit_progress) {
+                    $form->setFieldAttribute('progress', 'type', 'hidden');
+                    $form->setFieldAttribute('progress', 'filter', 'unset');
+                }
+            }
         }
 
         return $form;
@@ -367,14 +603,57 @@ class PKtasksModelTask extends PKModelAdmin
             return $item;
         }
 
-        // Get tags
+        // Get additional data
         if (is_object($item) && !empty($item->id)) {
             $item->tags = new JHelperTags;
             $item->tags->getTagIds($item->id, 'com_pktasks.task');
+
+            // Get author name
+            $sys_params = PKPluginHelper::getParams('system', 'projectknife');
+            $db         = JFactory::getDbo();
+            $query      = $db->getQuery(true);
+
+            switch ($sys_params->get('user_display_name'))
+            {
+                case '1':
+                    $query->select('name');
+                    break;
+
+                default:
+                    $query->select('username');
+                    break;
+            }
+
+            $query->from('#__users')
+                  ->where('id = ' . $item->created_by);
+
+            $db->setQuery($query);
+            $item->author_name = $db->loadResult();
+
+            // Get project title
+            $query->clear()
+                  ->select('title')
+                  ->from('#__pk_projects')
+                  ->where('id = ' . (int) $item->project_id);
+
+            $db->setQuery($query);
+            $item->project_title = $db->loadResult();
+
+            // Get milestone title
+            $query->clear()
+                  ->select('title')
+                  ->from('#__pk_milestones')
+                  ->where('id = ' . (int) $item->milestone_id);
+
+            $db->setQuery($query);
+            $item->milestone_title = $db->loadResult();
         }
 
         // Load assigned users
         $item->assignees = $this->getAssignees($pk);
+
+        // Load predecessors
+        $item->predecessors = $this->getPredecessors($pk);
 
         return $item;
     }
@@ -398,6 +677,30 @@ class PKtasksModelTask extends PKModelAdmin
         $query->select('user_id')
               ->from('#__pk_task_assignees')
               ->where('task_id = ' . $pk);
+
+        $this->_db->setQuery($query);
+        return $this->_db->loadColumn();
+    }
+
+
+    /**
+     * Method to get the predecessors of a given task
+     *
+     * @param     integer    $pk    The task id
+     *
+     * @return    array
+     */
+    public function getPredecessors($pk = null)
+    {
+        $pk = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
+
+        if (!$pk) return array();
+
+        $query = $this->_db->getQuery(true);
+
+        $query->select('predecessor_id')
+              ->from('#__pk_task_dependencies')
+              ->where('successor_id = ' . $pk);
 
         $this->_db->setQuery($query);
         return $this->_db->loadColumn();
@@ -454,6 +757,10 @@ class PKtasksModelTask extends PKModelAdmin
         // Generate unqiue title and alias
         list($data['title'], $data['alias']) = $this->uniqueTitleAlias($data['title'], $data['alias'], $data['project_id'], $pk);
 
+        // Set default publishing state to 1 for new items
+        if ($is_new && !array_key_exists('published', $data)) {
+            $data['published'] = 1;
+        }
 
         // Handle viewing access
         if ($data['milestone_id'] > 0 ) {
@@ -493,6 +800,20 @@ class PKtasksModelTask extends PKModelAdmin
             }
         }
 
+
+        // Set completed and completed by data
+        if ($this->progress_changed && $data['progress'] == 100) {
+            $user = JFactory::getUser();
+            $date = JDate::getInstance();
+
+            $data['completed_by'] = $user->id;
+            $data['completed']    = $date->toSql();
+        }
+        else {
+            $data['completed_by'] = 0;
+            $data['completed']    = $this->_db->getNullDate();
+        }
+
         parent::prepareSaveData($data, $is_new);
     }
 
@@ -514,6 +835,11 @@ class PKtasksModelTask extends PKModelAdmin
         // Save assigned users
         if (isset($data['assignees'])) {
             $this->saveAssignees($this->getState($this->getName() . '.id'), $data['assignees']);
+        }
+
+        // Save predecessors
+        if (isset($data['predecessors'])) {
+            $this->savePredecessors($this->getState($this->getName() . '.id'), $data['predecessors']);
         }
 
         // Trigger progress change event
@@ -712,10 +1038,24 @@ class PKtasksModelTask extends PKModelAdmin
 
         $pks = array_keys($items);
 
+        if ($progress == 100) {
+            $user = JFactory::getUser();
+            $date = JDate::getInstance();
+
+            $completed_by = $user->id;
+            $completed    = $date->toSql();
+        }
+        else {
+            $completed_by = 0;
+            $completed    = $this->_db->toSql();
+        }
+
         // Update progress
         $query->clear()
               ->update('#__pk_tasks')
               ->set('progress = ' . (int) $progress)
+              ->set('completed_by = ' . $completed_by)
+              ->set('completed = ' . $this->_db->quote($completed))
               ->where('id IN(' . implode(', ', $pks) . ')');
 
         try {
@@ -907,6 +1247,57 @@ class PKtasksModelTask extends PKModelAdmin
      * Assigns users to a given task
      *
      * @param     integer    $pk       The task id
+     * @param     array      $tasks    The users
+     *
+     * @return    boolean
+     */
+    public function addPredecessors($pk, $tasks)
+    {
+        // Sanitize user ids.
+        $tasks = array_unique($tasks);
+        JArrayHelper::toInteger($tasks);
+
+        // Remove any values of zero.
+        if (array_search(0, $tasks, true)) {
+            unset($tasks[array_search(0, $tasks, true)]);
+        }
+
+        if (empty($tasks)) {
+            return true;
+        }
+
+        $query = $this->_db->getQuery(true);
+
+        foreach ($tasks AS $tid)
+        {
+            $query->clear()
+                  ->insert('#__pk_task_dependencies')
+                  ->values($tid . ', ' . $pk);
+
+            try {
+                $this->_db->setQuery($query);
+                $this->_db->execute();
+            }
+            catch (RuntimeException $e) {
+                $this->setError($e->getMessage());
+                return false;
+            }
+        }
+
+        // Load Projectknife plugins
+        $dispatcher = JEventDispatcher::getInstance();
+        JPluginHelper::importPlugin('projectknife');
+
+        $dispatcher->trigger('onProjectknifeAfterAddPredecessors', array('com_pktasks.task', $pk, $tasks));
+
+        return true;
+    }
+
+
+    /**
+     * Assigns users to a given task
+     *
+     * @param     integer    $pk       The task id
      * @param     array      $users    The users
      *
      * @return    boolean
@@ -977,6 +1368,55 @@ class PKtasksModelTask extends PKModelAdmin
         JPluginHelper::importPlugin('projectknife');
 
         $dispatcher->trigger('onProjectknifeAfterUnassign', array('com_pktasks.task', $pk, $users));
+
+        return true;
+    }
+
+
+    /**
+     * Removes task predecessor connections
+     *
+     * @param     integer    $pk       The task id
+     * @param     array      $tasks    The predecessor tasks
+     *
+     * @return    boolean
+     */
+    public function removePredecessors($pk, $tasks)
+    {
+        // Sanitize user ids.
+        $tasks = array_unique($tasks);
+        JArrayHelper::toInteger($tasks);
+
+        // Remove any values of zero.
+        if (array_search(0, $tasks, true)) {
+            unset($tasks[array_search(0, $tasks, true)]);
+        }
+
+        if (empty($tasks)) {
+            return true;
+        }
+
+        $query = $this->_db->getQuery(true);
+
+        $query->delete('#__pk_task_dependencies')
+              ->where('successor_id = ' . $pk)
+              ->where('predecessor_id IN(' . implode(', ', $tasks) . ')');
+
+        try {
+            $this->_db->setQuery($query);
+            $this->_db->execute();
+        }
+        catch (RuntimeException $e) {
+            $this->setError($e->getMessage());
+            return false;
+        }
+
+
+        // Load Projectknife plugins
+        $dispatcher = JEventDispatcher::getInstance();
+        JPluginHelper::importPlugin('projectknife');
+
+        $dispatcher->trigger('onProjectknifeAfterRemovePredecessors', array('com_pktasks.task', $pk, $tasks));
 
         return true;
     }

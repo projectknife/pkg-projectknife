@@ -6,10 +6,15 @@
 		<action name="core.manage" title="JACTION_MANAGE" description="JACTION_MANAGE_COMPONENT_DESC" />
 	</section>
 	<section name="project">
-		<action name="core.create.task" title="JACTION_CREATE" description="COM_PKTASKS_ACTION_CREATE_TASKS_DESC" />
-		<action name="core.delete.task" title="JACTION_DELETE" description="COM_PKTASKS_ACTION_DELETE_TASKS_DESC" />
-		<action name="core.edit.task" title="JACTION_EDIT" description="COM_PKTASKS_ACTION_EDIT_TASKS_DESC" />
-		<action name="core.edit.state.task" title="JACTION_EDITSTATE" description="COM_PKTASKS_ACTION_EDITSTATE_TASKS_DESC" />
-		<action name="core.edit.own.task" title="JACTION_EDITOWN" description="COM_PKTASKS_ACTION_EDITOWN_TASKS_DESC" />
+		<action name="task.create" title="JACTION_CREATE" description="COM_PKTASKS_ACTION_CREATE_TASKS_DESC" />
+		<action name="task.edit" title="JACTION_EDIT" description="COM_PKTASKS_ACTION_EDIT_TASKS_DESC" />
+        <action name="task.edit.own" title="JACTION_EDITOWN" description="COM_PKTASKS_ACTION_EDITOWN_TASKS_DESC" />
+        <action name="task.edit.progress" title="COM_PKTASKS_ACTION_EDITPROGRESS" description="COM_PKTASKS_ACTION_EDITPROGRESS_TASKS_DESC" />
+        <action name="task.edit.own.progress" title="COM_PKTASKS_ACTION_EDITOWNPROGRESS" description="COM_PKTASKS_ACTION_EDITOWNPROGRESS_TASKS_DESC" />
+        <action name="task.edit.assigned.progress" title="COM_PKTASKS_ACTION_EDITASSIGNEDPROGRESS" description="COM_PKTASKS_ACTION_EDITASSIGNEDPROGRESS_TASKS_DESC" />
+		<action name="task.edit.state" title="JACTION_EDITSTATE" description="COM_PKTASKS_ACTION_EDITSTATE_TASKS_DESC" />
+		<action name="task.edit.own.state" title="PKGLOBAL_ACTION_EDITOWNSTATE" description="COM_PKTASKS_ACTION_EDITOWNSTATE_TASKS_DESC" />
+        <action name="task.delete" title="JACTION_DELETE" description="COM_PKTASKS_ACTION_DELETE_TASKS_DESC" />
+        <action name="task.delete.own" title="PKGLOBAL_ACTION_DELETEOWN" description="COM_PKTASKS_ACTION_DELETEOWN_TASKS_DESC" />
 	</section>
 </access>

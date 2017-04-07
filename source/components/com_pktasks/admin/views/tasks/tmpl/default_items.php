@@ -12,6 +12,7 @@ defined('_JEXEC') or die;
 
 
 $user  = JFactory::getUser();
+$doc   = JFactory::getDocument();
 $count = count($this->items);
 
 $params = JComponentHelper::getParams('com_pktasks');
@@ -57,17 +58,17 @@ for ($i = 0; $i != $count; $i++)
     $item = $this->items[$i];
 
     // Check permissions
-    $can_create     = PKUserHelper::authProject('core.create.task', $item->project_id);
-    $can_edit       = PKUserHelper::authProject('core.edit.task', $item->project_id);
-    $can_edit_state = PKUserHelper::authProject('core.edit.state.task', $item->project_id);
-    $can_edit_own   = (PKUserHelper::authProject('core.edit.own.task', $item->project_id) && $item->created_by == $user->id);
+    $can_create     = PKUserHelper::authProject('task.create', $item->project_id);
+    $can_edit       = PKUserHelper::authProject('task.edit', $item->project_id);
+    $can_edit_state = PKUserHelper::authProject('task.edit.state', $item->project_id);
+    $can_edit_own   = (PKUserHelper::authProject('task.edit.own', $item->project_id) && $item->created_by == $user->id);
     $can_checkin    = ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0);
     $can_change     = ($can_edit || $can_edit_own);
 
     // Actions menu
     $actions = '';
 
-    if (PKUserHelper::authProject('core.edit.state.task', $item->id)) {
+    if (PKUserHelper::authProject('task.edit.state', $item->id)) {
         $actions = str_replace(array('{cb}', '{title}'), array('cb' . $i, $this->escape($item->title)), $html_actions);
     }
 
@@ -186,7 +187,7 @@ for ($i = 0; $i != $count; $i++)
             }
         }
 
-        if (!$can_edit_state) {
+        if (!$can_edit_state || !$item->can_progress) {
             $progress_class .= ' disabled';
         }
 
@@ -199,8 +200,9 @@ for ($i = 0; $i != $count; $i++)
         // Progress percentage
         $progress_class = 'task-progress';
 
-        if (!$can_edit_state) {
-            $progress_class .= ' disabled';
+        if (!$can_edit_state || !$item->can_progress) {
+            // $progress_class .= ' disabled hidden';
+            $doc->addScriptDeclaration('jQuery(document).ready(function(){jQuery("#progress-' . $i . '").slider("disable");});');
         }
 
         $progress = '<input id="progress-' . $i . '" data-slider-id="slider-' . $i . '" '

@@ -41,14 +41,14 @@ for ($i = 0; $i != $count; $i++)
     $item = $this->items[$i];
 
     // Check permissions
-    $can_create   = PKUserHelper::authProject('core.create.milestone', $item->project_id);
-    $can_edit     = PKUserHelper::authProject('core.edit.milestone', $item->project_id);
-    $can_edit_own = (PKUserHelper::authProject('core.edit.own.milestone', $item->project_id) && $item->created_by == $user->id);
+    $can_create   = PKUserHelper::authProject('milestone.create.', $item->project_id);
+    $can_edit     = PKUserHelper::authProject('milestone.edit', $item->project_id);
+    $can_edit_own = (PKUserHelper::authProject('milestone.edit.own', $item->project_id) && $item->created_by == $user->id);
     $can_checkin  = ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0);
     $can_change   = ($can_edit || $can_edit_own);
 
     // Actions menu
-    if (PKUserHelper::authProject('core.edit.state.milestone', $item->id)) {
+    if (PKUserHelper::authProject('milestone.edit.state', $item->id)) {
         $actions = str_replace(array('{cb}', '{title}'), array('cb' . $i, $this->escape($item->title)), $html_actions);
     }
     else {

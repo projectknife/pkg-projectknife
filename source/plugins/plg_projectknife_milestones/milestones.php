@@ -457,6 +457,11 @@ class plgProjectknifeMilestones extends JPlugin
     {
         switch ($context)
         {
+            case 'com_pkprojects.project':
+            case 'com_pkprojects.form':
+                return $this->onContentChangeStateProject($context, $pks, $state);
+                break;
+
             case 'com_pktasks.task':
             case 'com_pktasks.form':
                 return $this->onContentChangeStateTask($context, $pks, $state);
@@ -464,6 +469,40 @@ class plgProjectknifeMilestones extends JPlugin
         }
 
         return true;
+    }
+
+
+    /**
+     * Updates the milestone state when the parent project state has changed
+     *
+     * @param     string     $context
+     * @param     array      $pks
+     * @param     integer    $state
+     *
+     * @return    boolean
+     */
+    protected function onContentChangeStateProject($context, $pks, $state)
+    {
+        if ($state == 1) {
+            return true;
+        }
+
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->update('#__pk_milestones')
+              ->set('published = ' . intval($state))
+              ->where('project_id IN(' . implode(', ', $pks) . ')');
+
+        if ($state == 0) {
+            $query->where('published NOT IN(-2, 0, 2)');
+        }
+        else {
+            $query->where('published <> -2');
+        }
+
+        $db->setQuery($query);
+        $db->execute();
     }
 
 
@@ -759,8 +798,9 @@ class plgProjectknifeMilestones extends JPlugin
 
 
         // Get filter options from model
-        $model = JModelLegacy::getInstance('List', 'PKmilestonesModel');
+        $model = JModelLegacy::getInstance('List', 'PKMilestonesModel');
         $state = $model->getState();
+        $pid   = (int) $state->get('filter.project_id');
 
         // Project filter
         $options = array_merge(
@@ -793,7 +833,7 @@ class plgProjectknifeMilestones extends JPlugin
         );
 
         // Publishing state filter
-        if (!$state->get('restrict.published')) {
+        if (PKUserHelper::authProject('milestone.edit.state', $pid) || PKUserHelper::authProject('milestone.edit.own.state', $pid)) {
             $options = array_merge(
                 array(JHtml::_('select.option', '',  JText::_('JOPTION_SELECT_PUBLISHED'))),
                 JHtml::_('jgrid.publishedOptions')

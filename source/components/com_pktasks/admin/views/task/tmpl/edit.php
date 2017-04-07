@@ -14,8 +14,8 @@ defined('_JEXEC') or die;
 JHtml::_('behavior.formvalidator');
 JHtml::_('behavior.keepalive');
 JHtml::_('formbehavior.chosen', 'select');
-JHtml::_('script', 'projectknife/lib_projectknife/form.js', false, true, false, false, true);
-JHtml::_('script', 'projectknife/lib_projectknife/calendar.js', false, true, false, false, true);
+JHtml::_('script', 'lib_projectknife/form.js', false, true, false, false, true);
+JHtml::_('script', 'lib_projectknife/calendar.js', false, true, false, false, true);
 
 $app    = JFactory::getApplication();
 $input  = $app->input;
@@ -39,6 +39,7 @@ JFactory::getDocument()->addScriptDeclaration('
             function()
             {
                 PKform.ajaxUpdateSchedule(this, "#jform_project_schedule", "index.php?option=com_pkprojects&task=project.getSchedule");
+                PKform.ajaxUpdateOptions("#jform_milestone_id", true, "index.php?option=com_pktasks&task=tasks.getMilestoneOptions&project_id=" + jQuery(this).val());
             }
         );
 

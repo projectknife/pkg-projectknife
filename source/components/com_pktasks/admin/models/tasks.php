@@ -191,6 +191,20 @@ class PKtasksModelTasks extends PKModelList
         $tag_id      = $this->getState('filter.tag_id');
         $search      = $this->getState('filter.search');
 
+        // Get system plugin settings
+        $sys_params = PKPluginHelper::getParams('system', 'projectknife');
+
+        switch ($sys_params->get('user_display_name'))
+        {
+            case '1':
+                $display_name_field = 'name';
+                break;
+
+            default:
+                $display_name_field = 'username';
+                break;
+        }
+
         $query->select(
             $this->getState(
                 'list.select',
@@ -203,7 +217,7 @@ class PKtasksModelTasks extends PKModelList
         $query->from('#__pk_tasks AS a');
 
         // Join over the users for the checked out user.
-        $query->select('uc.name AS editor')
+        $query->select('uc.' . $display_name_field . ' AS editor')
               ->join('LEFT', '#__users AS uc ON uc.id = a.checked_out');
 
         // Join over the asset groups.
@@ -211,11 +225,11 @@ class PKtasksModelTasks extends PKModelList
               ->join('LEFT', '#__viewlevels AS ag ON ag.id = a.access');
 
         // Join over the users for the author.
-        $query->select('ua.name AS author_name')
+        $query->select('ua.' . $display_name_field . ' AS author_name')
               ->join('LEFT', '#__users AS ua ON ua.id = a.created_by');
 
         // Join over the projects for the title
-        $query->select('p.title AS project_title')
+        $query->select('p.title AS project_title, p.alias AS project_alias')
               ->join('LEFT', '#__pk_projects AS p ON p.id = a.project_id');
 
         // Join over the milestones for the title
@@ -265,13 +279,27 @@ class PKtasksModelTasks extends PKModelList
                 $query->where('a.progress != 100');
                 break;
 
+            case 'overdue':
+                $date = new JDate();
+                $query->where('(a.progress != 100 AND a.due_date < ' . $this->_db->quote($date->toSql()) . ')');
+                break;
+
             case 'completed':
                 $query->where('a.progress = 100');
                 break;
 
-            case 'overdue':
-                $date = new JDate();
-                $query->where('(a.progress != 100 AND a.due_date < ' . $this->_db->quote($date->toSql()) . ')');
+            case 'completed-me':
+                $user = JFactory::getUser();
+
+                $query->where('a.progress = 100')
+                      ->where('a.completed_by = ' . (int) $user->id);
+                break;
+
+            case 'completed-notme':
+                $user = JFactory::getUser();
+
+                $query->where('a.progress = 100')
+                      ->where('a.completed_by != ' . (int) $user->id);
                 break;
         }
 
@@ -293,13 +321,11 @@ class PKtasksModelTasks extends PKModelList
         // Filter by assignee
         if (!empty($assignee_id)) {
             if (is_numeric($assignee_id)) {
-                $query->join('inner', '#__pk_task_assignees AS ta ON ta.task_id = a.id');
-                $query->where('ta.user_id = ' . (int) $assignee_id);
+                $query->join('inner', '#__pk_task_assignees AS ta ON (ta.task_id = a.id AND ta.user_id = ' . (int) $assignee_id . ')');
             }
             else if (strcmp($assignee_id, 'me') === 0) {
                 $user = JFactory::getUser();
-                $query->join('inner', '#__pk_task_assignees AS ta ON ta.task_id = a.id');
-                $query->where('ta.user_id = ' . (int) $user->id);
+                $query->join('inner', '#__pk_task_assignees AS ta ON (ta.task_id = a.id AND ta.user_id = ' . (int) $user->id . ')');
             }
             else if (strcmp($assignee_id, 'notme') === 0) {
                 $user   = JFactory::getUser();
@@ -340,7 +366,7 @@ class PKtasksModelTasks extends PKModelList
             }
             elseif (stripos($search, 'author:') === 0) {
                 $search = $this->_db->quote('%' . $this->_db->escape(substr($search, 7), true) . '%');
-                $query->where('(ua.name LIKE ' . $search . ' OR ua.username LIKE ' . $search . ')');
+                $query->where('ua.' . $display_name_field . ' LIKE ' . $search);
             }
             else {
                 $search = $this->_db->quote('%' . str_replace(' ', '%', $this->_db->escape(trim($search), true) . '%'));
@@ -380,18 +406,26 @@ class PKtasksModelTasks extends PKModelList
         $count = count($pks);
         $id    = 0;
 
-        $total_tags = $this->getTagsCount($pks);
+        $total_tags         = $this->getTagsCount($pks);
+        $total_predecessors = $this->getPredecessorCount($pks);
 
         for ($i = 0; $i < $count; $i++)
         {
             $id = $items[$i]->id;
 
-            $items[$i]->tags_count = 0;
-            $items[$i]->tags       = null;
-            $items[$i]->assignees  = array();
+            $items[$i]->tags_count   = 0;
+            $items[$i]->tags         = null;
+            $items[$i]->assignees    = array();
+
+            $items[$i]->predecessors      = array();
+            $items[$i]->predecessor_count = 0;
+            $items[$i]->can_progress      = true;
 
             // Create slug
             $items[$i]->slug = $items[$i]->id . ':' . $items[$i]->alias;
+
+            // Create project slug
+            $items[$i]->project_slug = $items[$i]->project_id . ':' . $items[$i]->project_alias;
 
             // Add tag details
             if (isset($total_tags[$id])) {
@@ -400,6 +434,27 @@ class PKtasksModelTasks extends PKModelList
                 // Load the actual tags
                 $items[$i]->tags = new JHelperTags();
                 $items[$i]->tags->getItemTags('com_pktasks.task', $id);
+            }
+
+            // Add predecessor dependencies
+            if (isset($total_predecessors[$id])) {
+                $items[$i]->predecessor_count = $total_predecessors[$id];
+                $items[$i]->predecessors      = $this->getPredecessors($id);
+
+                // Determine whether the task can be progressed
+                foreach ($items[$i]->predecessors AS $predecessor)
+                {
+                    // Ignore tasks that are not published.
+                    if ($predecessor->published != '1') {
+                        continue;
+                    }
+
+                    // If at least 1 precedeeding task is not complete, this task cannot be completed either.
+                    if ($predecessor->progress != '100') {
+                        $items[$i]->can_progress = false;
+                        break;
+                    }
+                }
             }
 
             // Add assignee details
@@ -461,6 +516,70 @@ class PKtasksModelTasks extends PKModelList
 
 
     /**
+     * Returns the total number of predecessors for the given tasks
+     *
+     * @param     array    $pks      The task ids
+     *
+     * @return    array    $count    The number of predecessors
+     */
+    public function getPredecessorCount($pks)
+    {
+        JArrayHelper::toInteger($pks);
+
+        if (!count($pks)) {
+            return array();
+        }
+
+        $query = $this->_db->getQuery(true);
+
+        $query->select('successor_id, COUNT(predecessor_id) AS total')
+              ->from('#__pk_task_dependencies')
+              ->where('successor_id IN(' . implode(', ', $pks) . ')')
+              ->group('successor_id');
+
+        try {
+            $this->_db->setQuery($query);
+            $count = (array) $this->_db->loadAssocList('successor_id', 'total');
+        }
+        catch (RuntimeException $e) {
+            $this->setError($e->getMessage());
+            return array();
+        }
+
+        return $count;
+    }
+
+
+    /**
+     * Returns the predecessors for a given task
+     *
+     * @param     array    $pk      The task ids
+     *
+     * @return    array    $tasks   A list of predecessors
+     */
+    public function getPredecessors($pk)
+    {
+        $query = $this->_db->getQuery(true);
+
+        $query->select('a.id, a.title, a.alias, a.published, a.progress, a.access')
+              ->from('#__pk_tasks AS a')
+              ->join('INNER', '#__pk_task_dependencies AS d ON d.predecessor_id = a.id')
+              ->where('successor_id = ' . (int) $pk);
+
+        try {
+            $this->_db->setQuery($query);
+            $tasks = $this->_db->loadObjectList();
+        }
+        catch (RuntimeException $e) {
+            $this->setError($e->getMessage());
+            return array();
+        }
+
+        return $tasks;
+    }
+
+
+    /**
      * Returns the assignees of a task
      *
      * @param   integer $id The task id
@@ -469,9 +588,23 @@ class PKtasksModelTasks extends PKModelList
      */
     protected function getAssignees($id)
     {
+        // Get system plugin settings
+        $sys_params = PKPluginHelper::getParams('system', 'projectknife');
+
+        switch ($sys_params->get('user_display_name'))
+        {
+            case '1':
+                $display_name_field = 'name';
+                break;
+
+            default:
+                $display_name_field = 'username';
+                break;
+        }
+
         $query = $this->_db->getQuery(true);
 
-        $query->select('u.id, u.name, u.username')
+        $query->select('u.id, u.' . $display_name_field . ' as assignee_name')
               ->from('#__users AS u')
               ->join('INNER', '#__pk_task_assignees AS a ON a.user_id = u.id')
               ->where('a.task_id = ' . (int) $id)
@@ -497,18 +630,32 @@ class PKtasksModelTasks extends PKModelList
      */
     public function getAuthorOptions()
     {
+        // Get system plugin settings
+        $sys_params = PKPluginHelper::getParams('system', 'projectknife');
+
+        switch ($sys_params->get('user_display_name'))
+        {
+            case '1':
+                $display_name_field = 'name';
+                break;
+
+            default:
+                $display_name_field = 'username';
+                break;
+        }
+
         $query = $this->_db->getQuery(true);
 
-        $query->select('u.id AS value, u.name AS text')
+        $query->select('u.id AS value, u.' . $display_name_field . ' AS text')
               ->from('#__users AS u')
               ->join('INNER', '#__pk_tasks AS t ON t.created_by = u.id')
-              ->group('u.id, u.name')
-              ->order('u.name ASC');
+              ->group('u.id, u.' . $display_name_field)
+              ->order('u.' . $display_name_field . ' ASC');
 
         // Restrict user visibility
         if ($this->getState('restrict.access')) {
             $levels   = $this->getState('auth.levels',   array(0));
-            $projects = $this->getState('auth.proejcts', array(0));
+            $projects = $this->getState('auth.projects', array(0));
 
             $query->where('(t.access IN(' . implode(', ', $levels) . ') OR t.project_id IN(' . implode(', ', $projects) . '))');
         }
@@ -589,7 +736,9 @@ class PKtasksModelTasks extends PKModelList
         $options = array(
             JHtml::_('select.option', 'to-do',     JText::_('PKGLOBAL_TODO')),
             JHtml::_('select.option', 'overdue',   JText::_('PKGLOBAL_OVERDUE')),
-            JHtml::_('select.option', 'completed', JText::_('PKGLOBAL_COMPLETED'))
+            JHtml::_('select.option', 'completed', JText::_('PKGLOBAL_COMPLETED')),
+            JHtml::_('select.option', 'completed-me', JText::_('PKGLOBAL_COMPLETED_BY_ME')),
+            JHtml::_('select.option', 'completed-notme', JText::_('PKGLOBAL_COMPLETED_NOT_BY_ME'))
         );
 
         return $options;

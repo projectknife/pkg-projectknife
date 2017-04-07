@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension type="component" version="3.5" method="install">
+<extension type="component" version="3.5" method="upgrade">
     <!-- Extension info -->
     <name>com_pkdashboard</name>
     <author>Tobias Kuhn</author>
-    <creationDate>July 2016</creationDate>
-    <copyright>Copyright (C) 2015-2016 Tobias Kuhn. All rights reserved.</copyright>
+    <creationDate>April 2017</creationDate>
+    <copyright>Copyright (C) 2015-2017 Tobias Kuhn. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later.</license>
     <authorEmail>support@projectknife.net</authorEmail>
     <authorUrl>http://projectknife.net</authorUrl>
-    <version>5.0.0.alpha.1</version>
+    <version>5.0.0.beta.2</version>
     <description>COM_PKDASHBOARD_XML_DESCRIPTION</description>
 
     <!-- Install script -->
@@ -16,8 +16,11 @@
 
     <!-- Site files -->
     <files folder="site">
+        <folder>models</folder>
+        <folder>views</folder>
         <filename>pkdashboard.php</filename>
         <filename>controller.php</filename>
+        <filename>router.php</filename>
     </files>
 
     <administration>

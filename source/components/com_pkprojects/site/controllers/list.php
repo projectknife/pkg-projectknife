@@ -25,7 +25,7 @@ class PKProjectsControllerList extends PKProjectsControllerProjects
      *
      * @return    jmodel
      */
-    public function getModel($name = 'Form', $prefix = 'PKprojectsModel', $config = array('ignore_request' => true))
+    public function getModel($name = 'Form', $prefix = 'PKProjectsModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
 

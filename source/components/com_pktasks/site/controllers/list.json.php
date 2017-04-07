@@ -11,10 +11,10 @@
 defined('_JEXEC') or die;
 
 
-JLoader::register('PKtasksControllerTasks', JPATH_ADMINISTRATOR . '/components/com_pktasks/controllers/tasks.json.php');
+JLoader::register('PKTasksControllerTasks', JPATH_ADMINISTRATOR . '/components/com_pktasks/controllers/tasks.json.php');
 
 
-class PKtasksControllerList extends PKtasksControllerTasks
+class PKTasksControllerList extends PKTasksControllerTasks
 {
     /**
      * Proxy for getModel.
@@ -25,10 +25,27 @@ class PKtasksControllerList extends PKtasksControllerTasks
      *
      * @return    jmodel
      */
-    public function getModel($name = 'Form', $prefix = 'PKtasksModel', $config = array('ignore_request' => true))
+    public function getModel($name = 'Form', $prefix = 'PKTasksModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
 
         return $model;
+    }
+
+
+    public function getMilestoneOptions()
+    {
+        $project_id = JFactory::getApplication()->input->getUInt('project_id', 0, 'integer');
+        $model      = $this->getModel('List');
+
+        if ($project_id <= 0) {
+            $items = array();
+        }
+        else {
+            $filters = array('project_id' => $project_id, 'task_id' => '');
+            $items   = $model->getMilestoneOptions($filters);
+        }
+
+        echo new JResponseJson($items);
     }
 }

@@ -8,14 +8,15 @@
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
-defined('_JEXEC') or die();
+defined('_JEXEC') or die;
 
 
 use Joomla\Registry\Registry;
 
-JLoader::register('PKprojectsModelProjects', JPATH_ADMINISTRATOR . '/components/com_pkprojects/models/projects.php');
+JLoader::register('PKProjectsModelProjects', JPATH_ADMINISTRATOR . '/components/com_pkprojects/models/projects.php');
 
-class PKprojectsModelList extends PKprojectsModelProjects
+
+class PKProjectsModelList extends PKProjectsModelProjects
 {
 
 }

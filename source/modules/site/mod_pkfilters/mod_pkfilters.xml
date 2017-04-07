@@ -1,21 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension type="module" version="3.5" client="site" method="install">
+<extension type="module" version="3.5" client="site" method="upgrade">
 	<!-- Extension info -->
     <name>mod_pkfilters</name>
 	<author>Tobias Kuhn</author>
-	<creationDate>July 2016</creationDate>
-	<copyright>Copyright (C) 2015-2016 Tobias Kuhn. All rights reserved.</copyright>
+	<creationDate>April 2017</creationDate>
+	<copyright>Copyright (C) 2015-2017 Tobias Kuhn. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later.</license>
 	<authorEmail>support@projectknife.net</authorEmail>
 	<authorUrl>http://projectknife.net</authorUrl>
-	<version>5.0.0.alpha.1</version>
+	<version>5.0.0.beta.2</version>
 	<description>MOD_PKFILTERS_XML_DESCRIPTION</description>
+
+    <!-- Install script -->
+    <scriptfile>setup.php</scriptfile>
 
     <!-- Files -->
     <files>
 		<filename module="mod_pkfilters">mod_pkfilters.php</filename>
 		<folder>tmpl</folder>
 		<filename>helper.php</filename>
+		<filename>setup.php</filename>
 	</files>
 
     <!-- Media files -->
@@ -26,6 +30,12 @@
     <!-- Config -->
 	<config>
 		<fields name="params">
+			<fieldset name="basic">
+                <field name="js_chosen" type="list" default="1" label="MOD_PKFILTERS_CONFIG_JS_SELECT_LABEL" description="MOD_PKFILTERS_CONFIG_JS_SELECT_DESC">
+                    <option value="1">MOD_PKFILTERS_CONFIG_ENABLED_OPTION</option>
+                    <option value="0">MOD_PKFILTERS_CONFIG_DISABLED_OPTION</option>
+                </field>
+			</fieldset>
 			<fieldset name="advanced">
 				<field
 					name="layout"

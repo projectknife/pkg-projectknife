@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension type="component" version="3.5" method="install">
+<extension type="component" version="3.5" method="upgrade">
     <!-- Extension info -->
     <name>com_pkmilestones</name>
     <author>Tobias Kuhn</author>
-    <creationDate>July 2016</creationDate>
-    <copyright>(C) 2015-2016 Tobias Kuhn. All rights reserved.</copyright>
+    <creationDate>April 2017</creationDate>
+    <copyright>(C) 2015-2017 Tobias Kuhn. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later.</license>
     <authorEmail>support@projectknife.net</authorEmail>
     <authorUrl>http://projectknife.net</authorUrl>
-    <version>5.0.0.alpha.1</version>
+    <version>5.0.0.beta.2</version>
     <description>COM_PKMILESTONES_XML_DESCRIPTION</description>
 
      <!-- Install script -->
@@ -18,12 +18,14 @@
     <install>
         <sql>
             <file driver="mysql" charset="utf8">_install/structure.sql</file>
+            <file driver="mysql" charset="utf8">_install/data.sql</file>
         </sql>
     </install>
 
     <!-- Uninstall SQL -->
     <uninstall folder="admin">
         <sql>
+            <file driver="mysql" charset="utf8">_uninstall/data.sql</file>
             <file driver="mysql" charset="utf8">_uninstall/structure.sql</file>
         </sql>
     </uninstall>

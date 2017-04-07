@@ -8,7 +8,7 @@
  * @license      GNU General Public License version 2 or later.
  */
 
-defined('_JEXEC') or die();
+defined('_JEXEC') or die;
 
 
 use Joomla\Registry\Registry;
@@ -67,7 +67,19 @@ class PKprojectsModelProject extends PKModelAdmin
      */
     protected function canDelete($record)
     {
-        return PKUserHelper::authProject('core.delete.project', $record->id);
+        if (PKUserHelper::authProject('core.delete', $record->id)) {
+            return true;
+        }
+
+        if (PKUserHelper::authProject('core.delete.own')) {
+            $user = JFactory::getUser();
+
+            if ($user->id > 0 && $user->id == $record->created_by) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 
@@ -80,7 +92,19 @@ class PKprojectsModelProject extends PKModelAdmin
      */
     protected function canEditState($record)
     {
-        return PKUserHelper::authProject('core.edit.state.project', $record->id);
+        if (PKUserHelper::authProject('core.edit.state', $record->id)) {
+            return true;
+        }
+
+        if (PKUserHelper::authProject('core.edit.own.state')) {
+            $user = JFactory::getUser();
+
+            if ($user->id > 0 && $user->id == $record->created_by) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 
@@ -199,23 +223,187 @@ class PKprojectsModelProject extends PKModelAdmin
 
 
     /**
-	 * Method to get a single record.
-	 *
-	 * @param   integer  $pk  The id of the primary key.
-	 *
-	 * @return  mixed    Object on success, false on failure.
-	 */
+     * Method to get a single record.
+     *
+     * @param     integer    $pk    The id of the primary key.
+     *
+     * @return    mixed             Object on success, false on failure.
+     */
     public function getItem($pk = null)
     {
         $item = parent::getItem($pk);
 
-        // Get tags
+        // Get additional data
         if (is_object($item) && !empty($item->id)) {
             $item->tags = new JHelperTags();
             $item->tags->getTagIds($item->id, 'com_pkprojects.project');
+
+            // Get author name
+            $sys_params = PKPluginHelper::getParams('system', 'projectknife');
+            $db         = JFactory::getDbo();
+            $query      = $db->getQuery(true);
+
+            switch ($sys_params->get('user_display_name'))
+            {
+                case '1':
+                    $query->select('name');
+                    break;
+
+                default:
+                    $query->select('username');
+                    break;
+            }
+
+            $query->from('#__users')
+                  ->where('id = ' . $item->created_by);
+
+            $db->setQuery($query);
+            $item->author_name = $db->loadResult();
+
+            // Get task count
+            $item->tasks_count     = $this->getTasksCount($item->id);
+            $item->tasks_completed = 0;
+
+            if ($item->tasks_count) {
+                $item->tasks_completed = $this->getTasksCompletedCount($item->id);
+            }
+
+            // Get milestones count
+            $item->milestones_count     = $this->getMilestonesCount($item->id);
+            $item->milestones_completed = 0;
+
+            if ($item->milestones_count) {
+                $item->milestones_completed = $this->getMilestonesCompletedCount($item->id);
+            }
         }
 
         return $item;
+    }
+
+
+    /**
+     * Returns the total number of active tasks for the given project
+     *
+     * @param     integer    $pk       The project id
+     *
+     * @return    integer    $count    The number of tasks
+     */
+    public function getTasksCount($pk = null)
+    {
+        $pk = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
+
+        if (!$pk) {
+            return 0;
+        }
+
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->clear()
+              ->select('COUNT(*)')
+              ->from('#__pk_tasks')
+              ->where('project_id = ' . intval($pk))
+              ->where('published > 0');
+
+        $db->setQuery($query);
+        $count = (int) $db->loadResult();
+
+        return $count;
+    }
+
+
+    /**
+     * Returns the total number of completed tasks for the given project
+     *
+     * @param     array    $pk       The project id
+     *
+     * @return    array    $count    The number of tasks
+     */
+    public function getTasksCompletedCount($pk = null)
+    {
+        $pk = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
+
+        if (!$pk) {
+            return 0;
+        }
+
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->clear()
+              ->select('COUNT(*)')
+              ->from('#__pk_tasks')
+              ->where('project_id = ' . intval($pk))
+              ->where('published > 0')
+              ->where('progress = 100');
+
+        $db->setQuery($query);
+        $count = (int) $db->loadResult();
+
+        return $count;
+    }
+
+
+    /**
+     * Returns the total number of active milestones for the given project
+     *
+     * @param     integer    $pk       The project ids
+     *
+     * @return    integer    $count    The number of milestones
+     */
+    public function getMilestonesCount($pk = null)
+    {
+        $pk = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
+
+        if (!$pk) {
+            return 0;
+        }
+
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->clear()
+              ->select('COUNT(*)')
+              ->from('#__pk_milestones')
+              ->where('project_id = ' . intval($pk))
+              ->where('published > 0');
+
+        $db->setQuery($query);
+        $count = (int) $db->loadResult();
+
+        return $count;
+    }
+
+
+    /**
+     * Returns the total number of completed milestones for the given project
+     *
+     * @param     array    $pk       The project id
+     *
+     * @return    array    $count    The number of milestones
+     */
+    public function getMilestonesCompletedCount($pk = null)
+    {
+        $pk = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
+
+        if (!$pk) {
+            return 0;
+        }
+
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->clear()
+              ->select('COUNT(*)')
+              ->from('#__pk_milestones')
+              ->where('project_id = ' . intval($pk))
+              ->where('published > 0')
+              ->where('progress = 100');
+
+        $db->setQuery($query);
+        $count = (int) $db->loadResult();
+
+        return $count;
     }
 
 
@@ -242,9 +430,14 @@ class PKprojectsModelProject extends PKModelAdmin
             return false;
         }
 
+        $input  = JFactory::getApplication()->input;
         $params = JComponentHelper::getParams('com_pkprojects');
 
-        if ($params->get('auto_access', '1') == '1') {
+        // Get item id
+        $id = $input->getUint('id', $this->getState('project.id', 0));
+
+
+        if ($params->get('auto_access', '0') == '1') {
             $form->setFieldAttribute('access', 'type', 'hidden');
             $form->setFieldAttribute('access', 'filter', 'unset');
         }
@@ -257,6 +450,35 @@ class PKprojectsModelProject extends PKModelAdmin
         // Disable some fields in the frontend form
         if ($is_site) {
             $form->setFieldAttribute('created_by', 'type', 'hidden');
+        }
+
+        // Check "edit state" permission
+        if (!PKUserHelper::authProject('core.edit.state', $id)) {
+            $can_edit_state = false;
+
+            if ($id) {
+                // Check if owner
+                if (PKUserHelper::authProject('core.edit.own.state')) {
+                    $user  = JFactory::getUser();
+                    $query = $this->_db->getQuery(true);
+
+                    $query->select('created_by')
+                          ->from('#__pk_projects')
+                          ->where('id = ' . $id);
+
+                    $this->_db->setQuery($query);
+                    $project_author = (int) $this->_db->loadResult();
+
+                    if ($user->id > 0 && $user->id == $project_author) {
+                        $can_edit_state = true;
+                    }
+                }
+            }
+
+            if (!$can_edit_state) {
+                $form->setFieldAttribute('published', 'type', 'hidden');
+                $form->setFieldAttribute('published', 'filter', 'unset');
+            }
         }
 
         return $form;
@@ -325,6 +547,11 @@ class PKprojectsModelProject extends PKModelAdmin
         // Generate unique title and alias
         list($data['title'], $data['alias']) = $this->uniqueTitleAlias($data['title'], $data['alias'], $pk);
 
+        // Set default publishing state to 1 for new items
+        if ($is_new && !array_key_exists('published', $data)) {
+            $data['published'] = 1;
+        }
+
         // Handle viewing access
         $category_access = 0;
         $access_inherit  = 1;
@@ -363,6 +590,11 @@ class PKprojectsModelProject extends PKModelAdmin
                     $data['access_inherit'] = 0;
                 }
             }
+        }
+
+        // Default state is published
+        if ($is_new && !isset($data['published'])) {
+            $data['published'] = 1;
         }
 
         // Handle start and due date
@@ -700,6 +932,8 @@ class PKprojectsModelProject extends PKModelAdmin
         $id         = 0;
         $start_task = null;
         $due_task   = null;
+        $start_time = 0;
+        $due_time   = 0;
 
         for ($i = 0; $i < $count; $i++)
         {
@@ -737,28 +971,48 @@ class PKprojectsModelProject extends PKModelAdmin
 
             // Update start date
             if (empty($start_task) || $start_task->id == null) {
+                $start_time = strtotime($dates[$id]['start_date']);
+
                 $query->set('start_date = ' . $this->_db->quote($dates[$id]['start_date']))
                       ->set('start_date_task_id = 0');
             }
             else {
+                $start_time = strtotime($start_task->start_date);
+
                 $query->set('start_date = ' . $this->_db->quote($start_task->start_date))
                       ->set('start_date_task_id = ' . (int) $start_task->id);
             }
 
             // Update due date
             if (empty($due_task) || $due_task->id == null) {
+                $due_time = strtotime($dates[$i]['due_date']);
+
                 $query->set('due_date = ' . $this->_db->quote($dates[$id]['due_date']))
                       ->set('due_date_task_id = 0');
             }
             else {
+                $due_time = strtotime($due_task->due_date);
+
                 $query->set('due_date = ' . $this->_db->quote($due_task->due_date))
                       ->set('due_date_task_id = ' . (int) $due_task->id);
+            }
+
+            // Update the duration
+            $duration = 1;
+            $delta    = $due_time - $start_time;
+
+            if ($delta > 0) {
+                $duration += ceil($delta / 86400) - 1;
+
+                $query->set('duration = ' . $duration);
             }
 
             $query->where('id = ' . (int) $id);
 
             $this->_db->setQuery($query);
             $this->_db->execute();
+
+
         }
 
         return true;

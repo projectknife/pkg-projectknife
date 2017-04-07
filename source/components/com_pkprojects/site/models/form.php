@@ -13,10 +13,10 @@ defined('_JEXEC') or die;
 
 use Joomla\Registry\Registry;
 
-JLoader::register('PKprojectsModelProject', JPATH_ADMINISTRATOR . '/components/com_pkprojects/models/project.php');
+JLoader::register('PKProjectsModelProject', JPATH_ADMINISTRATOR . '/components/com_pkprojects/models/project.php');
 
 
-class PKprojectsModelForm extends PKprojectsModelProject
+class PKProjectsModelForm extends PKProjectsModelProject
 {
     /**
      * Get the return URL.
@@ -43,7 +43,7 @@ class PKprojectsModelForm extends PKprojectsModelProject
         $return = $app->input->get('return', null, 'default', 'base64');
 
         if (empty($return) || !JUri::isInternal(base64_decode($return))) {
-            $return = base64_encode(JRoute::_(PKprojectsHelperRoute::getListRoute(), false));
+            $return = base64_encode(JRoute::_(PKProjectsHelperRoute::getListRoute(), false));
         }
 
         $this->setState('return_page', base64_decode($return));

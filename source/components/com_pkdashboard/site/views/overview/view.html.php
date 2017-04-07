@@ -65,6 +65,9 @@ class PKdashboardViewOverview extends JViewLegacy
         $this->params  = $app->getParams();
         $this->toolbar = $this->getToolbar();
 
+        // Set active project
+        PKApplicationHelper::setProjectId($this->state->get($this->get('Name') . '.id'));
+
         // Check viewing access
         if ($this->item && $this->item->id > 0) {
             $user      = JFactory::getUser();
@@ -79,6 +82,25 @@ class PKdashboardViewOverview extends JViewLegacy
                      return;
                 }
             }
+
+            // Import plugins
+    		JPluginHelper::importPlugin('content');
+
+            $context    = 'com_pkdashboard.overview';
+            $dispatcher	= JDispatcher::getInstance();
+
+            // Trigger events
+    		$results = $dispatcher->trigger('onContentPrepare', array ($context, &$this->item, &$this->params, 0));
+
+    		$this->item->event = new stdClass();
+    		$results = $dispatcher->trigger('onContentAfterTitle', array($context, &$this->item, &$this->params, 0));
+    		$this->item->event->afterDisplayTitle = trim(implode("\n", $results));
+
+    		$results = $dispatcher->trigger('onContentBeforeDisplay', array($context, &$this->item, &$this->params, 0));
+    		$this->item->event->beforeDisplayContent = trim(implode("\n", $results));
+
+    		$results = $dispatcher->trigger('onContentAfterDisplay', array($context, &$this->item, &$this->params, 0));
+    		$this->item->event->afterDisplayContent = trim(implode("\n", $results));
         }
 
         // Prepare doc
@@ -108,7 +130,7 @@ class PKdashboardViewOverview extends JViewLegacy
             $this->params->def('page_heading', $this->params->get('page_title', $this->menu->title));
         }
         else {
-            $this->params->def('page_heading', JText::_($this->defaultPageTitle));
+            $this->params->def('page_heading', JText::_('COM_PKDASHBOARD_SUBMENU_OVERVIEW'));
         }
 
         $title = $this->params->get('page_title', '');
@@ -166,8 +188,8 @@ class PKdashboardViewOverview extends JViewLegacy
             // Edit button
             if ($can_edit || $can_edit_own) {
                 $slug       = $this->item->id . ':' . $this->item->alias;
-                $url_return = base64_encode('index.php?option=com_pkdashboard&view=overview&Itemid=' . PKApplicationHelper::getMenuItemId('active'));
-                $item_form  = PKApplicationHelper::getMenuItemId('com_pkprojects', 'form');
+                $url_return = base64_encode('index.php?option=com_pkdashboard&view=overview&Itemid=' . PKRouteHelper::getMenuItemId('active'));
+                $item_form  = PKRouteHelper::getMenuItemId('com_pkprojects', 'form');
                 $url_edit   = JRoute::_('index.php?option=com_pkprojects&task=form.edit&id=' . $slug . '&Itemid=' . $item_form . '&return=' . $url_return);
 
                 PKToolbar::btnURL($url_edit, JText::_('JGLOBAL_EDIT'), array('icon' => 'edit'));

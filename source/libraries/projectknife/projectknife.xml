@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension type="library" method="install" version="3.5">
+<extension type="library" method="upgrade" version="3.5">
     <!-- Extension info -->
     <name>Projectknife</name>
     <libraryname>projectknife</libraryname>
     <author>Tobias Kuhn</author>
-    <creationDate>July 2016</creationDate>
-    <copyright>Copyright (C) 2015 - 2016 Tobias Kuhn. All rights reserved.</copyright>
+    <creationDate>April 2017</creationDate>
+    <copyright>Copyright (C) 2015 - 2017 Tobias Kuhn. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later.</license>
     <authorEmail>support@projectknife.net</authorEmail>
     <authorUrl>http://projectknife.net</authorUrl>
-    <version>5.0.0.alpha.1</version>
+    <version>5.0.0.beta.2</version>
     <description>LIB_PROJECTKNIFE_XML_DESCRIPTION</description>
 
     <!-- Site files -->
     <files>
-        <folder>_install</folder>
-        <folder>_uninstall</folder>
         <folder>access</folder>
         <folder>application</folder>
         <folder>date</folder>
         <folder>form</folder>
         <folder>grid</folder>
         <folder>model</folder>
+        <folder>plugin</folder>
+        <folder>route</folder>
         <folder>toolbar</folder>
         <folder>user</folder>
         <folder>version</folder>
@@ -39,18 +39,4 @@
         <language tag="en-GB">language/en-GB/en-GB.lib_projectknife.ini</language>
         <language tag="en-GB">language/en-GB/en-GB.lib_projectknife.sys.ini</language>
     </languages>
-
-    <!-- Install SQL -->
-    <install>
-        <sql>
-            <file driver="mysql" charset="utf8">_install/structure.sql</file>
-        </sql>
-    </install>
-
-    <!-- Uninstall SQL -->
-    <uninstall>
-        <sql>
-            <file driver="mysql" charset="utf8">_uninstall/structure.sql</file>
-        </sql>
-    </uninstall>
 </extension>

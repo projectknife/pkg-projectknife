@@ -81,13 +81,6 @@ class plgSystemProjectknife extends JPlugin
         }
 
         if ($app->isSite()) {
-            // Load admin language of the current component into the frontend
-            $component = $app->input->get('option');
-
-            if (in_array($component, $names)) {
-                $lang->load($component, $path . '/components/' . $component);
-            }
-
             // Load site component .sys language files
             $path = JPATH_SITE;
 

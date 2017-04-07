@@ -23,8 +23,10 @@ CREATE TABLE IF NOT EXISTS `#__pk_milestones` (
   `checked_out` int(10) UNSIGNED NOT NULL DEFAULT '0',
   `checked_out_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_alias` (`project_id`,`alias`),
   KEY `idx_project_id` (`project_id`),
   KEY `idx_published` (`published`),
   KEY `idx_access` (`access`),
-  KEY `idx_created_by` (`created_by`)
+  KEY `idx_created_by` (`created_by`),
+  KEY `idx_checked_out` (`checked_out`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

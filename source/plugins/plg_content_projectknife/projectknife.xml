@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension version="3.5" type="plugin" group="content" method="install">
+<extension version="3.5" type="plugin" group="content" method="upgrade">
     <!-- Extension info -->
     <name>plg_content_projectknife</name>
-    <creationDate>July 2016</creationDate>
+    <creationDate>April 2017</creationDate>
     <author>Tobias Kuhn</author>
-    <copyright>Copyright (C) 2015-2016 Tobias Kuhn. All rights reserved.</copyright>
+    <copyright>Copyright (C) 2015-2017 Tobias Kuhn. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later.</license>
     <authorEmail>support@projectknife.net</authorEmail>
     <authorUrl>http://projectknife.net</authorUrl>
-    <version>5.0.0.alpha.1</version>
+    <version>5.0.0.beta.2</version>
     <description>PLG_CONTENT_PROJECTKNIFE_XML_DESCRIPTION</description>
 
     <!-- Install script -->

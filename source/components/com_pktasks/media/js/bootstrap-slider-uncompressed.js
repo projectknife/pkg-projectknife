@@ -1,5 +1,5 @@
 /*! =======================================================
-                      VERSION  7.0.3              
+                      VERSION  9.2.0              
 ========================================================= */
 "use strict";
 
@@ -36,6 +36,7 @@ function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.const
  * v1.0.1
  * MIT license
  */
+var windowIsDefined = (typeof window === "undefined" ? "undefined" : _typeof(window)) === "object";
 
 (function (factory) {
 	if (typeof define === "function" && define.amd) {
@@ -52,6 +53,21 @@ function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.const
 		window.Slider = factory(window.jQuery);
 	}
 })(function ($) {
+	// Constants
+	var NAMESPACE_MAIN = 'slider';
+	var NAMESPACE_ALTERNATE = 'bootstrapSlider';
+
+	// Polyfill console methods
+	if (windowIsDefined && !window.console) {
+		window.console = {};
+	}
+	if (windowIsDefined && !window.console.log) {
+		window.console.log = function () {};
+	}
+	if (windowIsDefined && !window.console.warn) {
+		window.console.warn = function () {};
+	}
+
 	// Reference to Slider constructor
 	var Slider;
 
@@ -417,6 +433,19 @@ function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.const
 				sliderTrack.appendChild(sliderTrackSelection);
 				sliderTrack.appendChild(sliderTrackHigh);
 
+				/* Create highlight range elements */
+				this.rangeHighlightElements = [];
+				if (Array.isArray(this.options.rangeHighlights) && this.options.rangeHighlights.length > 0) {
+					for (var j = 0; j < this.options.rangeHighlights.length; j++) {
+
+						var rangeHighlightElement = document.createElement("div");
+						rangeHighlightElement.className = "slider-rangeHighlight slider-selection";
+
+						this.rangeHighlightElements.push(rangeHighlightElement);
+						sliderTrack.appendChild(rangeHighlightElement);
+					}
+				}
+
 				/* Add aria-labelledby to handle's */
 				var isLabelledbyArray = Array.isArray(this.options.labelledby);
 				if (isLabelledbyArray && this.options.labelledby[0]) {
@@ -433,19 +462,18 @@ function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.const
 				/* Create ticks */
 				this.ticks = [];
 				if (Array.isArray(this.options.ticks) && this.options.ticks.length > 0) {
+					this.ticksContainer = document.createElement('div');
+					this.ticksContainer.className = 'slider-tick-container';
+
 					for (i = 0; i < this.options.ticks.length; i++) {
 						var tick = document.createElement('div');
 						tick.className = 'slider-tick';
-
 						this.ticks.push(tick);
-						sliderTrack.appendChild(tick);
+						this.ticksContainer.appendChild(tick);
 					}
 
 					sliderTrackSelection.className += " tick-slider-selection";
 				}
-
-				sliderTrack.appendChild(sliderMinHandle);
-				sliderTrack.appendChild(sliderMaxHandle);
 
 				this.tickLabels = [];
 				if (Array.isArray(this.options.ticks_labels) && this.options.ticks_labels.length > 0) {
@@ -500,6 +528,12 @@ function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.const
 				if (this.tickLabelContainer) {
 					this.sliderElem.appendChild(this.tickLabelContainer);
 				}
+				if (this.ticksContainer) {
+					this.sliderElem.appendChild(this.ticksContainer);
+				}
+
+				this.sliderElem.appendChild(sliderMinHandle);
+				this.sliderElem.appendChild(sliderMaxHandle);
 
 				/* Append slider element to parent container, right before the original <input> element */
 				parent.insertBefore(this.sliderElem, this.element);
@@ -733,7 +767,8 @@ function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.const
 				scale: 'linear',
 				focus: false,
 				tooltip_position: null,
-				labelledby: null
+				labelledby: null,
+				rangeHighlights: []
 			},
 
 			getElement: function getElement() {
@@ -987,6 +1022,28 @@ function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.const
 				this.handle2.style[this.stylePos] = positionPercentages[1] + '%';
 				this.handle2.setAttribute('aria-valuenow', this._state.value[1]);
 
+				/* Position highlight range elements */
+				if (this.rangeHighlightElements.length > 0 && Array.isArray(this.options.rangeHighlights) && this.options.rangeHighlights.length > 0) {
+					for (var _i = 0; _i < this.options.rangeHighlights.length; _i++) {
+						var startPercent = this._toPercentage(this.options.rangeHighlights[_i].start);
+						var endPercent = this._toPercentage(this.options.rangeHighlights[_i].end);
+
+						var currentRange = this._createHighlightRange(startPercent, endPercent);
+
+						if (currentRange) {
+							if (this.options.orientation === 'vertical') {
+								this.rangeHighlightElements[_i].style.top = currentRange.start + "%";
+								this.rangeHighlightElements[_i].style.height = currentRange.size + "%";
+							} else {
+								this.rangeHighlightElements[_i].style.left = currentRange.start + "%";
+								this.rangeHighlightElements[_i].style.width = currentRange.size + "%";
+							}
+						} else {
+							this.rangeHighlightElements[_i].style.display = "none";
+						}
+					}
+				}
+
 				/* Position ticks and labels */
 				if (Array.isArray(this.options.ticks) && this.options.ticks.length > 0) {
 
@@ -1148,6 +1205,22 @@ function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.const
 							this.tooltip_max.style.top = this.tooltip_min.style.top;
 						}
 					}
+				}
+			},
+			_createHighlightRange: function _createHighlightRange(start, end) {
+				if (this._isHighlightRange(start, end)) {
+					if (start > end) {
+						return { 'start': end, 'size': start - end };
+					}
+					return { 'start': start, 'size': end - start };
+				}
+				return null;
+			},
+			_isHighlightRange: function _isHighlightRange(start, end) {
+				if (0 <= start && start <= 100 && 0 <= end && end <= 100) {
+					return true;
+				} else {
+					return false;
 				}
 			},
 			_resize: function _resize(ev) {
@@ -1597,13 +1670,25 @@ function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.const
   		Attach to global namespace
   	*********************************/
 		if ($) {
-			var namespace = $.fn.slider ? 'bootstrapSlider' : 'slider';
-			$.bridget(namespace, Slider);
+			(function () {
+				var autoRegisterNamespace = undefined;
 
-			// Auto-Register data-provide="slider" Elements
-			$(function () {
-				$("input[data-provide=slider]")[namespace]();
-			});
+				if (!$.fn.slider) {
+					$.bridget(NAMESPACE_MAIN, Slider);
+					autoRegisterNamespace = NAMESPACE_MAIN;
+				} else {
+					if (windowIsDefined) {
+						window.console.warn("bootstrap-slider.js - WARNING: $.fn.slider namespace is already bound. Use the $.fn.bootstrapSlider namespace instead.");
+					}
+					autoRegisterNamespace = NAMESPACE_ALTERNATE;
+				}
+				$.bridget(NAMESPACE_ALTERNATE, Slider);
+
+				// Auto-Register data-provide="slider" Elements
+				$(function () {
+					$("input[data-provide=slider]")[autoRegisterNamespace]();
+				});
+			})();
 		}
 	})($);
 

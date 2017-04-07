@@ -11,11 +11,11 @@
 defined('_JEXEC') or die;
 
 
-JHtml::_('stylesheet', 'projectknife/lib_projectknife/core.css', false, true, false, false, true);
-JHtml::_('stylesheet', 'projectknife/com_pkprojects/projects.css', false, true, false, false, true);
+JHtml::_('stylesheet', 'lib_projectknife/core.css', false, true, false, false, true);
+JHtml::_('stylesheet', 'com_pkprojects/projects.css', false, true, false, false, true);
 JHtml::_('behavior.formvalidator');
 JHtml::_('behavior.keepalive');
-JHtml::_('formbehavior.chosen', 'select');
+JHtml::_('formbehavior.chosen', '#item-form select');
 
 $app    = JFactory::getApplication();
 $input  = $app->input;

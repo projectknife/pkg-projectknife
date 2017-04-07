@@ -9,10 +9,6 @@
                 <option value="0">JHIDE</option>
 				<option value="1">JSHOW</option>
 			</field>
-            <field name="group_date_format" type="list" label="PKGLOBAL_GROUP_DATE_FORMAT" default="0">
-                <option value="0">PKGLOBAL_GROUP_DATE_FORMAT_MY</option>
-				<option value="1">PKGLOBAL_GROUP_DATE_FORMAT_YM</option>
-			</field>
             <field name="date_format" type="text" description="PKGLOBAL_DATE_FORMAT_LC4_DESCRIPTION" label="JGLOBAL_DATE_FORMAT_LABEL" size="15"/>
             <field name="sort_by" type="list" default="a.actual_due_date" label="PKGLOBAL_PRIMARY_SORT">
     			<option value="access_level">JGRID_HEADING_ACCESS</option>
@@ -51,7 +47,6 @@
     			<option value="desc">PKGLOBAL_ORDER_BY_ZA</option>
             </field>
             <field name="filter_published" type="list" label="PKGLOBAL_FILTER_PUBLISHED_LABEL" description="PKGLOBAL_FILTER_PUBLISHED_DESC">
-                <option value="">PKGLOBAL_DEFAULT_FILTER</option>
                 <option value="1">JPUBLISHED</option>
                 <option value="0">JUNPUBLISHED</option>
                 <option value="2">JARCHIVED</option>

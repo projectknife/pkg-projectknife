@@ -70,6 +70,102 @@ class plgProjectknifeTasks extends JPlugin
 
 
     /**
+     * "onContentChangeState" event handler
+     *
+     * @param     string     $context
+     * @param     array      $pks
+     * @param     integer    $state
+     *
+     * @return    boolean
+     */
+    public function onContentChangeState($context, $pks, $state)
+    {
+        switch ($context)
+        {
+            case 'com_pkprojects.project':
+            case 'com_pkprojects.form':
+                return $this->onContentChangeStateProject($context, $pks, $state);
+                break;
+
+            case 'com_pkmilestones.milestone':
+            case 'com_pkmilestones.form':
+                return $this->onContentChangeStateMilestone($context, $pks, $state);
+                break;
+        }
+
+        return true;
+    }
+
+
+    /**
+     * Updates the task state when the parent project state has changed
+     *
+     * @param     string     $context
+     * @param     array      $pks
+     * @param     integer    $state
+     *
+     * @return    boolean
+     */
+    protected function onContentChangeStateProject($context, $pks, $state)
+    {
+        if ($state == 1) {
+            return true;
+        }
+
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->update('#__pk_tasks')
+              ->set('published = ' . intval($state))
+              ->where('project_id IN(' . implode(', ', $pks) . ')');
+
+        if ($state == 0) {
+            $query->where('published NOT IN(-2, 0, 2)');
+        }
+        else {
+            $query->where('published <> -2');
+        }
+
+        $db->setQuery($query);
+        $db->execute();
+    }
+
+
+    /**
+     * Updates the task state when the parent project milestone has changed
+     *
+     * @param     string     $context
+     * @param     array      $pks
+     * @param     integer    $state
+     *
+     * @return    boolean
+     */
+    protected function onContentChangeStateMilestone($context, $pks, $state)
+    {
+        if ($state == 1) {
+            return true;
+        }
+
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->update('#__pk_tasks')
+              ->set('published = ' . intval($state))
+              ->where('milestone_id IN(' . implode(', ', $pks) . ')');
+
+        if ($state == 0) {
+            $query->where('published NOT IN(-2, 0, 2)');
+        }
+        else {
+            $query->where('published <> -2');
+        }
+
+        $db->setQuery($query);
+        $db->execute();
+    }
+
+
+    /**
      * "onContentAfterDelete" event handler
      *
      * @param     string     $context    The model context
@@ -89,6 +185,11 @@ class plgProjectknifeTasks extends JPlugin
             case 'com_pkmilestones.milestone':
             case 'com_pkmilestones.form':
                 $this->onContentAfterDeleteMilestone($context, $table);
+                break;
+
+            case 'com_pktasks.task':
+            case 'com_pktasks.form':
+                $this->onContentAfterDeleteTask($context, $table);
                 break;
         }
 
@@ -148,6 +249,45 @@ class plgProjectknifeTasks extends JPlugin
             $model = JModelLegacy::getInstance('Task', 'PKtasksModel', $config = array('ignore_request' => true));
             $model->delete($pks);
         }
+    }
+
+
+    /**
+     * Deletes task meta data to clean up
+     *
+     * @param     string    $context    The model context
+     * @param     object    $table      The table object instance
+     *
+     * @return    void
+     */
+    protected function onContentAfterDeleteTask($context, $table)
+    {
+        $db = JFactory::getDbo();
+        $query->getQuery(true);
+
+
+        // Remove all dependencies
+        $query->delete('#__pk_task_dependencies')
+              ->where('predecessor_id = ' . (int) $table->id);
+
+        $db->setQuery($query);
+        $db->execute();
+
+        $query->clear();
+        $query->delete('#__pk_task_dependencies')
+              ->where('successor_id = ' . (int) $table->id);
+
+        $db->setQuery($query);
+        $db->execute();
+
+
+        // Remove all assigned users
+        $query->clear();
+        $query->delete('#__pk_task_assignees')
+              ->where('task_id = ' . (int) $table->id);
+
+        $db->setQuery($query);
+        $db->execute();
     }
 
 
@@ -704,7 +844,7 @@ class plgProjectknifeTasks extends JPlugin
         );
 
         // Publishing state filter
-        if (!$state->get('restrict.published')) {
+        if (PKUserHelper::authProject('task.edit.state', $filter_project) || PKUserHelper::authProject('task.edit.own.state', $filter_project)) {
             $options = array_merge(
                 array(JHtml::_('select.option', '',  JText::_('JOPTION_SELECT_PUBLISHED'))),
                 JHtml::_('jgrid.publishedOptions')

@@ -8,7 +8,7 @@
  * @license      GNU General Public License version 2 or later.
  */
 
-defined('JPATH_PLATFORM') or die();
+defined('JPATH_PLATFORM') or die;
 
 
 use Joomla\Registry\Registry;
@@ -38,8 +38,18 @@ class JFormFieldPKtaskAssignee extends JFormFieldList
      */
     protected function getInput()
     {
+        $app = JFactory::getApplication();
         // Setup ajax request for finding users
-        $url = JUri::root() . 'administrator/index.php?option=com_pkprojects&task=project.searchMember&tmpl=component&format=json';
+        if ($app->isSite()) {
+            $url  = JUri::root();
+            $task = 'form';
+        }
+        else {
+            $url  = JUri::root() . 'administrator/';
+            $task = 'project';
+        }
+
+        $url .= 'index.php?option=com_pkprojects&task=' . $task . '.searchMember&tmpl=component&format=json';
 
         $chosenAjaxSettings = new Registry(
             array(
@@ -48,7 +58,7 @@ class JFormFieldPKtaskAssignee extends JFormFieldList
                 'url'           => $url . "&project_id=' + jQuery('#jform_project_id').val() + '",
                 'dataType'      => 'json',
                 'jsonTermKey'   => 'like',
-                'minTermLength' => 3
+                'minTermLength' => 0
             )
         );
 
@@ -59,13 +69,9 @@ class JFormFieldPKtaskAssignee extends JFormFieldList
         $html   = array();
 
         $html[] = JHtml::_('select.genericlist', $this->getOptions(), $this->name, trim($attr), 'value', 'text', $this->value, $this->id);
+        $html[] = '<input type="hidden" name="' . $this->name . '" value=""/>';
 
-        /*
-        $html[] = '<select id="' . $this->fieldname . '_search" name="' . $this->name . '" class="span12" multiple>';
-        $html[] = implode('', $this->getOptions());
-        $html[] = '</select>';
-*/
-        return implode(',', $html);
+        return implode("\n", $html);
     }
 
 
@@ -84,13 +90,27 @@ class JFormFieldPKtaskAssignee extends JFormFieldList
 
         JArrayHelper::toInteger($this->value);
 
+        // Get system plugin settings
+        $sys_params = PKPluginHelper::getParams('system', 'projectknife');
+
+        switch ($sys_params->get('user_display_name'))
+        {
+            case '1':
+                $display_name_field = 'name';
+                break;
+
+            default:
+                $display_name_field = 'username';
+                break;
+        }
+
         $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        $query->select('id AS value, username AS text')
+        $query->select('id AS value, ' . $display_name_field . ' AS text')
               ->from('#__users')
               ->where('id IN(' . implode(', ', $this->value) . ')')
-              ->order('username ASC');
+              ->order('' . $display_name_field . ' ASC');
 
         $db->setQuery($query);
         $users = $db->loadObjectList();

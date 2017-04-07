@@ -6,10 +6,7 @@
 		<field name="description" type="editor" label="COM_PKPROJECTS_FIELD_DESCRIPTION_LABEL" description="COM_PKPROJECTS_FIELD_DESCRIPTION_DESC" buttons="true" class="inputbox" filter="JComponentHelper::filterText"/>
 	</fieldset>
     <fieldset name="publishing-left-col" addfieldpath="/administrator/components/com_pktasks/models/fields">
-        <field type="pkproject" name="project_id" required="true" size="1" permission="core.create.task"
-            label="PLG_PROJECTKNIFE_PPROJECTS_FIELD_PROJECT_LABEL" description="PLG_PROJECTKNIFE_PPROJECTS_FIELD_PROJECT_DESC"
-            onchange="PKform.ajaxUpdateOptions('#jform_milestone_id', true, 'index.php?option=com_pktasks&amp;task=tasks.getMilestoneOptions&amp;project_id=' + jQuery(this).val());"
-        />
+        <field type="pkproject" name="project_id" required="true" size="1" permission="task.create" label="PLG_PROJECTKNIFE_PROJECTS_FIELD_PROJECT_LABEL" description="PLG_PROJECTKNIFE_PROJECTS_FIELD_PROJECT_DESC"/>
         <field name="project_schedule" type="text" label="COM_PKPROJECTS_PROJECT_SCHEDULE" size="30" class="inputbox" filter="unset" disabled="true"/>
 		<field type="pkmilestone" name="milestone_id" size="1" label="PLG_PROJECTKNIFE_MILESTONES_FIELD_MILESTONE_LABEL" description="PLG_PROJECTKNIFE_MILESTONES_FIELD_MILESTONE_DESC">
             <option value="">PLG_PROJECTKNIFE_MILESTONES_FIELD_MILESTONE_OPTION</option>
@@ -35,6 +32,7 @@
         <field name="tags" type="tag" label="JTAG" description="JTAG_DESC" class="inputbox small" multiple="true"/>
     </fieldset>
     <fieldset name="publishing-middle-col">
+        <field name="predecessors" type="pktaskdependency" label="COM_PKTASKS_PREDECESSORS_LABEL" description="COM_PKTASKS_PREDECESSORS_DESC" multiple="true"/>
         <field name="created" type="calendar" label="PKGLOBAL_CREATED_ON_LABEL" size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc" />
 		<field name="created_by" type="user" label="PKGLOBAL_CREATED_BY_LABEL" />
 		<field name="modified" type="hidden" readonly="true" format="%Y-%m-%d %H:%M:%S" filter="user_utc" class="readonly"/>

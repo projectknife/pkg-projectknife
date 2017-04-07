@@ -11,7 +11,7 @@
 defined('_JEXEC') or die;
 
 
-class PKtasksViewForm extends JViewLegacy
+class PKTasksViewForm extends JViewLegacy
 {
     /**
      * Instance of JForm
@@ -68,6 +68,49 @@ class PKtasksViewForm extends JViewLegacy
         if (count($errors = $this->get('Errors'))) {
             JError::raiseError(500, implode("\n", $errors));
             return false;
+        }
+
+
+        // Check viewing access
+        if ($this->item->id > 0 && !PKUserHelper::isSuperAdmin()) {
+            $user     = JFactory::getUser();
+            $levels   = $user->getAuthorisedViewLevels();
+            $projects = PKUserHelper::getProjects();
+
+            if (!in_array($this->item->access, $levels) && !in_array($this->item->project_id, $projects)) {
+                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'warning');
+                return;
+            }
+        }
+
+
+        // Check create/edit permission
+        if ($this->item->id == 0) {
+            if ($this->item->project_id) {
+                if (!PKUserHelper::authProject('task.create', $this->item->project_id)) {
+                    JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'warning');
+                    return;
+                }
+            }
+            else {
+                if (!PKUserHelper::authProject('task.create', 'any')) {
+                    JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'warning');
+                    return;
+                }
+            }
+        }
+        elseif (!PKUserHelper::authProject('task.edit', $this->item->project_id)) {
+            if (!PKUserHelper::authProject('task.edit.own', $this->item->project_id)) {
+                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'warning');
+                return;
+            }
+
+            $user = JFactory::getUser();
+
+            if ($user->id != $this->item->created_by || $user->id <= 0) {
+                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'warning');
+                return;
+            }
         }
 
         parent::display($tpl);

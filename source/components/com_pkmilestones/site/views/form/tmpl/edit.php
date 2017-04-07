@@ -13,8 +13,8 @@ defined('_JEXEC') or die;
 
 JHtml::_('behavior.formvalidator');
 JHtml::_('behavior.keepalive');
-JHtml::_('formbehavior.chosen', 'select');
-JHtml::_('script', 'projectknife/lib_projectknife/form.js', false, true, false, false, true);
+JHtml::_('formbehavior.chosen', '#item-form select');
+JHtml::_('script', 'lib_projectknife/form.js', false, true, false, false, true);
 
 $app    = JFactory::getApplication();
 $input  = $app->input;
@@ -36,7 +36,7 @@ JFactory::getDocument()->addScriptDeclaration('
         jQuery("#jform_project_id").change(
             function()
             {
-                PKform.ajaxUpdateSchedule(this, "#jform_project_schedule", "index.php?option=com_pkprojects&task=project.getSchedule")
+                PKform.ajaxUpdateSchedule(this, "#jform_project_schedule", "index.php?option=com_pkprojects&task=form.getSchedule")
             }
         ).trigger("change");
     });

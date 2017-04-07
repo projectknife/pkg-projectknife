@@ -8,10 +8,10 @@
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
-defined('_JEXEC') or die();
+defined('_JEXEC') or die;
 
 
-class PKprojectsRouter extends JComponentRouterBase
+class PKProjectsRouter extends JComponentRouterBase
 {
     /**
      * Build the route for the  component
@@ -41,6 +41,10 @@ class PKprojectsRouter extends JComponentRouterBase
             unset($query['Itemid']);
         }
 
+        if (!$menu_item_given) {
+            return $segments;
+        }
+
         if (isset($query['view'])) {
             $view = $query['view'];
         }
@@ -49,10 +53,35 @@ class PKprojectsRouter extends JComponentRouterBase
             return $segments;
         }
 
+        // Deal with the form view
+        if ($view == 'form')
+        {
+            unset($query['view']);
 
-        // Are we dealing with an article or category that is attached to a menu item?
-        if (($menu_item instanceof stdClass) && $menu_item->query['view'] == $query['view'] && isset($query['id']) && $menu_item->query['id'] == (int) $query['id']) {
-            unset($query['view'], $query['id']);
+            if (isset($query['id'])) {
+                // Check if we have the alias as part of the slug. If not, load it.
+                if (strpos($query['id'], ':') === false) {
+                    $db  = JFactory::getDbo();
+                    $dbq = $db->getQuery(true);
+
+    				$dbq->select('alias')
+                        ->from('#__pk_projects')
+                        ->where('id = ' . (int) $query['id']);
+
+    				$db->setQuery($dbq);
+    				$query['id'] = $query['id'] . ':' . $db->loadResult();
+                }
+
+                // Add the alias to the URL
+                list($tmp, $id) = explode(':', $query['id'], 2);
+
+                $segments[] = $id;
+                unset($query['id']);
+            }
+
+            if (isset($query['layout'])) {
+                unset($query['layout']);
+            }
 
             return $segments;
         }
@@ -73,9 +102,29 @@ class PKprojectsRouter extends JComponentRouterBase
         $total = count($segments);
         $vars  = array();
 
-        for ($i = 0; $i < $total; $i++)
+        /*for ($i = 0; $i < $total; $i++)
         {
             $segments[$i] = preg_replace('/-/', ':', $segments[$i], 1);
+        }*/
+
+        if ($total >= 1) {
+            $vars['view']   = 'form';
+            $vars['layout'] = 'edit';
+
+            if (strval(intval($segments[0])) === strval($segments[0])) {
+                $vars['id'] = intval($segments[0]);
+            }
+            else {
+                $db  = JFactory::getDbo();
+                $dbq = $db->getQuery(true);
+
+				$dbq->select('id')
+				    ->from('#__pk_projects')
+				    ->where('alias = ' . $db->quote($segments[0]));
+
+				$db->setQuery($dbq);
+				$vars['id'] = intval($db->loadResult());
+            }
         }
 
         return $vars;
@@ -92,7 +141,7 @@ class PKprojectsRouter extends JComponentRouterBase
  */
 function pkprojectsBuildRoute(&$query)
 {
-    $router = new PKprojectsRouter();
+    $router = new PKProjectsRouter();
 
     return $router->build($query);
 }
@@ -107,7 +156,7 @@ function pkprojectsBuildRoute(&$query)
  */
 function pkprojectsParseRoute($segments)
 {
-    $router = new PKprojectsRouter();
+    $router = new PKProjectsRouter();
 
     return $router->parse($segments);
 }

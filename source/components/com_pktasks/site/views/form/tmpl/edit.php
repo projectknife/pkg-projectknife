@@ -13,9 +13,9 @@ defined('_JEXEC') or die;
 
 JHtml::_('behavior.formvalidator');
 JHtml::_('behavior.keepalive');
-JHtml::_('formbehavior.chosen', 'select');
-JHtml::_('script', 'projectknife/lib_projectknife/form.js', false, true, false, false, true);
-JHtml::_('script', 'projectknife/lib_projectknife/calendar.js', false, true, false, false, true);
+JHtml::_('formbehavior.chosen', '#item-form select');
+JHtml::_('script', 'lib_projectknife/form.js', false, true, false, false, true);
+JHtml::_('script', 'lib_projectknife/calendar.js', false, true, false, false, true);
 
 $app    = JFactory::getApplication();
 $input  = $app->input;
@@ -38,17 +38,18 @@ JFactory::getDocument()->addScriptDeclaration('
         jQuery("#jform_project_id").change(
             function()
             {
-                PKform.ajaxUpdateSchedule(this, "#jform_project_schedule", "index.php?option=com_pkprojects&task=project.getSchedule");
+                PKform.ajaxUpdateSchedule(this, "#jform_project_schedule", "index.php?option=com_pkprojects&task=form.getSchedule");
+                PKform.ajaxUpdateOptions("#jform_milestone_id", true, "index.php?option=com_pktasks&task=list.getMilestoneOptions&project_id=" + jQuery(this).val());
             }
         );
 
         // Cannot trigger change event for project select because the selected milestone would be lost
-        PKform.ajaxUpdateSchedule(jQuery("#jform_project_id"), "#jform_project_schedule", "index.php?option=com_pkprojects&task=project.getSchedule");
+        PKform.ajaxUpdateSchedule(jQuery("#jform_project_id"), "#jform_project_schedule", "index.php?option=com_pkprojects&task=form.getSchedule");
 
         jQuery("#jform_milestone_id").change(
             function()
             {
-                PKform.ajaxUpdateSchedule(this, "#jform_milestone_schedule", "index.php?option=com_pkmilestones&task=milestone.getSchedule");
+                PKform.ajaxUpdateSchedule(this, "#jform_milestone_schedule", "index.php?option=com_pkmilestones&task=form.getSchedule");
             }
         ).trigger("change");
     });

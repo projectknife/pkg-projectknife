@@ -17,7 +17,7 @@ use Joomla\Registry\Registry;
 JPluginHelper::importPlugin('content');
 
 
-class PKmilestonesViewList extends JViewLegacy
+class PKMilestonesViewList extends JViewLegacy
 {
     /**
      * Items loaded by the model
@@ -80,9 +80,13 @@ class PKmilestonesViewList extends JViewLegacy
     {
         $app = JFactory::getApplication();
 
+        $this->state = $this->get('State');
+
+        // Set active project
+        PKApplicationHelper::setProjectId($this->state->get('filter.project_id'));
+
         $this->items      = $this->get('Items');
         $this->pagination = $this->get('Pagination');
-        $this->state      = $this->get('State');
         $this->params     = $app->getParams();
         $this->toolbar    = $this->getToolbar();
 
@@ -116,7 +120,7 @@ class PKmilestonesViewList extends JViewLegacy
             $this->params->def('page_heading', $this->params->get('page_title', $this->menu->title));
         }
         else {
-            $this->params->def('page_heading', JText::_($this->defaultPageTitle));
+            $this->params->def('page_heading', JText::_('COM_PKMILESTONES_SUBMENU_MILESTONES'));
         }
 
         $title = $this->params->get('page_title', '');
@@ -147,28 +151,6 @@ class PKmilestonesViewList extends JViewLegacy
     }
 
 
-    public function getSortFields()
-    {
-        $fields = array(
-            'a.ordering'          => JText::_('JGRID_HEADING_ORDERING'),
-            'project_title'       => JText::_('COM_PKPROJECTS_PROJECT'),
-            'a.title'             => JText::_('JGLOBAL_TITLE'),
-            'a.published'         => JText::_('PKGLOBAL_PUBLISHING_STATE'),
-            'a.created'           => JText::_('JDATE'),
-            'a.start_date'        => JText::_('PKGLOBAL_START_DATE'),
-            'a.due_date'          => JText::_('PKGLOBAL_DUE_DATE'),
-            'author_name'         => JText::_('JAUTHOR'),
-            'access_level'        => JText::_('JGRID_HEADING_ACCESS'),
-            'a.id'                => JText::_('JGRID_HEADING_ID'),
-            'a.progress'          => JText::_('PKGLOBAL_PROGRESS')
-        );
-
-        asort($fields);
-
-        return $fields;
-    }
-
-
     protected function getToolbar()
     {
         if ((int) $this->params->get('show_toolbar', 1) == 0) {
@@ -176,48 +158,70 @@ class PKmilestonesViewList extends JViewLegacy
         }
 
         $filter_published = $this->state->get('filter.published');
+        $filter_project   = (int) $this->state->get('filter.project_id');
+
+        if (!$filter_project) {
+            $filter_project = 'any';
+        }
+
+        $can_create = PKUserHelper::authProject('milestone.create', $filter_project);
+        $can_change = PKUserHelper::authProject('milestone.edit.state', $filter_project) || PKUserHelper::authProject('milestone.edit.own.state', $filter_project);
 
         // Main Menu
         PKToolbar::menu('main');
-            PKToolbar::btnTask('form.add', JText::_('JNEW'), false, array('icon' => 'plus'));
-            PKToolbar::btnClick('PKToolbar.showMenu(\'edit\');PKGrid.show();', JText::_('JACTION_EDIT'), array('icon' => 'pencil'));
+            if ($can_create) {
+                PKToolbar::btnTask('form.add', JText::_('JNEW'), false, array('icon' => 'plus'));
+            }
+
+            if ($can_create || $can_change) {
+                PKToolbar::btnClick('PKToolbar.showMenu(\'edit\');PKGrid.show();', JText::_('JACTION_EDIT'), array('icon' => 'pencil'));
+            }
+
             PKToolbar::btnClick('PKToolbar.showMenu(\'page\');', $this->state->get('list.limit'), array('icon' => 'list', 'id' => 'pk-toolbar-page-btn'));
             PKToolbar::search($this->escape($this->state->get('filter.search')));
         PKToolbar::menu();
 
         // Edit Menu
-        PKToolbar::menu('edit', false);
-            PKToolbar::group();
-            PKToolbar::btnClick('PKToolbar.showMenu(\'main\');PKGrid.hide();', '', array('icon' => 'chevron-left'));
-            PKToolbar::custom(PKGrid::selectAll('normal'));
-            PKToolbar::group();
+        if ($can_change || $can_create) {
+            PKToolbar::menu('edit', false);
+                PKToolbar::group();
+                PKToolbar::btnClick('PKToolbar.showMenu(\'main\');PKGrid.hide();', '', array('icon' => 'chevron-left'));
+                PKToolbar::custom(PKGrid::selectAll('normal'));
+                PKToolbar::group();
 
-            // List publishing state actions group
-            PKToolbar::group();
-            if ($filter_published != "" && $filter_published != "1") {
-                PKToolbar::btnTask('list.publish', JText::_('PKGLOBAL_PUBLISH'), true, array('icon' => 'eye-open', 'class' => 'disabled disabled-list'));
-            }
+                // List publishing state actions group
+                if ($can_change) {
+                    PKToolbar::group();
+                    if ($filter_published != "" && $filter_published != "1") {
+                        PKToolbar::btnTask('list.publish', JText::_('PKGLOBAL_PUBLISH'), true, array('icon' => 'eye-open', 'class' => 'disabled disabled-list'));
+                    }
 
-            if ($filter_published != "0") {
-                PKToolbar::btnTask('list.unpublish', JText::_('PKGLOBAL_UNPUBLISH'), true, array('icon' => 'eye-close', 'class' => 'disabled disabled-list'));
-            }
+                    if ($filter_published != "0") {
+                        PKToolbar::btnTask('list.unpublish', JText::_('PKGLOBAL_UNPUBLISH'), true, array('icon' => 'eye-close', 'class' => 'disabled disabled-list'));
+                    }
 
-            if ($filter_published != "2") {
-                PKToolbar::btnTask('list.archive', JText::_('PKGLOBAL_ARCHIVE'), true, array('icon' => 'folder-open', 'class' => 'disabled disabled-list'));
-            }
+                    if ($filter_published != "2") {
+                        PKToolbar::btnTask('list.archive', JText::_('PKGLOBAL_ARCHIVE'), true, array('icon' => 'folder-open', 'class' => 'disabled disabled-list'));
+                    }
 
-            if ($filter_published != "-2") {
-                PKToolbar::btnTask('list.trash', JText::_('PKGLOBAL_TRASH'), true, array('icon' => 'trash', 'class' => 'disabled disabled-list'));
-            }
-            else {
-                PKToolbar::btnTask('list.delete', JText::_('JACTION_DELETE'), true, array('icon' => 'trash', 'class' => 'disabled disabled-list'));
-            }
-            PKToolbar::group();
+                    if ($filter_published != "-2") {
+                        PKToolbar::btnTask('list.trash', JText::_('PKGLOBAL_TRASH'), true, array('icon' => 'trash', 'class' => 'disabled disabled-list'));
+                    }
+                    else {
+                        PKToolbar::btnTask('list.delete', JText::_('JACTION_DELETE'), true, array('icon' => 'trash', 'class' => 'disabled disabled-list'));
+                    }
+                    PKToolbar::group();
+                }
 
-            PKToolbar::group();
-            PKToolbar::btnTask('list.copy_dialog', JText::_('JLIB_HTML_BATCH_COPY'), true, array('icon' => 'copy', 'class' => 'disabled disabled-list'));
-            PKToolbar::group();
-        PKToolbar::menu();
+                if ($can_create) {
+                    PKToolbar::group();
+                    PKToolbar::btnTask('list.copy_dialog', JText::_('JLIB_HTML_BATCH_COPY'), true, array('icon' => 'copy', 'class' => 'disabled disabled-list'));
+                    PKToolbar::group();
+                }
+
+            PKToolbar::menu();
+        }
+
 
         // Page menu
         PKToolbar::menu('page', false);
@@ -227,14 +231,14 @@ class PKmilestonesViewList extends JViewLegacy
                 <span class="label hasTooltip" style="cursor: help;" title="' . JText::_('PKGLOBAL_PRIMARY_SORT_AND_ORDER') . '">' . JText::_('J1') . '</span>
             </div>'
             );
-            PKToolbar::selectSortBy($this->getSortFields(), $this->escape($this->state->get('list.ordering', 'a.due_date')));
+            PKToolbar::selectSortBy($this->get('SortOptions'), $this->escape($this->state->get('list.ordering', 'a.due_date')));
             PKToolbar::selectOrderBy($this->escape($this->state->get('list.direction', 'asc')));
             PKToolbar::custom('
                 <div class="btn-group hidden-phone">
                 <span class="label hasTooltip" style="cursor: help;" title="' . JText::_('PKGLOBAL_SECONDARY_SORT_AND_ORDER') . '">' . JText::_('J2') . '</span>
             </div>'
             );
-            PKToolbar::selectSortBy($this->getSortFields(), $this->escape($this->state->get('list.ordering_sec', 'a.progress')), '_sec');
+            PKToolbar::selectSortBy($this->get('SortOptions'), $this->escape($this->state->get('list.ordering_sec', 'a.progress')), '_sec');
             PKToolbar::selectOrderBy($this->escape($this->state->get('list.direction_sec', 'asc')), '_sec');
             PKToolbar::custom('
                 <div class="btn-group hidden-phone">

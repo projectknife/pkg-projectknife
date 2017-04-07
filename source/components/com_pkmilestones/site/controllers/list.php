@@ -14,7 +14,7 @@ defined('_JEXEC') or die();
 JLoader::register('PKmilestonesControllerMilestones', JPATH_ADMINISTRATOR . '/components/com_pkmilestones/controllers/milestones.php');
 
 
-class PKmilestonesControllerList extends PKmilestonesControllerMilestones
+class PKMilestonesControllerList extends PKmilestonesControllerMilestones
 {
     /**
      * Proxy for getModel.
@@ -25,7 +25,7 @@ class PKmilestonesControllerList extends PKmilestonesControllerMilestones
      *
      * @return    jmodel
      */
-    public function getModel($name = 'Form', $prefix = 'PKmilestonesModel', $config = array('ignore_request' => true))
+    public function getModel($name = 'Form', $prefix = 'PKMilestonesModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
 

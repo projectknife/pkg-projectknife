@@ -52,10 +52,14 @@ abstract class PKAccess
      */
     protected static function checkItem(&$cache, $context, $user_id, $action, $item_id = 0)
     {
+        $str_id  = strval($item_id);
         $user_id = (int) $user_id;
         $item_id = (int) $item_id;
 
-        if ($item_id > 0) {
+        if ($context == "project" && $str_id == "any") {
+            $asset = 'com_pkprojects.' . $context . '.' . $item_id;
+        }
+        elseif ($item_id > 0) {
             $asset = 'com_pkprojects.' . $context . '.' . $item_id;
         }
         else {
@@ -74,41 +78,49 @@ abstract class PKAccess
             return $cache[$user_id][$asset][$action];
         }
 
-        $result = null;
-        $path   = explode('.', $action);
-        $count  = count($path);
-        $check  = '';
+        // Check any project
+        if ($context == 'project' && $str_id == 'any') {
+            $db    = JFactory::getDbo();
+            $user  = JFactory::getUser();
+            $query = $db->getQuery(true);
 
-        if ($count < 2) {
-            $cache[$user_id][$asset][$action] = false;
+            $levels   = $user->getAuthorisedViewLevels();
+            $projects = PKUserHelper::getProjects();
 
-            return false;
-        }
-        else if ($count == 2) {
-            $result = JAccess::check($user_id, $action, $asset);
-        }
-        else {
-            $check = $path[0] . '.' . $path[1];
-            $allow = false;
+            $query->select('id')
+                  ->from('#__pk_projects')
+                  ->where('(access IN(' . implode(', ', $levels) . ') OR id IN(' . implode(', ', $projects) . '))')
+                  ->order('id ASC');
 
-            for ($i = 2; $i != $count; $i++)
+            try {
+                $db->setQuery($query);
+                $list = $db->loadColumn();
+            }
+            catch (RuntimeException $e) {
+                throw new RuntimeException('Failed to retrieve authorised project list because of a database error.', 500, $e);
+            }
+
+            $result = null;
+
+            foreach ($list AS $project_id)
             {
-                $result = JAccess::check($user_id, $check, $asset);
+                $result = self::checkItem($cache, $context, $user_id, $action, $project_id);
 
-                if ($result === false) {
+                if ($result === true) {
                     break;
                 }
-                elseif ($result === true) {
-                    $allow = true;
-                }
-
-                $check .= '.' . $path[$i];
             }
 
-            if (is_null($result) && $allow) {
-                $result = $allow;
+            if ($result !== true) {
+                $result = false;
             }
+
+            $cache[$user_id][$asset][$action] = $result;
+
+            return $result;
         }
+
+        $result = JAccess::check($user_id, $action, $asset);
 
         $cache[$user_id][$asset][$action] = $result;
 

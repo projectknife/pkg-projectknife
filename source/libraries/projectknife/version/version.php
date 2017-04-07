@@ -27,19 +27,19 @@ final class PKVersion
     public $DEV_LEVEL = '0';
 
     /** @var  string  Development status. */
-    public $DEV_STATUS = 'Alpha';
+    public $DEV_STATUS = 'Beta';
 
     /** @var  string  Build number. */
     public $BUILD = '1';
 
     /** @var  string  Code name. */
-    public $CODENAME = 'Ash';
+    public $CODENAME = 'Gnosh';
 
     /** @var  string  Release date. */
-    public $RELDATE = '26-July-2016';
+    public $RELDATE = '11-December-2016';
 
     /** @var  string  Release time. */
-    public $RELTIME = '16:00';
+    public $RELTIME = '10:00';
 
     /** @var  string  Release timezone. */
     public $RELTZ = 'CET';
@@ -48,7 +48,7 @@ final class PKVersion
     public $COPYRIGHT = 'Copyright (C) 2015-2016 Tobias Kuhn. All rights reserved.';
 
     /** @var  string  Link text. */
-    public $URL = '<a href="http://www.projectknife.net">Projectknife</a> is Free Software released under the GNU General Public License.';
+    public $URL = '<a href="http://www.projectknife.net">Projectknife</a> is free software released under the GNU General Public License.';
 
 
     /**
@@ -60,7 +60,7 @@ final class PKVersion
      */
     public function isCompatible($minimum)
     {
-        return version_compare(PFVERSION, $minimum, 'ge');
+        return version_compare(PK_VERSION, $minimum, 'ge');
     }
 
 

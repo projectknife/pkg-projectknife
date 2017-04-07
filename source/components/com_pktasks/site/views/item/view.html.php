@@ -64,8 +64,55 @@ class PKtasksViewItem extends JViewLegacy
         $this->params  = $app->getParams();
         $this->toolbar = $this->getToolbar();
 
+
+        // Check for errors
+        $errors = $this->get('Errors');
+
+        if (count($errors)) {
+            JError::raiseError(500, implode("\n", $errors));
+            return false;
+        }
+
+
+        // Check viewing access
+        if (!PKUserHelper::isSuperAdmin()) {
+            $user     = JFactory::getUser();
+            $levels   = $user->getAuthorisedViewLevels();
+            $projects = PKUserHelper::getProjects();
+
+            if (!in_array($this->item->access, $levels) && !in_array($this->item->project_id, $projects)) {
+                JFactory::getApplication()->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'warning');
+                return;
+            }
+        }
+
+
+        // Set active project
+        PKApplicationHelper::setProjectId($this->item->project_id);
+
+
         // Prepare doc
         $this->prepareDocument();
+
+        $this->item->text = '';
+
+        // Process the content plugins.
+		JPluginHelper::importPlugin('content');
+        $dispatcher	= JDispatcher::getInstance();
+
+        $offset  = 0;
+		$results = $dispatcher->trigger('onContentPrepare', array ('com_pktasks.item', &$this->item, &$this->params, $offset));
+
+		$this->item->event = new stdClass();
+		$results = $dispatcher->trigger('onContentAfterTitle', array('com_pktasks.item', &$this->item, &$this->params, $offset));
+		$this->item->event->afterDisplayTitle = trim(implode("\n", $results));
+
+		$results = $dispatcher->trigger('onContentBeforeDisplay', array('com_pktasks.item', &$this->item, &$this->params, $offset));
+		$this->item->event->beforeDisplayContent = trim(implode("\n", $results));
+
+		$results = $dispatcher->trigger('onContentAfterDisplay', array('com_pktasks.item', &$this->item, &$this->params, $offset));
+		$this->item->event->afterDisplayContent = trim(implode("\n", $results));
+
 
         // Display
         parent::display($tpl);
@@ -148,8 +195,8 @@ class PKtasksViewItem extends JViewLegacy
             // Edit button
             if ($can_edit || $can_edit_own) {
                 $slug       = $this->item->id . ':' . $this->item->alias;
-                $url_return = base64_encode('index.php?option=com_pktasks&view=item&id=' . $slug . '&Itemid=' . PKApplicationHelper::getMenuItemId('active'));
-                $item_form  = PKApplicationHelper::getMenuItemId('com_pktasks', 'form');
+                $url_return = base64_encode('index.php?option=com_pktasks&view=item&id=' . $slug . '&Itemid=' . PKRouteHelper::getMenuItemId('active'));
+                $item_form  = PKRouteHelper::getMenuItemId('com_pktasks', 'form');
                 $url_edit   = JRoute::_('index.php?option=com_pktasks&task=form.edit&id=' . $slug . '&Itemid=' . $item_form . '&return=' . $url_return);
 
                 PKToolbar::btnURL($url_edit, JText::_('JACTION_EDIT'), array('icon' => 'pencil'));

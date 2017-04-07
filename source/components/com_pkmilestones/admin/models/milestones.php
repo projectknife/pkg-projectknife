@@ -4,14 +4,14 @@
  * @subpackage   com_pkmilestones
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2015-2016 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2015-2017 Tobias Kuhn. All rights reserved.
  * @license      GNU General Public License version 2 or later.
  */
 
 defined('_JEXEC') or die;
 
 
-class PKmilestonesModelMilestones extends PKModelList
+class PKMilestonesModelMilestones extends PKModelList
 {
     /**
      * Constructor.
@@ -155,6 +155,20 @@ class PKmilestonesModelMilestones extends PKModelList
         $progress  = $this->getState('filter.progress');
         $search    = $this->getState('filter.search');
 
+        // Get system plugin settings
+        $sys_params = PKPluginHelper::getParams('system', 'projectknife');
+
+        switch ($sys_params->get('user_display_name'))
+        {
+            case '1':
+                $display_name_field = 'name';
+                break;
+
+            default:
+                $display_name_field = 'username';
+                break;
+        }
+
         $query->select(
             $this->getState(
                 'list.select',
@@ -167,7 +181,7 @@ class PKmilestonesModelMilestones extends PKModelList
         $query->from('#__pk_milestones AS a');
 
         // Join over the users for the checked out user.
-        $query->select('uc.name AS editor')
+        $query->select('uc.' . $display_name_field . ' AS editor')
               ->join('LEFT', '#__users AS uc ON uc.id = a.checked_out');
 
         // Join over the asset groups.
@@ -175,11 +189,11 @@ class PKmilestonesModelMilestones extends PKModelList
               ->join('LEFT', '#__viewlevels AS ag ON ag.id = a.access');
 
         // Join over the users for the author.
-        $query->select('ua.name AS author_name')
+        $query->select('ua.' . $display_name_field . ' AS author_name')
               ->join('LEFT', '#__users AS ua ON ua.id = a.created_by');
 
-        // Join over the projects for the title
-        $query->select('p.title AS project_title')
+        // Join over the projects for the title and alias
+        $query->select('p.title AS project_title, p.alias AS project_alias')
               ->join('LEFT', '#__pk_projects AS p ON p.id = a.project_id');
 
         // Join over the tasks for the actual start date task title
@@ -275,7 +289,7 @@ class PKmilestonesModelMilestones extends PKModelList
             }
             elseif (stripos($search, 'author:') === 0) {
                 $search = $this->_db->quote('%' . $this->_db->escape(substr($search, 7), true) . '%');
-                $query->where('(ua.name LIKE ' . $search . ' OR ua.username LIKE ' . $search . ')');
+                $query->where('ua.' . $display_name_field . ' LIKE ' . $search);
             }
             else {
                 $search = $this->_db->quote('%' . str_replace(' ', '%', $this->_db->escape(trim($search), true) . '%'));
@@ -309,13 +323,27 @@ class PKmilestonesModelMilestones extends PKModelList
      */
     public function getAuthorOptions()
     {
+        // Get system plugin settings
+        $sys_params = PKPluginHelper::getParams('system', 'projectknife');
+
+        switch ($sys_params->get('user_display_name'))
+        {
+            case '1':
+                $display_name_field = 'name';
+                break;
+
+            default:
+                $display_name_field = 'username';
+                break;
+        }
+
         $query = $this->_db->getQuery(true);
 
-        $query->select('u.id AS value, u.name AS text')
+        $query->select('u.id AS value, u.' . $display_name_field . ' AS text')
               ->from('#__users AS u')
               ->join('INNER', '#__pk_milestones AS c ON c.created_by = u.id')
-              ->group('u.id, u.name')
-              ->order('u.name ASC');
+              ->group('u.id, u.' . $display_name_field)
+              ->order('u.' . $display_name_field . ' ASC');
 
         // Restrict user visibility
         if ($this->getState('restrict.access')) {
@@ -383,7 +411,7 @@ class PKmilestonesModelMilestones extends PKModelList
             $levels   = $this->getState('auth.levels', array(0));
             $projects = $this->getState('auth.projects', array(0));
 
-            $query->where('(p.access IN(' . implode(', ', $levels) . ') p.id IN(' . implode(', ', $projects) . '))');
+            $query->where('(p.access IN(' . implode(', ', $levels) . ') OR p.id IN(' . implode(', ', $projects) . '))');
         }
 
         $query->group('p.id, p.title')
@@ -704,6 +732,9 @@ class PKmilestonesModelMilestones extends PKModelList
 
             // Create slug
             $items[$i]->slug = $items[$i]->id . ':' . $items[$i]->alias;
+
+            // Create project slug
+            $items[$i]->project_slug = $items[$i]->project_id . ':' . $items[$i]->project_alias;
 
             // Inject task count
             if (isset($total_tasks[$id])) {

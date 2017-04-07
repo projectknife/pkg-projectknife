@@ -11,7 +11,7 @@
 defined('_JEXEC') or die;
 
 
-class PKmilestonesControllerForm extends JControllerForm
+class PKMilestonesControllerForm extends JControllerForm
 {
 	/**
 	 * The URL view list variable.
@@ -19,6 +19,62 @@ class PKmilestonesControllerForm extends JControllerForm
 	 * @var    string
 	 */
 	protected $view_list = 'list';
+
+
+    /**
+     * Method to check if you can add a new record.
+     *
+     * @param     array      $data    An array of input data.
+     *
+     * @return    boolean
+     */
+    protected function allowAdd($data = array())
+    {
+        $pid = (isset($data['project_id'])) ? intval($data['project_id']) : 0;
+
+        return PKUserHelper::authProject('milestone.create', $pid);
+    }
+
+
+    /**
+     * Method to check if you can edit an existing record.
+     *
+     * @param     array      $data    An array of input data.
+     * @param     string     $key     The name of the key for the primary key; default is id.
+     *
+     * @return    boolean
+     */
+    protected function allowEdit($data = array(), $key = 'id')
+    {
+        $id  = (isset($data[$key])) ? intval($data[$key]) : 0;
+        $pid = (isset($data['project_id'])) ? intval($data['project_id']) : 0;
+
+        if (!$id) {
+            return PKUserHelper::authProject('milestone.create', $pid);
+        }
+
+        // Check "edit" permission
+        if (PKUserHelper::authProject('milestone.edit', $pid)) {
+            return true;
+        }
+
+
+        // Fall back to "edit.own" permission check
+        $user  = JFactory::getUser();
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('created_by')
+              ->from('#__pk_milestones')
+              ->where('id = ' . $id);
+
+        $db->setQuery($query);
+        $author = (int) $db->loadResult();
+
+        $can_edit_own = PKUserHelper::authProject('milestone.edit.own', $pid);
+
+        return ($can_edit_own && $user->id > 0 && $user->id == $author);
+    }
 
 
     /**
@@ -33,7 +89,7 @@ class PKmilestonesControllerForm extends JControllerForm
         $return = $app->input->get('return', null, 'default', 'base64');
 
         if (empty($return) || !JUri::isInternal(base64_decode($return))) {
-            return JRoute::_(PKmilestonesHelperRoute::getListRoute(), false);
+            return JRoute::_(PKMilestonesHelperRoute::getListRoute(), false);
         }
         else {
             return base64_decode($return);
@@ -105,7 +161,7 @@ class PKmilestonesControllerForm extends JControllerForm
         $result = parent::save($key, $urlVar);
 
         // If ok, redirect to the return page.
-        if ($result) {
+        if ($result && $this->getTask() != 'save2new') {
             $this->setRedirect($this->getReturnPage());
         }
 
@@ -125,6 +181,11 @@ class PKmilestonesControllerForm extends JControllerForm
     {
         $append = parent::getRedirectToItemAppend($recordId, $urlVar);
         $return = $this->input->get('return', null, 'default', 'base64');
+        $filter_project = $this->input->get('filter_project_id', '', 'string');
+
+        if ($filter_project) {
+            $append .= '&filter_project_id=' . $filter_project;
+        }
 
         if (!empty($return) && JUri::isInternal(base64_decode($return))) {
             $append .= '&return=' . $return;

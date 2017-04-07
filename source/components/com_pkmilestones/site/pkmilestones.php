@@ -13,6 +13,11 @@ defined('_JEXEC') or die;
 
 require_once JPATH_COMPONENT . '/helpers/route.php';
 
+$lang = JFactory::getLanguage();
+
+if (!$lang->load('com_pkmilestones', JPATH_ADMINISTRATOR)) {
+    $lang->load('com_pkmilestones', JPATH_ADMINISTRATOR . '/components/com_pkmilestones');
+}
 
 $controller = JControllerLegacy::getInstance('PKmilestones');
 $controller->execute(JFactory::getApplication()->input->get('task'));

@@ -181,8 +181,8 @@ class PKtasksControllerTasks extends JControllerAdmin
                 // Cache permissions
                 if (!isset($can[$pid])) {
                     $can[$pid]             = array();
-                    $can[$pid]['edit']     = PKUserHelper::authProject('core.edit.task', $pid);
-                    $can[$pid]['edit_own'] = PKUserHelper::authProject('core.edit.own.task', $pid);
+                    $can[$pid]['edit']     = PKUserHelper::authProject('task.edit', $pid);
+                    $can[$pid]['edit_own'] = PKUserHelper::authProject('task.edit.own', $pid);
                 }
 
                 // Check project viewing access

@@ -13,9 +13,10 @@ defined('_JEXEC') or die;
 
 use Joomla\Registry\Registry;
 
-JLoader::register('PKmilestonesModelMilestones', JPATH_ADMINISTRATOR . '/components/com_pkmilestones/models/milestones.php');
+JLoader::register('PKMilestonesModelMilestones', JPATH_ADMINISTRATOR . '/components/com_pkmilestones/models/milestones.php');
 
-class PKmilestonesModelList extends PKmilestonesModelMilestones
+
+class PKMilestonesModelList extends PKMilestonesModelMilestones
 {
 
 }

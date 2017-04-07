@@ -10,6 +10,11 @@
 
 defined('_JEXEC') or die;
 
+$lang = JFactory::getLanguage();
+
+if (!$lang->load('com_pkdashboard', JPATH_ADMINISTRATOR)) {
+    $lang->load('com_pkdashboard', JPATH_ADMINISTRATOR . '/components/com_pkdashboard');
+}
 
 $controller = JControllerLegacy::getInstance('PKdashboard');
 $controller->execute(JFactory::getApplication()->input->get('task'));

@@ -109,7 +109,7 @@ abstract class PKUserHelper
         if (is_null(self::$id)) {
             $user = JFactory::getUser();
 
-            self::$id     = $user->id;
+            self::$id      = $user->id;
             self::$is_root = $user->get('isRoot');
 
             if (is_null(self::$is_root)) {

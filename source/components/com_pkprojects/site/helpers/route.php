@@ -11,7 +11,7 @@
 defined('_JEXEC') or die;
 
 
-abstract class PKprojectsHelperRoute
+abstract class PKProjectsHelperRoute
 {
     /**
      * Get the list route.
@@ -20,11 +20,8 @@ abstract class PKprojectsHelperRoute
      */
     public static function getListRoute()
     {
-        $link = 'index.php?option=com_pkprojects&view=list';
-
-        if ($item = PKApplicationHelper::getMenuItemId('com_pkprojects', 'list')) {
-            $link .= '&Itemid=' . $item;
-        }
+        $link = 'index.php?option=com_pkprojects&view=list'
+              . '&Itemid=' . intval(PKRouteHelper::getMenuItemId('com_pkprojects', 'list'));
 
         return $link;
     }
@@ -33,17 +30,14 @@ abstract class PKprojectsHelperRoute
     /**
      * Get the item route.
      *
-     * @param     string  $slug The project id slug
+     * @param     string    $slug    The project id slug
      *
-     * @return    string    The project item route.
+     * @return    string             The project item route.
      */
     public static function getItemRoute($slug)
     {
-        $link = 'index.php?option=com_pkdashboard&&view=overview&id=' . $slug;
-
-        if ($item = PKApplicationHelper::getMenuItemId('com_pkdashboard', 'overview')) {
-            $link .= '&Itemid=' . $item;
-        }
+        $link = 'index.php?option=com_pkdashboard&&view=overview&id=' . $slug
+              . '&Itemid=' . intval(PKRouteHelper::getMenuItemId('com_pkdashboard', 'overview'));
 
         return $link;
     }
@@ -52,9 +46,9 @@ abstract class PKprojectsHelperRoute
     /**
      * Get the form route.
      *
-     * @param     string  $slug The project id slug
+     * @param     string    $slug    The project id slug
      *
-     * @return    string    The project form route.
+     * @return    string             The project form route.
      */
     public static function getFormRoute($slug = null)
     {
@@ -64,9 +58,7 @@ abstract class PKprojectsHelperRoute
             $link .= "&id=" . $slug;
         }
 
-        if ($item = PKApplicationHelper::getMenuItemId('com_pkprojects', 'form')) {
-            $link .= '&Itemid=' . $item;
-        }
+        $link .= '&Itemid=' . intval(PKRouteHelper::getMenuItemId('com_pkprojects', 'form'));
 
         return $link;
     }

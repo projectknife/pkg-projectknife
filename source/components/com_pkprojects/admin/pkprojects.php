@@ -16,7 +16,7 @@ if (!JFactory::getUser()->authorise('core.manage')) {
     return JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
 }
 
-JLoader::register('PKprojectsHelper', __DIR__ . '/helpers/pkprojects.php');
+JLoader::register('PKProjectsHelper', __DIR__ . '/helpers/pkprojects.php');
 
 $controller = JControllerLegacy::getInstance('PKprojects');
 $controller->execute(JFactory::getApplication()->input->get('task'));

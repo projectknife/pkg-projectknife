@@ -26,12 +26,12 @@ $modules = JFactory::getDocument()->loadRenderer('modules');
         echo '<div id="j-main-container">';
     }
     ?>
-    <div class="row">
+    <div class="row-fluid">
         <div class="span12">
             <?php echo $modules->render('pk-dashboard-top', array('style' => 'xhtml'), null); ?>
         </div>
     </div>
-    <div class="row">
+    <div class="row-fluid">
         <div class="span4">
             <?php echo $modules->render('pk-dashboard-middle-left', array('style' => 'xhtml'), null); ?>
         </div>
@@ -42,7 +42,7 @@ $modules = JFactory::getDocument()->loadRenderer('modules');
             <?php echo $modules->render('pk-dashboard-middle-right', array('style' => 'xhtml'), null); ?>
         </div>
     </div>
-    <div class="row">
+    <div class="row-fluid">
         <div class="span12">
             <?php echo $modules->render('pk-dashboard-bottom', array('style' => 'xhtml'), null); ?>
         </div>
