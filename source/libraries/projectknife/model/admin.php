@@ -65,7 +65,11 @@ class PKModelAdmin extends JModelAdmin
 
         $this->prepareSaveData($data, $is_new);
 
-        return parent::save($data);
+        if (!parent::save($data)) {
+            return false;
+        }
+
+        return $this->processSaveData($data, $is_new);
     }
 
 
@@ -85,5 +89,19 @@ class PKModelAdmin extends JModelAdmin
         $context    = $this->option . '.' . $this->name;
 
         $dispatcher->trigger($this->event_prepare_save_data, array($context, &$data, $is_new));
+    }
+
+
+    /**
+     * Method to process the user input after saving it
+     *
+     * @param     array    $data      The data to save
+     * @param     bool     $is_new    Indicates whether this is a new item or not
+     *
+     * @return    boolean             True on success, False on error.
+     */
+    protected function processSaveData($data, $is_new)
+    {
+        return true;
     }
 }
