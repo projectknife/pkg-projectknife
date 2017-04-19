@@ -73,6 +73,10 @@
 			<option value="1">JYES</option>
 			<option value="0">JNO</option>
 		</field>
+        <field name="auto_assign" type="radio" class="btn-group btn-group-yesno" default="" label="COM_PKTASKS_AUTO_ASSIGN_LABEL" description="COM_PKTASKS_AUTO_ASSIGN_DESC">
+            <option value="author">JAUTHOR</option>
+            <option value="">JNO</option>
+		</field>
         <field name="progress_type" type="list" default="1" label="COM_PKTASKS_PROGRESS_TYPE_LABEL" description="COM_PKTASKS_PROGRESS_TYPE_DESC">
 			<option value="1">COM_PKTASKS_PROGRESS_SIMPLE</option>
 			<option value="5">COM_PKTASKS_PROGRESS_PERCENTAGE_5</option>
