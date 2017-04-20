@@ -149,11 +149,13 @@ class PKprojectsControllerProject extends JControllerLegacy
         }
 
         // Search query
+        $sql_like = $db->quote('%' . $like . '%');
+
         $query->clear()
               ->select('a.id AS value, a.' . $display_name_field . ' AS text')
               ->from('#__users AS a')
               ->join('inner', '#__user_usergroup_map AS m ON m.user_id = a.id')
-              ->where('a.' . $display_name_field . ' LIKE ' . $db->quote('%' . $like . '%'))
+              ->where('(a.name LIKE ' . $sql_like . ' OR a.username LIKE ' . $sql_like . ' OR a.email LIKE ' . $sql_like . ')')
               ->group('a.id, a.' . $display_name_field);
 
         // Filter on member groups and users
@@ -169,7 +171,7 @@ class PKprojectsControllerProject extends JControllerLegacy
             }
         }
 
-        $db->setQuery($query);
+        $db->setQuery($query, 0, 5);
         $items = $db->loadObjectList();
 
         echo json_encode($items);
