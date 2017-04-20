@@ -27,6 +27,12 @@
         <folder>js</folder>
     </media>
 
+    <!-- Language files -->
+    <languages>
+            <language tag="en-GB">language/en-GB/en-GB.mod_pkfilters.ini</language>
+            <language tag="en-GB">language/en-GB/en-GB.mod_pkfilters.sys.ini</language>
+	</languages>
+
     <!-- Config -->
 	<config>
 		<fields name="params">
