@@ -14,6 +14,9 @@ defined('_JEXEC') or die;
 use Joomla\Registry\Registry;
 
 
+JLoader::register('PKtasksTableTask', JPATH_ADMINISTRATOR . '/components/com_pktasks/tables/task.php');
+
+
 class PKTasksModelTask extends PKModelAdmin
 {
     protected $progress_changed;

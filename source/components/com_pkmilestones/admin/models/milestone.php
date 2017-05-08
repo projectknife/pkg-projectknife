@@ -11,6 +11,9 @@
 defined('_JEXEC') or die;
 
 
+JLoader::register('PKmilestonesTableMilestone', JPATH_ADMINISTRATOR . '/components/com_pkmilestones/tables/milestone.php');
+
+
 class PKMilestonesModelMilestone extends PKModelAdmin
 {
     /**
