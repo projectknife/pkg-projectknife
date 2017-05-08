@@ -136,8 +136,8 @@ class plgProjectknifeMilestones extends JPlugin
      */
     protected function onContentAfterDeleteProject($context, $table)
     {
-        $db = JFactory::getDbo();
-        $query->getQuery(true);
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
 
         $query->select('id')
               ->from('#__pk_milestones')
