@@ -573,7 +573,7 @@ class PKprojectsModelProject extends PKModelAdmin
             $access_inherit  = 0;
         }
 
-        if ($params->get('auto_access', '1') == '1') {
+        if ($params->get('auto_access', '0') == '1') {
             // Always inherit
             $data['access'] = $category_access;
             $data['access_inherit'] = $access_inherit;
