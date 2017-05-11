@@ -146,8 +146,6 @@ JFactory::getDocument()->addScriptDeclaration('
         <?php endif; ?>
     </div>
 
-    <?php echo $item->event->afterDisplayContent; ?>
-
     <!-- Begin Task Modules -->
     <?php if (count(JModuleHelper::getModules('pk-task-top'))) : ?>
         <div class="row-fluid">
@@ -182,4 +180,6 @@ JFactory::getDocument()->addScriptDeclaration('
         </div>
     <?php endif; ?>
     <!-- End Dashboard Modules -->
+
+    <?php echo $item->event->afterDisplayContent; ?>
 </div>
