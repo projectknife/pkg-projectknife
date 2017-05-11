@@ -171,8 +171,6 @@ $desc_span       = $show_details ? '8' : '12';
                 </div>
             <?php endif; ?>
         </div>
-
-        <?php echo $item->event->afterDisplayContent; ?>
     <?php endif; ?>
 
     <!-- Begin Dashboard Modules -->
@@ -198,4 +196,6 @@ $desc_span       = $show_details ? '8' : '12';
         </div>
     </div>
     <!-- End Dashboard Modules -->
+
+    <?php echo $item->event->afterDisplayContent; ?>
 </div>
