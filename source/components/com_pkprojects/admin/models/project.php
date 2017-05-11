@@ -437,7 +437,7 @@ class PKprojectsModelProject extends PKModelAdmin
         $id = $input->getUint('id', $this->getState('project.id', 0));
 
 
-        if ($params->get('auto_access', '0') == '1') {
+        if ($this->getState('param.auto_access', $params->get('auto_access', '0')) == '1') {
             $form->setFieldAttribute('access', 'type', 'hidden');
             $form->setFieldAttribute('access', 'filter', 'unset');
         }
@@ -573,7 +573,7 @@ class PKprojectsModelProject extends PKModelAdmin
             $access_inherit  = 0;
         }
 
-        if ($params->get('auto_access', '0') == '1') {
+        if ($this->getState('param.auto_access', $params->get('auto_access', '0')) == '1') {
             // Always inherit
             $data['access'] = $category_access;
             $data['access_inherit'] = $access_inherit;

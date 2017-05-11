@@ -256,7 +256,7 @@ class PKMilestonesModelMilestone extends PKModelAdmin
         $id  = $input->getUint('id', $this->getState('milestone.id', 0));
         $pid = (isset($data['project_id']) ? intval($data['project_id']) : PKApplicationHelper::getProjectId());
 
-        if ($params->get('auto_access', '1') == '1') {
+        if ($this->getState('param.auto_access', $params->get('auto_access', '1')) == '1') {
             $form->setFieldAttribute('access', 'type', 'hidden');
             $form->setFieldAttribute('access', 'filter', 'unset');
         }
@@ -515,7 +515,7 @@ class PKMilestonesModelMilestone extends PKModelAdmin
         $this->_db->setQuery($query);
         $project_access = (int) $this->_db->loadResult();
 
-        if ($params->get('auto_access', '1') == '1') {
+        if ($this->getState('param.auto_access', $params->get('auto_access', '1')) == '1') {
             // Always inherit
             $data['access'] = $project_access;
             $data['access_inherit'] = 1;
