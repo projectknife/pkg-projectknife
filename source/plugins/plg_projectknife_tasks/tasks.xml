@@ -16,6 +16,7 @@
 
     <!-- Files -->
     <files>
+        <folder>fields</folder>
         <filename plugin="tasks">tasks.php</filename>
         <filename>setup.php</filename>
     </files>
