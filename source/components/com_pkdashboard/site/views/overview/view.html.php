@@ -4,7 +4,7 @@
  * @subpackage   com_pkdashboard
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2015-2016 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2015-2017 Tobias Kuhn. All rights reserved.
  * @license      GNU General Public License version 2 or later.
  */
 

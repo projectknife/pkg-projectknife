@@ -4,7 +4,7 @@
  * @subpackage   lib_projectknife
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2015-2016 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2015-2017 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -30,13 +30,13 @@ final class PKVersion
     public $DEV_STATUS = 'Beta';
 
     /** @var  string  Build number. */
-    public $BUILD = '1';
+    public $BUILD = '3';
 
     /** @var  string  Code name. */
-    public $CODENAME = 'Gnosh';
+    public $CODENAME = 'M1';
 
     /** @var  string  Release date. */
-    public $RELDATE = '11-December-2016';
+    public $RELDATE = '12-May-2017';
 
     /** @var  string  Release time. */
     public $RELTIME = '10:00';
@@ -45,10 +45,10 @@ final class PKVersion
     public $RELTZ = 'CET';
 
     /** @var  string  Copyright Notice. */
-    public $COPYRIGHT = 'Copyright (C) 2015-2016 Tobias Kuhn. All rights reserved.';
+    public $COPYRIGHT = 'Copyright (C) 2015-2017 Tobias Kuhn. All rights reserved.';
 
     /** @var  string  Link text. */
-    public $URL = '<a href="http://www.projectknife.net">Projectknife</a> is free software released under the GNU General Public License.';
+    public $URL = '<a href="http://projectknife.net">Projectknife</a> is free software released under the GNU General Public License.';
 
 
     /**

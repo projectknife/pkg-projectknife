@@ -4,11 +4,11 @@
  * @subpackage   plg_projectknife_tasks
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2015-2016 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2015-2017 Tobias Kuhn. All rights reserved.
  * @license      GNU General Public License version 2 or later.
  */
 
-defined('JPATH_PLATFORM') or die();
+defined('JPATH_PLATFORM') or die;
 
 
 JFormHelper::loadFieldClass('list');
