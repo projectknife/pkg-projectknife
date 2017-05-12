@@ -26,6 +26,7 @@
         <folder>user</folder>
         <folder>version</folder>
         <file>library.php</file>
+        <file>projectknife.xml</file>
     </files>
 
     <!-- Media files -->
