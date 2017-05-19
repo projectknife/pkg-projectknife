@@ -330,14 +330,27 @@ for ($i = 0; $i != $count; $i++)
             echo '<h3>' . $this->escape($heading_string) . '</h3><hr/>';
         }
     }
+
+    // Comment count
+    $comments = '';
+
+    if (property_exists($item, 'comment_count')) {
+        if ($item->comment_count > 0) {
+            $comments = ' <span class="label">'
+                      . $item->comment_count
+                      . ' <i class="icon-comment"></i></span>';
+        }
+    }
     ?>
     <div class="row-fluid projectItem" id="project-<?php echo $item->id; ?>" sortable-group-id="<?php echo $item->category_id; ?>">
         <div class="span12">
             <div class="row-fluid">
                 <div class="span12">
                     <h3 class="item-title">
-                        <?php echo $btn_select . $btn_order . $title;?>
-                        <div class="pull-right"><?php echo $btn_edit; ?></div>
+                        <?php echo $btn_select . $btn_order . $title . $comments;?>
+                        <div class="pull-right">
+                            <?php echo $btn_edit; ?>
+                        </div>
                     </h3>
                 </div>
             </div>
