@@ -14,6 +14,9 @@ defined('_JEXEC') or die;
 use Joomla\Registry\Registry;
 
 
+JLoader::register('PKtasksTableTask', JPATH_ADMINISTRATOR . '/components/com_pktasks/tables/task.php');
+
+
 class PKTasksModelTask extends PKModelAdmin
 {
     protected $progress_changed;
@@ -263,7 +266,6 @@ class PKTasksModelTask extends PKModelAdmin
         }
         catch (RuntimeException $e) {
             $this->setError($e->getMessage());
-            die($e->getMessage());
             return false;
         }
 
@@ -439,7 +441,7 @@ class PKTasksModelTask extends PKModelAdmin
         $id  = $input->getUint('id', $this->getState('task.id', 0));
         $pid = (isset($data['project_id']) ? intval($data['project_id']) : PKApplicationHelper::getProjectId());
 
-        if ($params->get('auto_access', '1') == '1') {
+        if ($this->getState('param.auto_access', $params->get('auto_access', '1')) == '1') {
             $form->setFieldAttribute('access', 'type', 'hidden');
             $form->setFieldAttribute('access', 'filter', 'unset');
         }
@@ -781,7 +783,7 @@ class PKTasksModelTask extends PKModelAdmin
         $this->_db->setQuery($query);
         $parent_access = (int) $this->_db->loadResult();
 
-        if ($params->get('auto_access', '1') == '1') {
+        if ($this->getState('param.auto_access', $params->get('auto_access', '1')) == '1') {
             // Always inherit
             $data['access'] = $parent_access;
             $data['access_inherit'] = 1;
@@ -814,6 +816,22 @@ class PKTasksModelTask extends PKModelAdmin
             $data['completed']    = $this->_db->getNullDate();
         }
 
+
+        // Auto-Assign task
+        if ($is_new && $params->get('auto_assign') == 'author') {
+            if (!array_key_exists('assignees', $data) || !is_array($data['assignees'])) {
+                $data['assignees'] = array();
+            }
+
+            JArrayHelper::toInteger($data['assignees']);
+
+            $user = JFactory::getUser();
+
+            if (!in_array(intval($user->id), $data['assignees'])) {
+                $data['assignees'][] = intval($user->id);
+            }
+        }
+
         parent::prepareSaveData($data, $is_new);
     }
 
@@ -825,13 +843,8 @@ class PKTasksModelTask extends PKModelAdmin
      *
      * @return    boolean             True on success, False on error.
      */
-    public function save($data)
+    public function processSaveData($data, $is_new)
     {
-        // Save item
-        if (!parent::save($data)) {
-            return false;
-        }
-
         // Save assigned users
         if (isset($data['assignees'])) {
             $this->saveAssignees($this->getState($this->getName() . '.id'), $data['assignees']);

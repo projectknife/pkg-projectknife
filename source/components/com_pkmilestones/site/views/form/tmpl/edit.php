@@ -4,7 +4,7 @@
  * @subpackage   com_pkmilestones
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2015-2016 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2015-2017 Tobias Kuhn. All rights reserved.
  * @license      GNU General Public License version 2 or later.
  */
 
@@ -106,15 +106,28 @@ JFactory::getDocument()->addScriptDeclaration('
             $ignore    = array('publishing-left-col', 'publishing-middle-col', 'publishing-right-col');
             $fields    = array();
 
+            $fieldset_title = "";
+
             foreach ($fieldsets AS $fieldset)
             {
                 if (in_array($fieldset->name, $ignore)) {
                     continue;
                 }
 
-                echo JHtml::_('bootstrap.addTab', 'myTab', $fieldset->name, JText::_('COM_PKMILESTONES_MILESTONE_TAB_' . strtoupper($fieldset->name), true));
+                if (!empty($fieldset->label)) {
+                    $fieldset_title = JText::_($fieldset->label);
+                }
+                else {
+                    $fieldset_title = JText::_('COM_PKMILESTONES_MILESTONE_TAB_' . strtoupper($fieldset->name));
+                }
+
+                echo JHtml::_('bootstrap.addTab', 'myTab', $fieldset->name, $fieldset_title);
+
+                if (isset($fieldset->description) && trim($fieldset->description)) {
+        			echo '<p class="alert alert-info">' . $this->escape(JText::_($fieldset->description)) . '</p>';
+        		}
                 ?>
-                <div class="row-fluid form-horizontal-desktop">
+                <div class="row-fluid form-vertical form-vertical-desktop">
                     <div class="span12">
                         <?php
                         $fields = $this->form->getFieldset($fieldset->name);

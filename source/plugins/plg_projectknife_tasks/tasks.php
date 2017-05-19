@@ -4,11 +4,11 @@
  * @subpackage   plg_projectknife_milestones
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2015-2016 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2015-2017 Tobias Kuhn. All rights reserved.
  * @license      GNU General Public License version 2 or later.
  */
 
-defined('_JEXEC') or die();
+defined('_JEXEC') or die;
 
 
 JLoader::register('PKtasksModelTask', JPATH_ADMINISTRATOR . '/components/com_pktasks/models/task.php');
@@ -207,8 +207,8 @@ class plgProjectknifeTasks extends JPlugin
      */
     protected function onContentAfterDeleteProject($context, $table)
     {
-        $db = JFactory::getDbo();
-        $query->getQuery(true);
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
 
         $query->select('id')
               ->from('#__pk_tasks')
@@ -236,7 +236,7 @@ class plgProjectknifeTasks extends JPlugin
     protected function onContentAfterDeleteMilestone($context, $table)
     {
         $db = JFactory::getDbo();
-        $query->getQuery(true);
+        $query = $db->getQuery(true);
 
         $query->select('id')
               ->from('#__pk_tasks')
@@ -262,8 +262,8 @@ class plgProjectknifeTasks extends JPlugin
      */
     protected function onContentAfterDeleteTask($context, $table)
     {
-        $db = JFactory::getDbo();
-        $query->getQuery(true);
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
 
 
         // Remove all dependencies
@@ -326,7 +326,7 @@ class plgProjectknifeTasks extends JPlugin
     protected function onContentBeforeSaveTask($context, $table, $is_new)
     {
         if (!$is_new) {
-            $db = JFactory::getDbo();
+            $db    = JFactory::getDbo();
             $query = $db->getQuery(true);
 
             $query->select('access')

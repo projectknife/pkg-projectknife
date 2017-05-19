@@ -4,7 +4,7 @@
  * @subpackage   com_pktasks
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2015-2016 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2015-2017 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -146,8 +146,6 @@ JFactory::getDocument()->addScriptDeclaration('
         <?php endif; ?>
     </div>
 
-    <?php echo $item->event->afterDisplayContent; ?>
-
     <!-- Begin Task Modules -->
     <?php if (count(JModuleHelper::getModules('pk-task-top'))) : ?>
         <div class="row-fluid">
@@ -182,4 +180,6 @@ JFactory::getDocument()->addScriptDeclaration('
         </div>
     <?php endif; ?>
     <!-- End Dashboard Modules -->
+
+    <?php echo $item->event->afterDisplayContent; ?>
 </div>

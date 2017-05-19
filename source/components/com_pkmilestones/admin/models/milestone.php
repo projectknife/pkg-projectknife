@@ -11,6 +11,9 @@
 defined('_JEXEC') or die;
 
 
+JLoader::register('PKmilestonesTableMilestone', JPATH_ADMINISTRATOR . '/components/com_pkmilestones/tables/milestone.php');
+
+
 class PKMilestonesModelMilestone extends PKModelAdmin
 {
     /**
@@ -253,7 +256,7 @@ class PKMilestonesModelMilestone extends PKModelAdmin
         $id  = $input->getUint('id', $this->getState('milestone.id', 0));
         $pid = (isset($data['project_id']) ? intval($data['project_id']) : PKApplicationHelper::getProjectId());
 
-        if ($params->get('auto_access', '1') == '1') {
+        if ($this->getState('param.auto_access', $params->get('auto_access', '1')) == '1') {
             $form->setFieldAttribute('access', 'type', 'hidden');
             $form->setFieldAttribute('access', 'filter', 'unset');
         }
@@ -512,7 +515,7 @@ class PKMilestonesModelMilestone extends PKModelAdmin
         $this->_db->setQuery($query);
         $project_access = (int) $this->_db->loadResult();
 
-        if ($params->get('auto_access', '1') == '1') {
+        if ($this->getState('param.auto_access', $params->get('auto_access', '1')) == '1') {
             // Always inherit
             $data['access'] = $project_access;
             $data['access_inherit'] = 1;
@@ -828,9 +831,10 @@ class PKMilestonesModelMilestone extends PKModelAdmin
 
         $query = $this->_db->getQuery(true);
 
-        $query->select('id, start_date, due_date')
+        $query->select('id, start_date, start_date_inherit, due_date, due_date_inherit')
               ->from('#__pk_milestones')
               ->where('id IN(' . implode(', ', $pks) . ')')
+              ->where('(start_date_inherit = 1 OR due_date_inherit = 1)')
               ->order('id ASC');
 
         $this->_db->setQuery($query);
@@ -850,6 +854,9 @@ class PKMilestonesModelMilestone extends PKModelAdmin
             if (!isset($dates[$id])) {
                 continue;
             }
+
+            $inherit_start = ($dates[$id]['start_date_inherit'] == '1');
+            $inherit_due   = ($dates[$id]['due_date_inherit'] == '1');
 
             // Load task min start date
             $query->clear()
@@ -878,7 +885,7 @@ class PKMilestonesModelMilestone extends PKModelAdmin
                   ->update('#__pk_milestones');
 
             // Update start date
-            if (empty($start_task) || $start_task->id == null) {
+            if (empty($start_task) || $start_task->id == null || !$inherit_start) {
                 $start_time = strtotime($dates[$id]['start_date']);
 
                 $query->set('start_date = ' . $this->_db->quote($dates[$id]['start_date']))
@@ -892,7 +899,7 @@ class PKMilestonesModelMilestone extends PKModelAdmin
             }
 
             // Update due date
-            if (empty($due_task) || $due_task->id == null) {
+            if (empty($due_task) || $due_task->id == null || !$inherit_due) {
                 $due_time = strtotime($dates[$i]['due_date']);
 
                 $query->set('due_date = ' . $this->_db->quote($dates[$id]['due_date']))

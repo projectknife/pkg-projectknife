@@ -4,7 +4,7 @@
  * @subpackage   com_pktasks
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2015-2016 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2015-2017 Tobias Kuhn. All rights reserved.
  * @license      GNU General Public License version 2 or later.
  */
 
@@ -245,17 +245,17 @@ class PKtasksModelTasks extends PKModelList
         }
 
         // Filter by access level.
-        if ($access) {
+        if (is_numeric($access) && intval($access) > 0) {
             $query->where('a.access = ' . (int) $access);
         }
 
         // Filter by project
-        if (is_numeric($project)) {
+        if (is_numeric($project) && intval($project) > 0) {
             $query->where('a.project_id = ' . (int) $project);
         }
 
         // Filter by milestone
-        if (is_numeric($milestone)) {
+        if (is_numeric($milestone) && intval($milestone) > 0) {
             $query->where('a.milestone_id = ' . (int) $milestone);
         }
 
@@ -304,7 +304,7 @@ class PKtasksModelTasks extends PKModelList
         }
 
         // Filter by author
-        if (is_numeric($author_id)) {
+        if (is_numeric($author_id) && intval($author_id) > 0) {
             $type = $this->getState('filter.author_id.include', true) ? ' = ' : ' <> ';
             $query->where('a.created_by' . $type . (int) $author_id);
         }
@@ -320,7 +320,7 @@ class PKtasksModelTasks extends PKModelList
 
         // Filter by assignee
         if (!empty($assignee_id)) {
-            if (is_numeric($assignee_id)) {
+            if (is_numeric($assignee_id) && intval($assignee_id) > 0) {
                 $query->join('inner', '#__pk_task_assignees AS ta ON (ta.task_id = a.id AND ta.user_id = ' . (int) $assignee_id . ')');
             }
             else if (strcmp($assignee_id, 'me') === 0) {
@@ -343,7 +343,7 @@ class PKtasksModelTasks extends PKModelList
         }
 
         // Filter by tag
-        if (is_numeric($tag_id)) {
+        if (is_numeric($tag_id) && intval($tag_id) > 0) {
             $query2 = $this->_db->getQuery(true);
 
             $query2->select('type_id')

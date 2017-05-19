@@ -4,11 +4,11 @@
  * @subpackage   com_pkmilestones
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2015-2016 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2015-2017 Tobias Kuhn. All rights reserved.
  * @license      GNU General Public License version 2 or later.
  */
 
-defined('_JEXEC') or die();
+defined('_JEXEC') or die;
 
 
 class PKmilestonesHelper extends JHelperContent
@@ -45,6 +45,22 @@ class PKmilestonesHelper extends JHelperContent
                 'index.php?option=' . $item->name . '&view=' . $item->admin_view,
                 $view == $item->admin_view
             );
+
+            if ($item->name == self::$extension) {
+                if (version_compare(JVERSION, '3.7', 'ge')) {
+                    JHtmlSidebar::addEntry(
+                        '&nbsp; ' . JText::_('PKGLOBAL_SUBMENU_CUSTOM_FIELD_GROUPS'),
+                        'index.php?option=com_fields&view=groups&context=' . self::$extension . '.milestone',
+                        $view == 'fields.groups'
+                    );
+
+                    JHtmlSidebar::addEntry(
+                        '&nbsp; ' . JText::_('PKGLOBAL_SUBMENU_CUSTOM_FIELDS'),
+                        'index.php?option=com_fields&context=' . self::$extension . '.milestone',
+                        $view == 'fields.fields'
+                    );
+                }
+            }
         }
     }
 }

@@ -4,7 +4,7 @@
  * @subpackage   com_pkdashboard
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2015-2016 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2015-2017 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -171,8 +171,6 @@ $desc_span       = $show_details ? '8' : '12';
                 </div>
             <?php endif; ?>
         </div>
-
-        <?php echo $item->event->afterDisplayContent; ?>
     <?php endif; ?>
 
     <!-- Begin Dashboard Modules -->
@@ -198,4 +196,7 @@ $desc_span       = $show_details ? '8' : '12';
         </div>
     </div>
     <!-- End Dashboard Modules -->
+    <?php if ($item->id) : ?>
+        <?php echo $item->event->afterDisplayContent; ?>
+    <?php endif; ?>
 </div>

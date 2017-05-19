@@ -4,7 +4,7 @@
  * @subpackage   lib_projectknife
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2015-2016 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2015-2017 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -36,7 +36,7 @@ class PKModelList extends JModelList
             $dispatcher = JEventDispatcher::getInstance();
             JPluginHelper::importPlugin('projectknife');
 
-            $dispatcher->trigger('onPKAfterGetListQuery', array($this->name, &$this->query));
+            $dispatcher->trigger('onPKAfterGetListQuery', array($this->context, &$this->query));
         }
 
         return $this->query;
@@ -100,7 +100,7 @@ class PKModelList extends JModelList
         $dispatcher = JEventDispatcher::getInstance();
         JPluginHelper::importPlugin('projectknife');
 
-        $dispatcher->trigger('onProjectknifeAfterPopulateState', array($this->name, &$this->state));
+        $dispatcher->trigger('onProjectknifeAfterPopulateState', array($this->context, &$this->state));
     }
 
 
@@ -137,7 +137,7 @@ class PKModelList extends JModelList
         $dispatcher = JEventDispatcher::getInstance();
         JPluginHelper::importPlugin('projectknife');
 
-        $dispatcher->trigger('onProjectknifeAfterPrepareItems', array($this->name, &$items));
+        $dispatcher->trigger('onProjectknifeAfterPrepareItems', array($this->context, &$items));
 
         // Add the items to the internal cache.
         $this->cache[$store] = $items;

@@ -4,11 +4,11 @@
  * @subpackage   plg_projectknife_milestones
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2015-2016 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2015-2017 Tobias Kuhn. All rights reserved.
  * @license      GNU General Public License version 2 or later.
  */
 
-defined('_JEXEC') or die();
+defined('_JEXEC') or die;
 
 
 JLoader::register('PKmilestonesModelMilestone', JPATH_ADMINISTRATOR . '/components/com_pkmilestones/models/milestone.php');
@@ -136,8 +136,8 @@ class plgProjectknifeMilestones extends JPlugin
      */
     protected function onContentAfterDeleteProject($context, $table)
     {
-        $db = JFactory::getDbo();
-        $query->getQuery(true);
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
 
         $query->select('id')
               ->from('#__pk_milestones')

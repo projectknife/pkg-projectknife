@@ -4,7 +4,7 @@
  * @subpackage   com_pkprojects
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2015-2016 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2015-2017 Tobias Kuhn. All rights reserved.
  * @license      GNU General Public License version 2 or later.
  */
 
@@ -437,7 +437,7 @@ class PKprojectsModelProject extends PKModelAdmin
         $id = $input->getUint('id', $this->getState('project.id', 0));
 
 
-        if ($params->get('auto_access', '0') == '1') {
+        if ($this->getState('param.auto_access', $params->get('auto_access', '0')) == '1') {
             $form->setFieldAttribute('access', 'type', 'hidden');
             $form->setFieldAttribute('access', 'filter', 'unset');
         }
@@ -573,7 +573,7 @@ class PKprojectsModelProject extends PKModelAdmin
             $access_inherit  = 0;
         }
 
-        if ($params->get('auto_access', '1') == '1') {
+        if ($this->getState('param.auto_access', $params->get('auto_access', '0')) == '1') {
             // Always inherit
             $data['access'] = $category_access;
             $data['access_inherit'] = $access_inherit;
@@ -920,9 +920,10 @@ class PKprojectsModelProject extends PKModelAdmin
 
         $query = $this->_db->getQuery(true);
 
-        $query->select('id, start_date, due_date, duration')
+        $query->select('id, start_date, start_date_inherit, due_date, due_date_inherit, duration')
               ->from('#__pk_projects')
               ->where('id IN(' . implode(', ', $pks) . ')')
+              ->where('(start_date_inherit = 1 OR due_date_inherit = 1)')
               ->order('id ASC');
 
         $this->_db->setQuery($query);
@@ -942,6 +943,9 @@ class PKprojectsModelProject extends PKModelAdmin
             if (!isset($dates[$id])) {
                 continue;
             }
+
+            $inherit_start = ($dates[$id]['start_date_inherit'] == '1');
+            $inherit_due   = ($dates[$id]['due_date_inherit'] == '1');
 
             // Load task min start date
             $query->clear()
@@ -969,8 +973,9 @@ class PKprojectsModelProject extends PKModelAdmin
             $query->clear()
                   ->update('#__pk_projects');
 
+
             // Update start date
-            if (empty($start_task) || $start_task->id == null) {
+            if (empty($start_task) || $start_task->id == null || !$inherit_start) {
                 $start_time = strtotime($dates[$id]['start_date']);
 
                 $query->set('start_date = ' . $this->_db->quote($dates[$id]['start_date']))
@@ -983,8 +988,9 @@ class PKprojectsModelProject extends PKModelAdmin
                       ->set('start_date_task_id = ' . (int) $start_task->id);
             }
 
+
             // Update due date
-            if (empty($due_task) || $due_task->id == null) {
+            if (empty($due_task) || $due_task->id == null || !$inherit_due) {
                 $due_time = strtotime($dates[$i]['due_date']);
 
                 $query->set('due_date = ' . $this->_db->quote($dates[$id]['due_date']))
@@ -996,6 +1002,7 @@ class PKprojectsModelProject extends PKModelAdmin
                 $query->set('due_date = ' . $this->_db->quote($due_task->due_date))
                       ->set('due_date_task_id = ' . (int) $due_task->id);
             }
+
 
             // Update the duration
             $duration = 1;

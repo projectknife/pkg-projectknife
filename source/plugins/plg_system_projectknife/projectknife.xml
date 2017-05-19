@@ -3,12 +3,12 @@
     <!-- Extension info -->
     <name>PLG_SYSTEM_PROJECTKNIFE</name>
     <author>Tobias Kuhn</author>
-    <creationDate>April 2017</creationDate>
+    <creationDate>May 2017</creationDate>
     <copyright>Copyright (C) 2015-2017 Tobias Kuhn. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later.</license>
     <authorEmail>support@projectknife.net</authorEmail>
     <authorUrl>http://projectknife.net</authorUrl>
-    <version>5.0.0.beta.2</version>
+    <version>5.0.0.beta.4</version>
     <description>PLG_SYSTEM_PROJECTKNIFE_XML_DESCRIPTION</description>
 
     <!-- Install script -->

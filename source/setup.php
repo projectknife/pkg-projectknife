@@ -3,7 +3,7 @@
  * @package      pkg_projectknife
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2015-2016 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2015-2017 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -12,6 +12,40 @@ defined('_JEXEC') or die;
 
 class pkg_projectknifeInstallerScript
 {
+    public function preflight($type, JAdapterInstance $adapter)
+    {
+        if ($type == 'update') {
+            // Temporarily remove the "protected" state from the PK library
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->update('#__extensions')
+                  ->set('protected = 0')
+                  ->where($db->quoteName('type') . ' = ' . $db->quote('library'))
+                  ->where('element = ' . $db->quote('projectknife'));
+
+            $db->setQuery($query);
+            $db->execute();
+        }
+    }
+
+
+    public function update(JAdapterInstance $adapter)
+    {
+        // Set the "protected" state of the PK library
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->update('#__extensions')
+              ->set('protected = 1')
+              ->where($db->quoteName('type') . ' = ' . $db->quote('library'))
+              ->where('element = ' . $db->quote('projectknife'));
+
+        $db->setQuery($query);
+        $db->execute();
+    }
+
+
     public function uninstall(JAdapterInstance $adapter)
     {
         $db    = JFactory::getDbo();
@@ -27,6 +61,15 @@ class pkg_projectknifeInstallerScript
               ->update('#__extensions')
               ->set('protected = 0')
               ->where('extension_id IN(' . implode(', ', $pks) . ')');
+
+        $db->setQuery($query);
+        $db->execute();
+
+        $query->clear()
+              ->update('#__extensions')
+              ->set('protected = 0')
+              ->where($db->quoteName('type') . ' = ' . $db->quote('library'))
+              ->where('element = ' . $db->quote('projectknife'));
 
         $db->setQuery($query);
         $db->execute();

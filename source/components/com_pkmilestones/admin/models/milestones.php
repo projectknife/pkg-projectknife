@@ -205,7 +205,7 @@ class PKMilestonesModelMilestones extends PKModelList
               ->join('LEFT', '#__pk_tasks AS tdd ON tdd.id = a.due_date_task_id');
 
         // Filter by project
-        if (is_numeric($project)) {
+        if (is_numeric($project) && intval($project) > 0) {
             $query->where('a.project_id = ' . (int) $project);
         }
 
@@ -218,7 +218,7 @@ class PKMilestonesModelMilestones extends PKModelList
         }
 
         // Filter by access level.
-        if ($access) {
+        if (is_numeric($access) && intval($access) > 0) {
             $query->where('a.access = ' . (int) $access);
         }
 
@@ -236,7 +236,7 @@ class PKMilestonesModelMilestones extends PKModelList
         }
 
         // Filter by author
-        if (is_numeric($author_id)) {
+        if (is_numeric($author_id) && intval($author_id) > 0) {
             $type = $this->getState('filter.author_id.include', true) ? ' = ' : ' <> ';
             $query->where('a.created_by' . $type . (int) $author_id);
         }
@@ -267,7 +267,7 @@ class PKMilestonesModelMilestones extends PKModelList
         }
 
         // Filter by tag
-        if (is_numeric($tag_id)) {
+        if (is_numeric($tag_id) && intval($tag_id) > 0) {
             $query2 = $this->_db->getQuery(true);
 
             $query2->select('type_id')
