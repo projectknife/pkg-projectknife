@@ -52,6 +52,20 @@ class PKprojectsHelper extends JHelperContent
                     'index.php?option=com_categories&extension=' . self::$extension,
                     $view == 'categories'
                 );
+
+                if (version_compare(JVERSION, '3.7', 'ge')) {
+                    JHtmlSidebar::addEntry(
+                        '&nbsp; ' . JText::_('PKGLOBAL_SUBMENU_CUSTOM_FIELD_GROUPS'),
+                        'index.php?option=com_fields&view=groups&context=' . self::$extension . '.project',
+                        $view == 'fields.groups'
+                    );
+
+                    JHtmlSidebar::addEntry(
+                        '&nbsp; ' . JText::_('PKGLOBAL_SUBMENU_CUSTOM_FIELDS'),
+                        'index.php?option=com_fields&context=' . self::$extension . '.project',
+                        $view == 'fields.fields'
+                    );
+                }
             }
         }
     }

@@ -45,6 +45,22 @@ class PKtasksHelper extends JHelperContent
                 'index.php?option=' . $item->name . '&view=' . $item->admin_view,
                 $view == $item->admin_view
             );
+
+            if ($item->name == self::$extension) {
+                if (version_compare(JVERSION, '3.7', 'ge')) {
+                    JHtmlSidebar::addEntry(
+                        '&nbsp; ' . JText::_('PKGLOBAL_SUBMENU_CUSTOM_FIELD_GROUPS'),
+                        'index.php?option=com_fields&view=groups&context=' . self::$extension . '.task',
+                        $view == 'fields.groups'
+                    );
+
+                    JHtmlSidebar::addEntry(
+                        '&nbsp; ' . JText::_('PKGLOBAL_SUBMENU_CUSTOM_FIELDS'),
+                        'index.php?option=com_fields&context=' . self::$extension . '.task',
+                        $view == 'fields.fields'
+                    );
+                }
+            }
         }
     }
 }

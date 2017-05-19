@@ -196,6 +196,7 @@ $desc_span       = $show_details ? '8' : '12';
         </div>
     </div>
     <!-- End Dashboard Modules -->
-
-    <?php echo $item->event->afterDisplayContent; ?>
+    <?php if ($item->id) : ?>
+        <?php echo $item->event->afterDisplayContent; ?>
+    <?php endif; ?>
 </div>
