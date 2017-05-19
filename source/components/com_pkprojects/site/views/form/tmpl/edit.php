@@ -150,6 +150,7 @@ JFactory::getDocument()->addScriptDeclaration('
 
             echo JHtml::_('bootstrap.addTab', 'myTab', 'user-permissions', JText::_('COM_PKPROJECTS_PROJECT_TAB_USER_PERMISSIONS', true));
             ?>
+            <p class="alert alert-info"><?php echo JText::_('COM_PKPROJECTS_PROJECT_TAB_USER_PERMISSIONS_DESC'); ?></p>
             <div class="row-fluid form-vertical">
                 <div class="span12">
                 <?php
