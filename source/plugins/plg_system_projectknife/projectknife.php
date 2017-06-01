@@ -22,6 +22,8 @@ class plgSystemProjectknife extends JPlugin
     {
         // Include the library
         $pk_lib = JPATH_LIBRARIES . '/projectknife/library.php';
+        $input  = JFactory::getApplication()->input;
+        $option = $input->get('option');
 
         if (file_exists($pk_lib)) {
             require_once($pk_lib);
@@ -35,16 +37,16 @@ class plgSystemProjectknife extends JPlugin
         if (defined('PK_LIBRARY')) {
             $this->loadComponentLanguage();
 
-            if (JFactory::getApplication()->isSite()) {
+            $is_pk_extension = in_array($option, PKApplicationHelper::getComponentNames());
+
+            if (JFactory::getApplication()->isSite() && $is_pk_extension) {
                 // Load Joomla backend language to the frontend
-                // JFactory::getLanguage()->load('', JPATH_ADMINISTRATOR);
+                JFactory::getLanguage()->load($option, JPATH_ADMINISTRATOR . '/components/' . $option);
             }
         }
 
         // Load Projectknife plugins for ajax requests
-        $input = JFactory::getApplication()->input;
-
-        if ($input->get('option') === 'com_ajax' && $input->get('plugin')) {
+        if ($option === 'com_ajax' && $input->get('plugin')) {
             JPluginHelper::importPlugin('projectknife');
         }
     }
