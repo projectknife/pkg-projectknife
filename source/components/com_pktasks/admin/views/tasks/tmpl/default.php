@@ -18,9 +18,9 @@ JHtml::_('formbehavior.chosen', 'select');
 $params = JComponentHelper::getParams('com_pktasks');
 $progress_type = (int) $params->get('progress_type', 1);
 
-$list_order     = $this->escape($this->state->get('list.ordering', 'a.due_date'));
+$list_order     = $this->escape($this->state->get('list.ordering', 'a.start_date'));
 $list_dir       = $this->escape($this->state->get('list.direction', 'asc'));
-$list_order_sec = $this->escape($this->state->get('list.ordering_sec', 'a.title'));
+$list_order_sec = $this->escape($this->state->get('list.ordering_sec', 'a.due_date'));
 $list_dir_sec   = $this->escape($this->state->get('list.direction_sec', 'asc'));
 
 if ($list_order == 'a.ordering' || $list_order == 'ordering') {

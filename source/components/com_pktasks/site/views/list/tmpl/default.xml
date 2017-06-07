@@ -10,7 +10,7 @@
 				<option value="1">JSHOW</option>
 			</field>
             <field name="date_format" type="text" description="PKGLOBAL_DATE_FORMAT_LC4_DESCRIPTION" label="JGLOBAL_DATE_FORMAT_LABEL" size="15"/>
-            <field name="sort_by" type="list" default="a.actual_due_date" label="PKGLOBAL_PRIMARY_SORT">
+            <field name="sort_by" type="list" default="a.start_date" label="PKGLOBAL_PRIMARY_SORT">
     			<option value="access_level">JGRID_HEADING_ACCESS</option>
                 <option value="author_name">JAUTHOR</option>
                 <option value="a.created">JDATE</option>
@@ -28,7 +28,7 @@
                 <option value="asc">PKGLOBAL_ORDER_BY_AZ</option>
     			<option value="desc">PKGLOBAL_ORDER_BY_ZA</option>
             </field>
-            <field name="sort_by_sec" type="list" default="a.progress" label="PKGLOBAL_SECONDARY_SORT">
+            <field name="sort_by_sec" type="list" default="a.due_date" label="PKGLOBAL_SECONDARY_SORT">
     			<option value="access_level">JGRID_HEADING_ACCESS</option>
                 <option value="author_name">JAUTHOR</option>
                 <option value="a.created">JDATE</option>

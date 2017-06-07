@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
     <fieldset name="list" label="PKGLOBAL_LIST_OPTIONS_LABEL" description="COM_PKTASKS_LIST_OPTIONS_DESC">
-        <field name="sort_by" type="list" default="a.due_date" label="PKGLOBAL_PRIMARY_SORT">
+        <field name="sort_by" type="list" default="a.start_date" label="PKGLOBAL_PRIMARY_SORT">
 			<option value="access_level">JGRID_HEADING_ACCESS</option>
             <option value="author_name">JAUTHOR</option>
             <option value="a.created">JDATE</option>
@@ -19,7 +19,7 @@
             <option value="asc">PKGLOBAL_ORDER_BY_AZ</option>
 			<option value="desc">PKGLOBAL_ORDER_BY_ZA</option>
         </field>
-        <field name="sort_by_sec" type="list" default="a.title" label="PKGLOBAL_SECONDARY_SORT">
+        <field name="sort_by_sec" type="list" default="a.due_date" label="PKGLOBAL_SECONDARY_SORT">
 			<option value="access_level">JGRID_HEADING_ACCESS</option>
             <option value="author_name">JAUTHOR</option>
             <option value="a.created">JDATE</option>

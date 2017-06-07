@@ -18,7 +18,7 @@ $count = count($this->items);
 $params = JComponentHelper::getParams('com_pktasks');
 $progress_type = (int) $params->get('progress_type', 1);
 
-$list_order       = $this->escape($this->state->get('list.ordering'));
+$list_order       = $this->escape($this->state->get('list.ordering', 'a.start_date'));
 $viewing_archived = ($this->state->get('filter.published') == 2);
 $viewing_trashed  = ($this->state->get('filter.published') == -2);
 $viewing_project  = ($this->state->get('filter.project_id') > 0);

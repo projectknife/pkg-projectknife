@@ -113,7 +113,7 @@ class PKtasksModelTasks extends PKModelList
         $this->setState('list.direction_sec', $direction_sec);
 
         // List state information.
-        $ordering  = ($ordering === null  ? $params->get('sort_by', 'a.due_date') : $ordering);
+        $ordering  = ($ordering === null  ? $params->get('sort_by', 'a.start_date') : $ordering);
         $direction = ($direction === null ? $params->get('order_by', 'asc')     : $direction);
 
         // Reset milestone filter if the selected option does not belong to the current project
@@ -377,9 +377,9 @@ class PKtasksModelTasks extends PKModelList
         // Order
         $params = JComponentHelper::getParams('com_pktasks');
 
-        $order_pri_col = $this->state->get('list.ordering',      $params->get('sort_by', 'a.due_date'));
+        $order_pri_col = $this->state->get('list.ordering',      $params->get('sort_by', 'a.start_date'));
         $order_pri_dir = $this->state->get('list.direction',     $params->get('order_by', 'asc'));
-        $order_sec_col = $this->state->get('list.ordering_sec',  $params->get('sort_by_sec', 'a.title'));
+        $order_sec_col = $this->state->get('list.ordering_sec',  $params->get('sort_by_sec', 'a.due_date'));
         $order_sec_dir = $this->state->get('list.direction_sec', $params->get('order_by_sec', 'asc'));
         $order_sec     = '';
 
