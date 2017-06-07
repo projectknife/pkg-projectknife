@@ -173,6 +173,17 @@ $desc_span       = $show_details ? '8' : '12';
         </div>
     <?php endif; ?>
 
+    <!-- Begin Dashboard quick-buttons -->
+    <?php
+    if ($this->params->get('show_buttons', 1)) {
+        echo $this->loadTemplate('buttons');
+    }
+    ?>
+    <!-- End Dashboard quick-buttons -->
+
+    <div class="row-fluid">
+        <div class="row-12"></div>
+    </div>
     <!-- Begin Dashboard Modules -->
     <div class="row-fluid">
         <div class="span12">

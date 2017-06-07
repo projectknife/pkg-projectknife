@@ -12,10 +12,22 @@
 	</fields>
     <fields name="params">
         <fieldset name="advanced" label="PKGLOBAL_ITEM_LAYOUT_OPTIONS">
-            <field name="show_toolbar" type="list" label="PKGLOBAL_TOOLBAR_LABEL" default="1">
+            <field name="show_toolbar" type="radio" class="btn-group btn-group-yesno" label="PKGLOBAL_TOOLBAR_LABEL" default="1">
+                <option value="1">JSHOW</option>
                 <option value="0">JHIDE</option>
-				<option value="1">JSHOW</option>
 			</field>
+            <field name="show_buttons" type="radio" class="btn-group btn-group-yesno" default="1" label="COM_PKDASHBOARD_BUTTONS">
+    			<option value="1">JSHOW</option>
+    			<option value="0">JHIDE</option>
+    		</field>
+            <field name="buttons_per_row" type="list" default="3" label="COM_PKDASHBOARD_BUTTONS_PER_ROW">
+    			<option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="6">6</option>
+                <option value="12">12</option>
+    		</field>
             <field name="date_format" type="text" description="PKGLOBAL_DATE_FORMAT_LC4_DESCRIPTION" label="JGLOBAL_DATE_FORMAT_LABEL" size="15"/>
             <field name="show_description" type="list" label="JGLOBAL_DESCRIPTION" default="1">
                 <option value="0">JHIDE</option>

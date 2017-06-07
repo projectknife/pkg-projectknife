@@ -938,4 +938,42 @@ class plgProjectknifeMilestones extends JPlugin
         // Access filter
         $filters[] = '<input type="hidden" name="filter_access" id="filter_access" value="' . $state->get('filter.access')  . '"/>';
     }
+
+
+    /**
+     * Adds dasboard buttons
+     *
+     * @param    array      $buttons
+     * @param    integer    $project_id
+     *
+     * @return   void
+     */
+    public function onProjectknifeDisplayDashboardButtons(&$buttons, $project_id = 0)
+    {
+        if (!PKUserHelper::authProject('milestone.create', $project_id)) {
+            return;
+        }
+
+
+        $btn = new stdClass();
+        $btn->title = JText::_('COM_PKMILESTONES_ADD_MILESTONE');
+        $btn->link  = 'index.php?option=com_pkmilestones&task=';
+        $btn->icon  = JHtml::image('com_pkmilestones/dashboard_button.png', 'yes', null, true);
+
+        if (JFactory::getApplication()->isSite()) {
+            $itemid = PKRouteHelper::getMenuItemId('com_pkmilestones', 'form');
+
+            $btn->link .= "form.add";
+
+            if ($itemid) {
+                $btn->link .= '&Itemid=' . $itemid;
+            }
+        }
+        else {
+            $btn->link .= "milestone.add";
+        }
+
+
+        $buttons[] = $btn;
+    }
 }

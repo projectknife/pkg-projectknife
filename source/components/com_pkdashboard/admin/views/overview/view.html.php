@@ -20,6 +20,13 @@ class PKdashboardViewOverview extends JViewLegacy
      */
     public $sidebar = '';
 
+    /**
+     * Component settings
+     *
+     * @var    object
+     */
+    public $params;
+
 
     /**
 	 * Execute and display a template script.
@@ -30,6 +37,8 @@ class PKdashboardViewOverview extends JViewLegacy
 	 */
     public function display($tpl = null)
     {
+        $this->params = JComponentHelper::getParams('com_pkdashboard');
+
         if ($this->getLayout() !== 'modal') {
             PKdashboardHelper::addSubmenu('overview');
 

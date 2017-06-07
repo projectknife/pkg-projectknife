@@ -1062,4 +1062,43 @@ class plgProjectknifeProjects extends JPlugin
         // Access filter
         $filters[] = '<input type="hidden" name="filter_access" id="filter_access" value="' . $state->get('filter.access')  . '"/>';
     }
+
+
+    /**
+     * Adds dasboard buttons
+     *
+     * @param    array      $buttons
+     * @param    integer    $project_id
+     *
+     * @return   void
+     */
+    public function onProjectknifeDisplayDashboardButtons(&$buttons, $project_id = 0)
+    {
+        if (!PKUserHelper::authProject('core.create')) {
+            return;
+        }
+
+
+        $btn = new stdClass();
+        $btn->title = JText::_('COM_PKPROJECTS_ADD_PROJECT');
+        $btn->link  = 'index.php?option=com_pkprojects&task=';
+        $btn->icon  = JHtml::image('com_pkprojects/dashboard_button.png', 'yes', null, true);
+
+        if (JFactory::getApplication()->isSite()) {
+            $itemid = PKRouteHelper::getMenuItemId('com_pkprojects', 'form');
+
+            $btn->link .= "form.add";
+
+            if ($itemid) {
+                $btn->link .= '&Itemid=' . $itemid;
+            }
+        }
+        else {
+            $btn->link .= "project.add";
+        }
+
+
+        $buttons[] = $btn;
+
+    }
 }

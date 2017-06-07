@@ -25,6 +25,10 @@ $modules = JFactory::getDocument()->loadRenderer('modules');
     else {
         echo '<div id="j-main-container">';
     }
+
+    if ($this->params->get('show_buttons', 1)) {
+        echo $this->loadTemplate('buttons');
+    }
     ?>
     <div class="row-fluid">
         <div class="span12">
