@@ -9,6 +9,10 @@
                 <option value="0">JHIDE</option>
 				<option value="1">JSHOW</option>
 			</field>
+            <field name="show_project_title" type="list" default="1" label="PKGLOBAL_SHOW_CURRENT_PROJECT_TITLE" description="PKGLOBAL_SHOW_CURRENT_PROJECT_TITLE_DESC">
+                <option value="0">JHIDE</option>
+				<option value="1">JSHOW</option>
+			</field>
             <field name="date_dynamic" type="list" label="PKGLOBAL_DYNAMIC_DATE" description="PKGLOBAL_DYNAMIC_DATE_DESC" default="1">
 				<option value="1">JYES</option>
                 <option value="0">JNO</option>

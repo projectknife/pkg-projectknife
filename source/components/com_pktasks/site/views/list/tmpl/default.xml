@@ -9,6 +9,10 @@
                 <option value="0">JHIDE</option>
 				<option value="1">JSHOW</option>
 			</field>
+            <field name="show_project_title" type="list" default="1" label="PKGLOBAL_SHOW_CURRENT_PROJECT_TITLE" description="PKGLOBAL_SHOW_CURRENT_PROJECT_TITLE_DESC">
+                <option value="0">JHIDE</option>
+				<option value="1">JSHOW</option>
+			</field>
             <field name="date_format" type="text" description="PKGLOBAL_DATE_FORMAT_LC4_DESCRIPTION" label="JGLOBAL_DATE_FORMAT_LABEL" size="15"/>
             <field name="sort_by" type="list" default="a.start_date" label="PKGLOBAL_PRIMARY_SORT">
     			<option value="access_level">JGRID_HEADING_ACCESS</option>
