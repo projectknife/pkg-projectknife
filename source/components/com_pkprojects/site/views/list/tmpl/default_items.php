@@ -199,9 +199,9 @@ for ($i = 0; $i != $count; $i++)
 
     // Progress bar
     if ($item->progress) {
-        $progress_bar = '<div class="progress">'
+        $progress_bar = '<div class="progress progress-success">'
                       . '    <div class="bar" style="width: ' . $item->progress . '%">'
-                      . '        <span class="label label-info pull-right">' . $item->progress . '%</span>'
+                      . '        <span class="label label-success pull-right">' . $item->progress . '%</span>'
                       . '   </div>'
                       . '</div>';
     }
