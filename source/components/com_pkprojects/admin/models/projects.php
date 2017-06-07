@@ -219,7 +219,7 @@ class PKprojectsModelProjects extends PKModelList
         }
 
         // Restrict category
-        if ((is_numeric($cat_id) && $cat_id > 0) && $this->getState('restrict.access')) {
+        if ((is_numeric($cat_id) && $cat_id > 0) && $this->getState('restrict.access', true)) {
             $levels = $this->getState('auth.levels', array(0));
 
             if (!in_array($cat_id, $levels)) {
@@ -264,7 +264,7 @@ class PKprojectsModelProjects extends PKModelList
               ->join('LEFT', '#__pk_tasks AS tdd ON tdd.id = a.due_date_task_id');
 
         // Viewing restriction
-        if ($this->getState('restrict.access')) {
+        if ($this->getState('restrict.access', true)) {
             $levels   = $this->getState('auth.levels',   array(0));
             $projects = $this->getState('auth.projects', array(0));
 
@@ -707,7 +707,7 @@ class PKprojectsModelProjects extends PKModelList
               ->order('u.' . $display_name_field . ' ASC');
 
         // Restrict user visibility
-        if ($this->getState('restrict.access')) {
+        if ($this->getState('restrict.access', true)) {
             $levels   = $this->getState('auth.levels',   array(0));
             $projects = $this->getState('auth.projects', array(0));
 
@@ -755,7 +755,7 @@ class PKprojectsModelProjects extends PKModelList
         $items = JHtml::_('access.assetgroups');
 
         // Filter out inaccessible access levels
-        if ($this->getState('restrict.access')) {
+        if ($this->getState('restrict.access', true)) {
             $levels = $this->getState('auth.levels', array(0));
 
             foreach ($items AS $i => $item)
@@ -780,7 +780,7 @@ class PKprojectsModelProjects extends PKModelList
         $items = JHtml::_('category.options', 'com_pkprojects');
 
         // Filter out inaccessible categories
-        if ($this->getState('restrict.access')) {
+        if ($this->getState('restrict.access', true)) {
             $levels = $this->getState('auth.levels', array(0));
             $count  = count($items);
 
@@ -830,7 +830,7 @@ class PKprojectsModelProjects extends PKModelList
               ->order('a.title ASC');
 
         // Restrict user visibility
-        if ($this->getState('restrict.access')) {
+        if ($this->getState('restrict.access', true)) {
             $levels = $this->getState('auth.levels', array(0));
 
             $query->where('a.access IN(' . implode(', ', $levels) . ')');
