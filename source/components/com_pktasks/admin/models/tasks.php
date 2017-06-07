@@ -40,7 +40,8 @@ class PKtasksModelTasks extends PKModelList
             'a.milestone_id', 'milestone_id', 'milestone_title',
             'author_id',
             'a.progress', 'progress',
-            'a.priority', 'priority'
+            'a.priority', 'priority',
+            'a.due_date', 'due_date'
         );
 
         parent::__construct($config);
