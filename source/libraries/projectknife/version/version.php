@@ -30,16 +30,16 @@ final class PKVersion
     public $DEV_STATUS = 'Beta';
 
     /** @var  string  Build number. */
-    public $BUILD = '4';
+    public $BUILD = '5';
 
     /** @var  string  Code name. */
-    public $CODENAME = 'ThreeSeven';
+    public $CODENAME = 'Taylor';
 
     /** @var  string  Release date. */
-    public $RELDATE = '19-May-2017';
+    public $RELDATE = '08-June-2017';
 
     /** @var  string  Release time. */
-    public $RELTIME = '15:00';
+    public $RELTIME = '11:00';
 
     /** @var  string  Release timezone. */
     public $RELTZ = 'CET';

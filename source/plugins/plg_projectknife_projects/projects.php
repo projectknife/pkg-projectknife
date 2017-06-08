@@ -1082,7 +1082,7 @@ class plgProjectknifeProjects extends JPlugin
         $btn = new stdClass();
         $btn->title = JText::_('COM_PKPROJECTS_ADD_PROJECT');
         $btn->link  = 'index.php?option=com_pkprojects&task=';
-        $btn->icon  = JHtml::image('com_pkprojects/dashboard_button.png', 'yes', null, true);
+        $btn->icon  = JHtml::image('com_pkprojects/dashboard_button.png', '', null, true);
 
         if (JFactory::getApplication()->isSite()) {
             $itemid = PKRouteHelper::getMenuItemId('com_pkprojects', 'form');

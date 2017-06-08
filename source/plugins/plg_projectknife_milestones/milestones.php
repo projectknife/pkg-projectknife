@@ -958,7 +958,7 @@ class plgProjectknifeMilestones extends JPlugin
         $btn = new stdClass();
         $btn->title = JText::_('COM_PKMILESTONES_ADD_MILESTONE');
         $btn->link  = 'index.php?option=com_pkmilestones&task=';
-        $btn->icon  = JHtml::image('com_pkmilestones/dashboard_button.png', 'yes', null, true);
+        $btn->icon  = JHtml::image('com_pkmilestones/dashboard_button.png', '', null, true);
 
         if (JFactory::getApplication()->isSite()) {
             $itemid = PKRouteHelper::getMenuItemId('com_pkmilestones', 'form');

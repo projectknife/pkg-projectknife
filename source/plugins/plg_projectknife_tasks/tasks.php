@@ -975,7 +975,7 @@ class plgProjectknifeTasks extends JPlugin
         $btn = new stdClass();
         $btn->title = JText::_('COM_PKTASKS_ADD_TASK');
         $btn->link  = 'index.php?option=com_pktasks&task=';
-        $btn->icon  = JHtml::image('com_pktasks/dashboard_button.png', 'yes', null, true);
+        $btn->icon  = JHtml::image('com_pktasks/dashboard_button.png', '', null, true);
 
         if (JFactory::getApplication()->isSite()) {
             $itemid = PKRouteHelper::getMenuItemId('com_pktasks', 'form');
