@@ -11,6 +11,9 @@
 defined('_JEXEC') or die;
 
 
+use Joomla\Registry\Registry;
+
+
 class PKtasksModelTasks extends PKModelList
 {
     /**
@@ -67,6 +70,19 @@ class PKtasksModelTasks extends PKModelList
             $this->context .= '.' . $layout;
         }
 
+        // Frontent Menu item params
+        if ($app->isSite()) {
+            $menu_params = new Registry;
+
+    		if ($menu = $app->getMenu()->getActive()) {
+    			$menu_params->loadString($menu->params);
+
+                $this->context .= '.' . $app->input->getUInt('Itemid');
+    		}
+
+		    $params->merge($menu_params);
+        }
+
         $search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
         $this->setState('filter.search', $search);
 
@@ -76,19 +92,23 @@ class PKtasksModelTasks extends PKModelList
         $milestone = $app->getUserStateFromRequest($this->context . '.filter.milestone_id', 'filter_milestone_id');
         $this->setState('filter.milestone_id', $milestone);
 
-        $access = $this->getUserStateFromRequest($this->context . '.filter.access', 'filter_access');
+        $default = $params->get('filter_access');
+        $access  = $this->getUserStateFromRequest($this->context . '.filter.access', 'filter_access', $default);
         $this->setState('filter.access', $access);
 
         $author_id = $app->getUserStateFromRequest($this->context . '.filter.author_id', 'filter_author_id');
         $this->setState('filter.author_id', $author_id);
 
-        $assignee_id = $app->getUserStateFromRequest($this->context . '.filter.assignee_id', 'filter_assignee_id');
+        $default     = $params->get('filter_assignee_id');
+        $assignee_id = $app->getUserStateFromRequest($this->context . '.filter.assignee_id', 'filter_assignee_id', $default);
         $this->setState('filter.assignee_id', $assignee_id);
 
-        $published = $this->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
+        $default   = $params->get('filter_published', '');
+        $published = $this->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', $default);
         $this->setState('filter.published', $published);
 
-        $priority = $this->getUserStateFromRequest($this->context . '.filter.priority', 'filter_priority', '');
+        $default  = $params->get('filter_priority', '');
+        $priority = $this->getUserStateFromRequest($this->context . '.filter.priority', 'filter_priority', $default);
         $this->setState('filter.priority', $priority);
 
         $progress = $this->getUserStateFromRequest($this->context . '.filter.progress', 'filter_progress', '');

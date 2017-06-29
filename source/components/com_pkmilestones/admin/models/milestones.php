@@ -11,6 +11,9 @@
 defined('_JEXEC') or die;
 
 
+use Joomla\Registry\Registry;
+
+
 class PKMilestonesModelMilestones extends PKModelList
 {
     /**
@@ -66,6 +69,19 @@ class PKMilestonesModelMilestones extends PKModelList
             $this->context .= '.' . $layout;
         }
 
+        // Frontent Menu item params
+        if ($app->isSite()) {
+            $menu_params = new Registry;
+
+    		if ($menu = $app->getMenu()->getActive()) {
+    			$menu_params->loadString($menu->params);
+
+                $this->context .= '.' . $app->input->getUInt('Itemid');
+    		}
+
+		    $params->merge($menu_params);
+        }
+
         $search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
         $this->setState('filter.search', $search);
 
@@ -78,7 +94,8 @@ class PKMilestonesModelMilestones extends PKModelList
         $author_id = $app->getUserStateFromRequest($this->context . '.filter.author_id', 'filter_author_id');
         $this->setState('filter.author_id', $author_id);
 
-        $published = $this->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
+        $default   = $params->get('filter_published', '');
+        $published = $this->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', $default);
         $this->setState('filter.published', $published);
 
         $progress = $this->getUserStateFromRequest($this->context . '.filter.progress', 'filter_progress', '');

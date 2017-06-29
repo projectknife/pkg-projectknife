@@ -11,6 +11,9 @@
 defined('_JEXEC') or die;
 
 
+use Joomla\Registry\Registry;
+
+
 class PKprojectsModelProjects extends PKModelList
 {
     /**
