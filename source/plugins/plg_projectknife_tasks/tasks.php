@@ -954,6 +954,9 @@ class plgProjectknifeTasks extends JPlugin
 
         // Assignee filter
         $filters[] = '<input type="hidden" name="filter_assignee_id" id="filter_assignee_id" value="' . $state->get('filter.assignee_id')  . '"/>';
+
+        // Priority filter
+        $filters[] = '<input type="hidden" name="filter_priority" id="filter_priority" value="' . $state->get('filter.priority')  . '"/>';
     }
 
 
