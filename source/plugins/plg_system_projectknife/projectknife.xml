@@ -49,6 +49,12 @@
                     <option value="0">PLG_SYSTEM_PROJECTKNIFE_CONFIG_USERNAME_OPTION</option>
                     <option value="1">PLG_SYSTEM_PROJECTKNIFE_CONFIG_NAME_OPTION</option>
                 </field>
+                <field type="list" name="user_profile_link" default="" label="PLG_SYSTEM_PROJECTKNIFE_CONFIG_USER_PROFILE_LINK_LABEL" description="PLG_SYSTEM_PROJECTKNIFE_CONFIG_USER_PROFILE_LINK_DESC">
+                    <option value="">PLG_SYSTEM_PROJECTKNIFE_CONFIG_NO_LINK_OPTION</option>
+                    <option value="cb">PLG_SYSTEM_PROJECTKNIFE_CONFIG_COMMUNITY_BUILDER_OPTION</option>
+                    <option value="jomsocial">PLG_SYSTEM_PROJECTKNIFE_CONFIG_JOMSOCIAL_OPTION</option>
+                    <option value="joomla">PLG_SYSTEM_PROJECTKNIFE_CONFIG_JOOMLA_OPTION</option>
+                </field>
             </fieldset>
         </fields>
     </config>
