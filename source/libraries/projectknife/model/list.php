@@ -13,6 +13,40 @@ defined('_JEXEC') or die;
 
 class PKModelList extends JModelList
 {
+    protected $restrict_access    = true;
+    protected $restrict_published = true;
+    protected $auth_levels        = array();
+    protected $auth_projects      = array();
+
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->setupRestrictions();
+    }
+
+
+    protected function setupRestrictions()
+    {
+        $user = JFactory::getUser();
+
+        // Determine whether to restrict item viewing access or not
+        $can_admin  = $user->authorise('core.admin', $this->option);
+        $can_manage = $user->authorise('core.manage', $this->option);
+
+        $this->restrict_access = (!$can_admin && !$can_manage);
+
+        // Determine whether to restrict viewing to published items only
+        $this->restrict_published = !$user->authorise('core.edit.state', $this->option);
+
+        if ($this->restrict_access) {
+            $this->auth_levels   = $user->getAuthorisedViewLevels();
+            $this->auth_projects = PKUserHelper::getProjects();
+        }
+    }
+
+
     /**
      * Method to cache the last query constructed.
      *
@@ -53,9 +87,10 @@ class PKModelList extends JModelList
     protected function getStoreId($id = '')
     {
         // Compile the store id.
-        $id .= ':' . $this->getState('restrict.access');
-        $id .= ':' . $this->getState('restrict.published');
-        $id .= ':' . serialize($this->getState('auth.levels'));
+        $id .= ':' . $this->restrict_access;
+        $id .= ':' . $this->restrict_published;
+        $id .= ':' . serialize($this->auth_levels);
+        $id .= ':' . serialize($this->auth_projects);
 
         return parent::getStoreId($id);
     }
@@ -71,30 +106,11 @@ class PKModelList extends JModelList
      */
     protected function populateState($ordering = null, $direction = null)
     {
-        $user = JFactory::getUser();
-
-        // Set viewing access and publishing state restrictions
-        $restrict_access    = (!$user->authorise('core.admin', $this->option) && !$user->authorise('core.manage', $this->option));
-        $restrict_published = !$user->authorise('core.edit.state', $this->option);
-
-        $this->setState('restrict.access',    $restrict_access);
-        $this->setState('restrict.published', $restrict_published);
-
-        if ($restrict_access) {
-            $this->setState('filter.access', '');
-            $this->setState('auth.levels',   $user->getAuthorisedViewLevels());
-            $this->setState('auth.projects', PKUserHelper::getProjects());
-        }
-        else {
-            $this->setState('auth.levels',   array());
-            $this->setState('auth.projects', array());
-        }
-
-        if ($restrict_published) {
-            $this->setState('filter.published', 1);
-        }
-
         parent::populateState($ordering, $direction);
+
+        // Save restrictions in state
+        $this->setState('restrict.access',    $this->restrict_access);
+        $this->setState('restrict.published', $this->restrict_published);
 
         // Load Projectknife plugins
         $dispatcher = JEventDispatcher::getInstance();

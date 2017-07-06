@@ -227,9 +227,9 @@ class PKMilestonesModelMilestones extends PKModelList
         }
 
         // Viewing restriction
-        if ($this->getState('restrict.access', true)) {
-            $levels   = $this->getState('auth.levels',   array(0));
-            $projects = $this->getState('auth.projects', array(0));
+        if ($this->restrict_access) {
+            $levels   = $this->auth_levels;
+            $projects = $this->auth_projects;
 
             $query->where('(a.access IN(' . implode(', ', $levels) . ') OR a.project_id IN(' . implode(', ', $projects) . '))');
         }
@@ -363,9 +363,9 @@ class PKMilestonesModelMilestones extends PKModelList
               ->order('u.' . $display_name_field . ' ASC');
 
         // Restrict user visibility
-        if ($this->getState('restrict.access', true)) {
-            $levels   = $this->getState('auth.levels',   array(0));
-            $projects = $this->getState('auth.projects', array(0));
+        if ($this->restrict_access) {
+            $levels   = $this->auth_levels;
+            $projects = $this->auth_projects;
 
             $query->where('(c.access IN(' . implode(', ', $levels) . ') OR c.project_id IN(' . implode(', ', $projects) . '))');
         }
@@ -424,9 +424,9 @@ class PKMilestonesModelMilestones extends PKModelList
         }
 
         // Restrict project visibility
-        if ($this->getState('restrict.access', true)) {
-            $levels   = $this->getState('auth.levels', array(0));
-            $projects = $this->getState('auth.projects', array(0));
+        if ($this->restrict_access) {
+            $levels   = $this->auth_levels;
+            $projects = $this->auth_projects;
 
             $query->where('(p.access IN(' . implode(', ', $levels) . ') OR p.id IN(' . implode(', ', $projects) . '))');
         }
@@ -497,8 +497,8 @@ class PKMilestonesModelMilestones extends PKModelList
         $items = JHtml::_('access.assetgroups');
 
         // Filter out inaccessible access levels
-        if ($this->getState('restrict.access', true)) {
-            $levels = $this->getState('auth.levels', array(0));
+        if ($this->restrict_access) {
+            $levels = $this->auth_levels;
             $count  = count($items);
 
             for ($i = 0; $i != $count; $i++)
@@ -541,8 +541,8 @@ class PKMilestonesModelMilestones extends PKModelList
               ->order('a.title ASC');
 
         // Restrict user visibility
-        if ($this->getState('restrict.access', true)) {
-            $query->where('a.access IN(' . implode(', ', $this->getState('auth.levels')) . ')');
+        if ($this->restrict_access) {
+            $query->where('a.access IN(' . implode(', ', $this->auth_levels) . ')');
         }
 
         try {
