@@ -20,14 +20,14 @@ JFormHelper::loadFieldClass('list');
  * Form Field class for selecting task precedessors.
  *
  */
-class JFormFieldPKTaskDependency extends JFormFieldList
+class JFormFieldPKTaskPredecessor extends JFormFieldList
 {
     /**
      * The form field type.
      *
      * @var    string
      */
-    public $type = 'PKTaskDependency';
+    public $type = 'PKTaskPredecessor';
 
 
     /**
@@ -49,7 +49,7 @@ class JFormFieldPKTaskDependency extends JFormFieldList
             $task = 'task';
         }
 
-        $url .= 'index.php?option=com_pktasks&task=' . $task . '.searchDependency&tmpl=component&format=json';
+        $url .= 'index.php?option=com_pktasks&task=' . $task . '.searchPredecessor&tmpl=component&format=json';
 
         $chosenAjaxSettings = new Registry(
             array(
