@@ -139,9 +139,21 @@ for ($i = 0; $i != $count; $i++)
     $assignee_pks = array();
 
     if ($item->assignee_count) {
+        $assignee_profile = null;
+
         foreach ($item->assignees AS $assignee)
         {
-            $assignees[]    = $this->escape($assignee->assignee_name);
+            $assignee_profile = PKUserHelper::getProfileLink($assignee->id);
+
+            if ($assignee_profile) {
+                $assignees[] = '<a href="' . $assignee_profile . '">'
+                             . $this->escape($assignee->assignee_name)
+                             . '</a>';
+            }
+            else {
+                $assignees[] = $this->escape($assignee->assignee_name);
+            }
+
             $assignee_pks[] = $assignee->id;
         }
 

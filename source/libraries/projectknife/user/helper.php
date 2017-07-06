@@ -321,14 +321,14 @@ abstract class PKUserHelper
     			}
             }
 
-            if (!$menu_itemid) $itemid = 0;
+            if (!$menu_itemid) $menu_itemid = 0;
         }
 
         // Create slug
         $slug = (int) $id . (empty($alias) ? '' : ':' . $alias);
 
 
-        return 'index.php?option=com_comprofiler&task=userProfile&user=' . $slug . ($itemid ? '&Itemid=' . $itemid : '');
+        return 'index.php?option=com_comprofiler&task=userProfile&user=' . $slug . ($menu_itemid ? '&Itemid=' . $menu_itemid : '');
     }
 
 
@@ -403,7 +403,7 @@ abstract class PKUserHelper
             $router = class_exists('UsersHelperRoute');
         }
 
-        if (!class_exists($router)) {
+        if (!$router) {
             return null;
         }
 
@@ -416,6 +416,6 @@ abstract class PKUserHelper
         // Create slug
         $slug = (int) $id . (empty($alias) ? '' : ':' . $alias);
 
-        return 'index.php?option=com_users&view=profile&id=' . $slug . ($itemid ? '&Itemid=' . $itemid : '');
+        return 'index.php?option=com_users&view=profile&id=' . $slug . ($menu_itemid ? '&Itemid=' . $menu_itemid : '');
     }
 }
