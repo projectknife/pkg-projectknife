@@ -136,6 +136,37 @@ class PKTasksModelTask extends PKModelAdmin
 
 
     /**
+     * Checks if a given task can be progressed by looking at the progress of its precessors.
+     *
+     * @param     integer    $pk     The task id
+     *
+     * @return    boolean
+     */
+    public function canProgress($pk)
+    {
+        $predecessors = $this->getPredecessors($pk);
+
+        if (!count($predecessors)) {
+            return true;
+        }
+
+        // Check if all predessors are completed
+        $query = $this->_db->getQuery(true);
+
+        $query->select('COUNT(*)')
+              ->from('#__pk_tasks')
+              ->where('id IN(' . implode(', ', $predecessors) . ')')
+              ->where('progress < 100')
+              ->where('published > 0');
+
+        $this->_db->setQuery($query);
+        $blocking  = (int) $this->_db->loadResult();
+
+        return !($blocking > 0);
+    }
+
+
+    /**
      * Method to change the title & alias.
      *
      * @param     string     $title         The title.
@@ -525,41 +556,15 @@ class PKTasksModelTask extends PKModelAdmin
             }
 
             if (!$can_edit_progress) {
-                $form->setFieldAttribute('progress', 'type', 'hidden');
+                $form->setFieldAttribute('progress', 'disabled', true);
                 $form->setFieldAttribute('progress', 'filter', 'unset');
             }
         }
         elseif ($id) {
             // Check predecessor progress
-            $predecessors = $this->getPredecessors($id);
-
-            if (count($predecessors)) {
-                $query = $this->_db->getQuery(true);
-
-                $query->select('id, published, progress')
-                      ->from('#__pk_tasks WHERE id IN(' . implode(', ', $predecessors) . ')');
-
-                $this->_db->setQuery($query);
-                $tasks = $this->_db->loadObjectList();
-
-                $can_edit_progress = true;
-
-                foreach ($tasks AS $task)
-                {
-                    if (!$task->published) {
-                        continue;
-                    }
-
-                    if ($task->progress != '100') {
-                        $can_edit_progress = false;
-                        break;
-                    }
-                }
-
-                if (!$can_edit_progress) {
-                    $form->setFieldAttribute('progress', 'type', 'hidden');
-                    $form->setFieldAttribute('progress', 'filter', 'unset');
-                }
+            if (!$this->canProgress($id)) {
+                $form->setFieldAttribute('progress', 'disabled', 'true');
+                $form->setFieldAttribute('progress', 'filter', 'unset');
             }
         }
 
