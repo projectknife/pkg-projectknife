@@ -718,10 +718,10 @@ class plgProjectknifeProjects extends JPlugin
               ->from('#__pk_projects');
 
         if ($count === 1) {
-            $query->where('catid = ' . (int) $pks[0]);
+            $query->where('category_id = ' . (int) $pks[0]);
         }
         else {
-            $query->where('catid IN(' . implode(', ', $pks) . ')');
+            $query->where('category_id IN(' . implode(', ', $pks) . ')');
         }
 
         $query->where('access != ' . $access)
