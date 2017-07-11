@@ -240,7 +240,7 @@ abstract class PKUserHelper
         $id = (int) $id;
 
         if (array_key_exists($id, $cache)) {
-            return $cache;
+            return $cache[$id];
         }
 
         if (is_null($target)) {
