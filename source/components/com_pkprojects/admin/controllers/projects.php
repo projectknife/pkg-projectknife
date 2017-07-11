@@ -75,8 +75,8 @@ class PKProjectsControllerProjects extends JControllerAdmin
             $query  = $db->getQuery(true);
 
             // Set default options
-            if (!isset($options['catid'])) {
-                $options['catid'] = '';
+            if (!isset($options['category_id'])) {
+                $options['category_id'] = '';
             }
 
             if (!isset($options['access'])) {
@@ -92,13 +92,13 @@ class PKProjectsControllerProjects extends JControllerAdmin
             }
 
             // Check access to the target category
-            if (is_numeric($options['catid'])) {
-                $options['catid'] = (int) $options['catid'];
+            if (is_numeric($options['category_id'])) {
+                $options['category_id'] = (int) $options['category_id'];
 
                 $query->clear()
                       ->select('access')
                       ->from('#__categories')
-                      ->where('id = ' . $options['catid']);
+                      ->where('id = ' . $options['category_id']);
 
                 $db->setQuery($query);
                 $cat_access = (int) $db->loadResult();
@@ -110,13 +110,13 @@ class PKProjectsControllerProjects extends JControllerAdmin
                 }
 
                 // Check create project permission
-                if (!PKUserHelper::authCategory('core.create.project', $options['catid'])) {
+                if (!PKUserHelper::authCategory('core.create.project', $options['category_id'])) {
                     JLog::add(JText::_($this->text_prefix . '_CATEGORY_CREATE_PROJECT_DENIED'), JLog::WARNING, 'jerror');
                     return;
                 }
             }
 
-            $query->select('id, catid, access, created_by')
+            $query->select('id, category_id, access, created_by')
                   ->from('#__pk_projects')
                   ->where('id IN(' . implode(',', $pks) . ')');
 
@@ -143,9 +143,9 @@ class PKProjectsControllerProjects extends JControllerAdmin
                     continue;
                 }
 
-                if (!is_numeric($options['catid'])) {
+                if (!is_numeric($options['category_id'])) {
                     // Check access to target category
-                    if (!PKUserHelper::authCategory('core.create.project', $items[$id]->catid)) {
+                    if (!PKUserHelper::authCategory('core.create.project', $items[$id]->category_id)) {
                         unset($pks[$i]);
                     }
                 }

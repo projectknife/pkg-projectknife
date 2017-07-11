@@ -625,8 +625,8 @@ class plgProjectknifeTasks extends JPlugin
             return true;
         }
 
-        if (array_key_exists('catid', $options)) {
-            unset($options['catid']);
+        if (array_key_exists('category_id', $options)) {
+            unset($options['category_id']);
         }
 
         $db      = JFactory::getDbo();
@@ -680,8 +680,8 @@ class plgProjectknifeTasks extends JPlugin
             return true;
         }
 
-        if (array_key_exists('catid', $options)) {
-            unset($options['catid']);
+        if (array_key_exists('category_id', $options)) {
+            unset($options['category_id']);
         }
 
         $db      = JFactory::getDbo();
