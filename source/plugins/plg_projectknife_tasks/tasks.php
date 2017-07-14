@@ -588,6 +588,10 @@ class plgProjectknifeTasks extends JPlugin
      */
     public function onProjectknifeAfterCopy($context, $pks, $options)
     {
+        if (!count($pks)) {
+            return true;
+        }
+
         switch ($context)
         {
             case 'com_pkprojects.projects':

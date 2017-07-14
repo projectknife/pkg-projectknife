@@ -762,6 +762,7 @@ class PKTasksModelTask extends PKModelAdmin
         }
 
         // Generate unqiue title and alias
+        $old = $data['alias'];
         list($data['title'], $data['alias']) = $this->uniqueTitleAlias($data['title'], $data['alias'], $data['project_id'], $pk);
 
         // Set default publishing state to 1 for new items
@@ -926,6 +927,7 @@ class PKTasksModelTask extends PKModelAdmin
         $options['access']       = (array_key_exists('access', $options)       ? $options['access']          : '');
         $options['include']      = (array_key_exists('include', $options)      ? (array) $options['include'] : array());
 
+        /*
         $options['ignore_permissions'] = (array_key_exists('ignore_permissions', $options) ? (bool) $options['ignore_permissions'] : PKUserHelper::isSuperAdmin());
 
         // Validate permissions
@@ -944,7 +946,7 @@ class PKTasksModelTask extends PKModelAdmin
                 return false;
             }
         }
-
+        */
         // Copy items
         $count = count($pks);
         $table = $this->getTable();
@@ -962,7 +964,14 @@ class PKTasksModelTask extends PKModelAdmin
                 continue;
             }
 
-            $data = (array) $table;
+            $fields = array_keys($table->getFields());
+            $data   = array();
+
+            foreach ($fields AS $field)
+            {
+                $data[$field] = $table->$field;
+            }
+
             $data['id'] = 0;
 
             if (is_numeric($options['project_id'])) {
@@ -980,17 +989,22 @@ class PKTasksModelTask extends PKModelAdmin
             $data['users'] = $this->getAssignees($id);
 
             if (!$this->save($data)) {
-                continue;
+                JFactory::getApplication()->enqueueMessage(JText::_($this->getError()), 'error');
             }
 
             $ref[$id] = (int) $this->getState($id_state);
         }
 
         // Load Projectknife plugins
-        $dispatcher = JEventDispatcher::getInstance();
-        JPluginHelper::importPlugin('projectknife');
+        if (count($ref)) {
+            $dispatcher = JEventDispatcher::getInstance();
+            JPluginHelper::importPlugin('projectknife');
 
-        $dispatcher->trigger('onProjectknifeAfterCopy', array('com_pktasks.tasks', $ref, $options));
+            $dispatcher->trigger('onProjectknifeAfterCopy', array('com_pktasks.tasks', $ref, $options));
+        }
+        else {
+            JFactory::getApplication()->enqueueMessage(JText::_('COM_PKTASKS_WARNING_NO_TASKS_COPIED'), 'warning');
+        }
 
         return true;
     }
