@@ -21,7 +21,10 @@ if (!count($buttons)) {
 
 $j = 0;
 $btns_per_row = $this->params->get('buttons_per_row', 3);
+$btn_img_size = (int) $this->params->get('max_button_img_size', 64);
 $span = 12 / $btns_per_row;
+
+JFactory::getDocument()->addStyleDeclaration('.pk-dashboard-buttons img {max-width: ' . $btn_img_size . 'px;}');
 
 for ($i = 0; $i < count($buttons); $i++)
 {

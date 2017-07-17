@@ -28,6 +28,12 @@
                 <option value="6">6</option>
                 <option value="12">12</option>
     		</field>
+            <field name="max_button_img_size" type="list" default="64" label="COM_PKDASHBOARD_BUTTON_IMAGE_SIZE">
+                <option value="32">32px</option>
+                <option value="64">64px</option>
+                <option value="128">128px</option>
+                <option value="256">256px</option>
+    		</field>
             <field name="date_format" type="text" description="PKGLOBAL_DATE_FORMAT_LC4_DESCRIPTION" label="JGLOBAL_DATE_FORMAT_LABEL" size="15"/>
             <field name="show_description" type="list" label="JGLOBAL_DESCRIPTION" default="1">
                 <option value="0">JHIDE</option>
