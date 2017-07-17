@@ -30,7 +30,16 @@ class PKTasksControllerForm extends JControllerForm
      */
     protected function allowAdd($data = array())
     {
-        $pid = (isset($data['project_id'])) ? intval($data['project_id']) : 0;
+        if (isset($data['project_id'])) {
+            $pid = (int) $data['project_id'];
+        }
+        else {
+            $pid = PKApplicationHelper::getProjectId();
+
+            if (!$pid) {
+                $pid = 'any';
+            }
+        }
 
         return PKUserHelper::authProject('task.create', $pid);
     }
@@ -47,7 +56,26 @@ class PKTasksControllerForm extends JControllerForm
     protected function allowEdit($data = array(), $key = 'id')
     {
         $id  = (isset($data[$key])) ? intval($data[$key]) : 0;
-        $pid = (isset($data['project_id'])) ? intval($data['project_id']) : 0;
+
+        if (isset($data['project_id'])) {
+            $pid = (int) $data['project_id'];
+        }
+        else {
+            if ($id) {
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
+                $query->select('project_id')
+                      ->from('#__pk_tasks')
+                      ->where('id = ' . (int) $id);
+
+                $db->setQuery($query);
+                $pid = (int) $db->loadResult();
+            }
+            else {
+                return false;
+            }
+        }
 
         if (!$id) {
             return PKUserHelper::authProject('task.create', $pid);
@@ -158,6 +186,63 @@ class PKTasksControllerForm extends JControllerForm
      */
     public function save($key = null, $urlVar = 'id')
     {
+        $data = $this->input->post->get('jform', array(), 'array');
+        $id   = (isset($data['id']) ? intval($data['id']) : 0);
+
+        if ($id || !isset($data['progress']) || !isset($data['predecessors'])) {
+            $result = parent::save($key, $urlVar);
+
+            // If ok, redirect to the return page.
+            if ($result && $this->getTask() != 'save2new') {
+                $this->setRedirect($this->getReturnPage());
+            }
+
+            return $result;
+        }
+
+
+        // Check on progress
+        $progress = (int) $data['progress'];
+
+        if (!$progress) {
+            return parent::save($key, $urlVar);
+        }
+
+        $predecessors = $data['predecessors'];
+        JArrayHelper::toInteger($predecessors);
+
+        if (!count($predecessors)) {
+            $result = parent::save($key, $urlVar);
+
+            // If ok, redirect to the return page.
+            if ($result && $this->getTask() != 'save2new') {
+                $this->setRedirect($this->getReturnPage());
+            }
+
+            return $result;
+        }
+
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('title')
+              ->from('#__pk_tasks')
+              ->where('id IN(' . implode(', ', $predecessors) . ')')
+              ->where('progress < 100')
+              ->where('published > 0')
+              ->order('title ASC');
+
+        $db->setQuery($query);
+        $blocking  = $db->loadColumn();
+
+        if (count($blocking)) {
+            // Set out a message that the progress cannot be changed
+            $tasks = implode(', ', $blocking);
+            $app   = JFactory::getApplication();
+            $app->enqueueMessage(JText::sprintf('COM_PKTASKS_TASK_PROGRESS_BLOCKED_BY_PREDECESSORS', $tasks));
+            unset($data['progress']);
+        }
+
         $result = parent::save($key, $urlVar);
 
         // If ok, redirect to the return page.

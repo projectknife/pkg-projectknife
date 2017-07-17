@@ -40,7 +40,7 @@ if ($date_pos_d === false) $date_pos_d = -1;
 if ($date_pos_m === false) $date_pos_m = -1;
 if ($date_pos_y === false) $date_pos_y = -1;
 
-$date_heading_format = ($date_pos_m > $date_pos_y) ? 'Y/m' : 'm/Y';
+$date_heading_format = 'F Y';
 $date_item_format    = ($date_pos_m > $date_pos_d) ? 'd M' : 'M d';
 
 
@@ -171,9 +171,9 @@ for ($i = 0; $i != $count; $i++)
 
     // Progress bar
     if ($item->progress) {
-        $progress_bar = '<div class="progress">'
+        $progress_bar = '<div class="progress progress-success">'
                       . '    <div class="bar" style="width: ' . $item->progress . '%">'
-                      . '        <span class="label label-info pull-right">' . $item->progress . '%</span>'
+                      . '        <span class="label label-success pull-right">' . $item->progress . '%</span>'
                       . '   </div>'
                       . '</div>';
     }

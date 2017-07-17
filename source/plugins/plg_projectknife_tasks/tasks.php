@@ -588,6 +588,10 @@ class plgProjectknifeTasks extends JPlugin
      */
     public function onProjectknifeAfterCopy($context, $pks, $options)
     {
+        if (!count($pks)) {
+            return true;
+        }
+
         switch ($context)
         {
             case 'com_pkprojects.projects':
@@ -625,8 +629,8 @@ class plgProjectknifeTasks extends JPlugin
             return true;
         }
 
-        if (array_key_exists('catid', $options)) {
-            unset($options['catid']);
+        if (array_key_exists('category_id', $options)) {
+            unset($options['category_id']);
         }
 
         $db      = JFactory::getDbo();
@@ -680,8 +684,8 @@ class plgProjectknifeTasks extends JPlugin
             return true;
         }
 
-        if (array_key_exists('catid', $options)) {
-            unset($options['catid']);
+        if (array_key_exists('category_id', $options)) {
+            unset($options['category_id']);
         }
 
         $db      = JFactory::getDbo();
@@ -954,5 +958,46 @@ class plgProjectknifeTasks extends JPlugin
 
         // Assignee filter
         $filters[] = '<input type="hidden" name="filter_assignee_id" id="filter_assignee_id" value="' . $state->get('filter.assignee_id')  . '"/>';
+
+        // Priority filter
+        $filters[] = '<input type="hidden" name="filter_priority" id="filter_priority" value="' . $state->get('filter.priority')  . '"/>';
+    }
+
+
+    /**
+     * Adds dasboard buttons
+     *
+     * @param    array      $buttons
+     * @param    integer    $project_id
+     *
+     * @return   void
+     */
+    public function onProjectknifeDisplayDashboardButtons(&$buttons, $project_id = 0)
+    {
+        if (!PKUserHelper::authProject('task.create', $project_id)) {
+            return;
+        }
+
+
+        $btn = new stdClass();
+        $btn->title = JText::_('COM_PKTASKS_ADD_TASK');
+        $btn->link  = 'index.php?option=com_pktasks&task=';
+        $btn->icon  = JHtml::image('com_pktasks/dashboard_button.png', '', null, true);
+
+        if (JFactory::getApplication()->isSite()) {
+            $itemid = PKRouteHelper::getMenuItemId('com_pktasks', 'form');
+
+            $btn->link .= "form.add";
+
+            if ($itemid) {
+                $btn->link .= '&Itemid=' . $itemid;
+            }
+        }
+        else {
+            $btn->link .= "task.add";
+        }
+
+
+        $buttons[] = $btn;
     }
 }

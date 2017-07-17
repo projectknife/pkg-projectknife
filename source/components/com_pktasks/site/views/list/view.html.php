@@ -114,15 +114,30 @@ class PKTasksViewList extends JViewLegacy
         $this->pathway = $app->getPathway();
         $title         = null;
 
+
         // Because the application sets a default page title, we need to get it from the menu item itself
         $this->menu = $menus->getActive();
 
+        // Set page heading
+        $heading = '';
+
+        if ($this->params->get('show_project_title', 1)) {
+            if (PKApplicationHelper::getProjectId()) {
+                $heading = PKApplicationHelper::getProjectTitle() . ': ';
+            }
+            else {
+                $heading = JText::_('PKGLOBAL_ALL_PROJECTS') . ': ';
+            }
+        }
+
         if ($this->menu) {
-            $this->params->def('page_heading', $this->params->get('page_title', $this->menu->title));
+            $heading .= $this->params->get('page_title', $this->menu->title);
         }
         else {
-            $this->params->def('page_heading', JText::_('COM_PKTASKS_SUBMENU_TASKS'));
+            $heading .= JText::_('COM_PKMILESTONES_SUBMENU_MILESTONES');
         }
+
+        $this->params->def('page_heading', $heading);
 
         $title = $this->params->get('page_title', '');
 

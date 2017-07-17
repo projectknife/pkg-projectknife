@@ -87,7 +87,7 @@ class PKmilestonesTableMilestone extends JTable
 
         // Verify that the alias is unique
         $table = JTable::getInstance('Milestone', 'PKmilestonesTable', array('dbo', $this->getDbo()));
-        $data  = array('alias' => $this->alias, 'project_id' => $table->project_id);
+        $data  = array('alias' => $this->alias, 'project_id' => $this->project_id);
 
         if ($table->load($data) && ($table->id != $this->id || $this->id == 0)) {
             $this->setError(JText::_('COM_PKMILESTONES_ERROR_PROJECT_UNIQUE_ALIAS'));

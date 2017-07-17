@@ -38,7 +38,7 @@ $txt_tags       = JText::_('JTAG');
 
 // Determine heading and item date formats
 $date_dynamic = $this->params->get('date_dynamic', 1);
-$date_default = $this->params->get('date_default', 'due_date');
+$date_default = $this->params->get('date_default', 'start_date');
 $date_format  = $this->params->get('date_format', JText::_('DATE_FORMAT_LC4'));
 
 
@@ -50,7 +50,7 @@ if ($date_pos_d === false) $date_pos_d = -1;
 if ($date_pos_m === false) $date_pos_m = -1;
 if ($date_pos_y === false) $date_pos_y = -1;
 
-$date_heading_format = ($date_pos_m > $date_pos_y) ? 'Y/m' : 'm/Y';
+$date_heading_format = 'F Y';
 $date_item_format    = ($date_pos_m > $date_pos_d) ? 'd M' : 'M d';
 $date_item_large     = ($date_pos_m > $date_pos_d) ? 'd'   : 'M';
 $date_item_medium    = ($date_pos_m > $date_pos_d) ? 'M'   : 'd';
@@ -60,7 +60,7 @@ $date_item_medium    = ($date_pos_m > $date_pos_d) ? 'M'   : 'd';
 $heading_date_fields   = array('start_date', 'due_date', 'created');
 $heading_string_fields = array('author_name', 'project_title');
 
-$list_order      = str_replace('a.', '', $this->escape($this->state->get('list.ordering', 'a.due_date')));
+$list_order      = str_replace('a.', '', $this->escape($this->state->get('list.ordering', 'a.start_date')));
 $heading_show    = false;
 $heading_by_date = false;
 $heading_prefix  = '';
@@ -139,9 +139,21 @@ for ($i = 0; $i != $count; $i++)
     $assignee_pks = array();
 
     if ($item->assignee_count) {
+        $assignee_profile = null;
+
         foreach ($item->assignees AS $assignee)
         {
-            $assignees[]    = $this->escape($assignee->assignee_name);
+            $assignee_profile = PKUserHelper::getProfileLink($assignee->id);
+
+            if ($assignee_profile) {
+                $assignees[] = '<a href="' . $assignee_profile . '">'
+                             . $this->escape($assignee->assignee_name)
+                             . '</a>';
+            }
+            else {
+                $assignees[] = $this->escape($assignee->assignee_name);
+            }
+
             $assignee_pks[] = $assignee->id;
         }
 

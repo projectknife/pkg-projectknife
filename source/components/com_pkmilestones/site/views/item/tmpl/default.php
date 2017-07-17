@@ -102,9 +102,20 @@ JFactory::getDocument()->addScriptDeclaration('
                     }
 
                     if ($show_author) {
+                        $author_link = PKUserHelper::getProfileLink($item->created_by);
+
+                        if ($author_link) {
+                            $author_name = '<a href="' . $author_link . '">'
+                                         . $this->escape($item->author_name)
+                                         . '</a>';
+                        }
+                        else {
+                            $author_name = $this->escape($item->author_name);
+                        }
+
                         echo '<li class="pkdetail-created_by">'
                         . JText::_('PKGLOBAL_CREATED_BY_LABEL') . ': '
-                        . $this->escape($item->author_name)
+                        . $author_name
                         . '</li>';
                     }
 

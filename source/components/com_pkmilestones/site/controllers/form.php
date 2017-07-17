@@ -30,7 +30,16 @@ class PKMilestonesControllerForm extends JControllerForm
      */
     protected function allowAdd($data = array())
     {
-        $pid = (isset($data['project_id'])) ? intval($data['project_id']) : 0;
+        if (isset($data['project_id'])) {
+            $pid = (int) $data['project_id'];
+        }
+        else {
+            $pid = PKApplicationHelper::getProjectId();
+
+            if (!$pid) {
+                $pid = 'any';
+            }
+        }
 
         return PKUserHelper::authProject('milestone.create', $pid);
     }
@@ -46,8 +55,27 @@ class PKMilestonesControllerForm extends JControllerForm
      */
     protected function allowEdit($data = array(), $key = 'id')
     {
-        $id  = (isset($data[$key])) ? intval($data[$key]) : 0;
-        $pid = (isset($data['project_id'])) ? intval($data['project_id']) : 0;
+        $id = (isset($data[$key])) ? intval($data[$key]) : 0;
+
+        if (isset($data['project_id'])) {
+            $pid = (int) $data['project_id'];
+        }
+        else {
+            if ($id) {
+                $db = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
+                $query->select('project_id')
+                      ->from('#__pk_milestones')
+                      ->where('id = ' . (int) $id);
+
+                $db->setQuery($query);
+                $pid = (int) $db->loadResult();
+            }
+            else {
+                return false;
+            }
+        }
 
         if (!$id) {
             return PKUserHelper::authProject('milestone.create', $pid);

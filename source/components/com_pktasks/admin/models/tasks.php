@@ -11,6 +11,9 @@
 defined('_JEXEC') or die;
 
 
+use Joomla\Registry\Registry;
+
+
 class PKtasksModelTasks extends PKModelList
 {
     /**
@@ -40,7 +43,8 @@ class PKtasksModelTasks extends PKModelList
             'a.milestone_id', 'milestone_id', 'milestone_title',
             'author_id',
             'a.progress', 'progress',
-            'a.priority', 'priority'
+            'a.priority', 'priority',
+            'a.due_date', 'due_date'
         );
 
         parent::__construct($config);
@@ -66,6 +70,19 @@ class PKtasksModelTasks extends PKModelList
             $this->context .= '.' . $layout;
         }
 
+        // Frontent Menu item params
+        if ($app->isSite()) {
+            $menu_params = new Registry;
+
+    		if ($menu = $app->getMenu()->getActive()) {
+    			$menu_params->loadString($menu->params);
+
+                $this->context .= '.' . $app->input->getUInt('Itemid');
+    		}
+
+		    $params->merge($menu_params);
+        }
+
         $search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
         $this->setState('filter.search', $search);
 
@@ -75,19 +92,23 @@ class PKtasksModelTasks extends PKModelList
         $milestone = $app->getUserStateFromRequest($this->context . '.filter.milestone_id', 'filter_milestone_id');
         $this->setState('filter.milestone_id', $milestone);
 
-        $access = $this->getUserStateFromRequest($this->context . '.filter.access', 'filter_access');
+        $default = $params->get('filter_access');
+        $access  = $this->getUserStateFromRequest($this->context . '.filter.access', 'filter_access', $default);
         $this->setState('filter.access', $access);
 
         $author_id = $app->getUserStateFromRequest($this->context . '.filter.author_id', 'filter_author_id');
         $this->setState('filter.author_id', $author_id);
 
-        $assignee_id = $app->getUserStateFromRequest($this->context . '.filter.assignee_id', 'filter_assignee_id');
+        $default     = $params->get('filter_assignee_id');
+        $assignee_id = $app->getUserStateFromRequest($this->context . '.filter.assignee_id', 'filter_assignee_id', $default);
         $this->setState('filter.assignee_id', $assignee_id);
 
-        $published = $this->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
+        $default   = $params->get('filter_published', '');
+        $published = $this->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', $default);
         $this->setState('filter.published', $published);
 
-        $priority = $this->getUserStateFromRequest($this->context . '.filter.priority', 'filter_priority', '');
+        $default  = $params->get('filter_priority', '');
+        $priority = $this->getUserStateFromRequest($this->context . '.filter.priority', 'filter_priority', $default);
         $this->setState('filter.priority', $priority);
 
         $progress = $this->getUserStateFromRequest($this->context . '.filter.progress', 'filter_progress', '');
@@ -113,7 +134,7 @@ class PKtasksModelTasks extends PKModelList
         $this->setState('list.direction_sec', $direction_sec);
 
         // List state information.
-        $ordering  = ($ordering === null  ? $params->get('sort_by', 'a.due_date') : $ordering);
+        $ordering  = ($ordering === null  ? $params->get('sort_by', 'a.start_date') : $ordering);
         $direction = ($direction === null ? $params->get('order_by', 'asc')     : $direction);
 
         // Reset milestone filter if the selected option does not belong to the current project
@@ -237,9 +258,9 @@ class PKtasksModelTasks extends PKModelList
               ->join('LEFT', '#__pk_milestones AS m ON m.id = a.milestone_id');
 
         // Viewing restriction
-        if ($this->getState('restrict.access')) {
-            $levels   = $this->getState('auth.levels',   array(0));
-            $projects = $this->getState('auth.projects', array(0));
+        if ($this->restrict_access) {
+            $levels   = $this->auth_levels;
+            $projects = $this->auth_projects;
 
             $query->where('(a.access IN(' . implode(', ', $levels) . ') OR a.project_id IN(' . implode(', ', $projects). '))');
         }
@@ -377,9 +398,9 @@ class PKtasksModelTasks extends PKModelList
         // Order
         $params = JComponentHelper::getParams('com_pktasks');
 
-        $order_pri_col = $this->state->get('list.ordering',      $params->get('sort_by', 'a.due_date'));
+        $order_pri_col = $this->state->get('list.ordering',      $params->get('sort_by', 'a.start_date'));
         $order_pri_dir = $this->state->get('list.direction',     $params->get('order_by', 'asc'));
-        $order_sec_col = $this->state->get('list.ordering_sec',  $params->get('sort_by_sec', 'a.title'));
+        $order_sec_col = $this->state->get('list.ordering_sec',  $params->get('sort_by_sec', 'a.due_date'));
         $order_sec_dir = $this->state->get('list.direction_sec', $params->get('order_by_sec', 'asc'));
         $order_sec     = '';
 
@@ -653,9 +674,9 @@ class PKtasksModelTasks extends PKModelList
               ->order('u.' . $display_name_field . ' ASC');
 
         // Restrict user visibility
-        if ($this->getState('restrict.access')) {
-            $levels   = $this->getState('auth.levels',   array(0));
-            $projects = $this->getState('auth.projects', array(0));
+        if ($this->restrict_access) {
+            $levels   = $this->auth_levels;
+            $projects = $this->auth_projects;
 
             $query->where('(t.access IN(' . implode(', ', $levels) . ') OR t.project_id IN(' . implode(', ', $projects) . '))');
         }
@@ -690,9 +711,9 @@ class PKtasksModelTasks extends PKModelList
               ->order('u.name ASC');
 
         // Restrict user visibility
-        if ($this->getState('restrict.access')) {
-            $levels   = $this->getState('auth.levels', array(0));
-            $projects = $this->getState('auth.projects', array(0));
+        if ($this->restrict_access) {
+            $levels   = $this->auth_levels;
+            $projects = $this->auth_projects;
 
             $query->where('(t.access IN(' . implode(', ', $levels) . ') OR t.project_id IN(' . implode(', ', $projects) . '))');
         }
@@ -761,9 +782,9 @@ class PKtasksModelTasks extends PKModelList
               ->order('p.title');
 
         // Restrict project visibility
-        if ($this->getState('restrict.access')) {
-            $levels   = $this->getState('auth.levels',   array(0));
-            $projects = $this->getState('auth.projects', array(0));
+        if ($this->restrict_access) {
+            $levels   = $this->auth_levels;
+            $projects = $this->auth_projects;
 
             $query->where('(p.access IN(' . implode(', ', $levels) . ') OR p.id IN(' . implode(', ', $projects) . '))');
         }
@@ -838,9 +859,9 @@ class PKtasksModelTasks extends PKModelList
         }
 
         // Restrict user visibility
-        if ($this->getState('restrict.access')) {
-            $levels   = $this->getState('auth.levels', array(0));
-            $projects = $this->getState('auth.projects', array(0));
+        if ($this->restrict_access) {
+            $levels   = $this->auth_levels;
+            $projects = $this->auth_projects;
 
             $query->where('(m.access IN(' . implode(', ', $levels) . ') OR m.project_id IN(' . implode(', ', $projects) . '))');
         }
@@ -868,8 +889,8 @@ class PKtasksModelTasks extends PKModelList
         $items = JHtml::_('access.assetgroups');
 
         // Filter out inaccessible access levels
-        if ($this->getState('restrict.access')) {
-            $levels = $this->getState('auth.levels', array(0));
+        if ($this->restrict_access) {
+            $levels = $this->auth_levels;
             $count  = count($items);
 
             for ($i = 0; $i != $count; $i++)
@@ -918,8 +939,8 @@ class PKtasksModelTasks extends PKModelList
               ->order('a.title ASC');
 
         // Restrict user visibility
-        if ($this->getState('restrict.access')) {
-            $query->where('a.access IN(' . implode(', ', $this->getState('auth.levels', array(0))) . ')');
+        if ($this->restrict_access) {
+            $query->where('a.access IN(' . implode(', ', $this->auth_levels) . ')');
         }
 
         try {

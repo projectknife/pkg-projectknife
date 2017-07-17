@@ -718,10 +718,10 @@ class plgProjectknifeProjects extends JPlugin
               ->from('#__pk_projects');
 
         if ($count === 1) {
-            $query->where('catid = ' . (int) $pks[0]);
+            $query->where('category_id = ' . (int) $pks[0]);
         }
         else {
-            $query->where('catid IN(' . implode(', ', $pks) . ')');
+            $query->where('category_id IN(' . implode(', ', $pks) . ')');
         }
 
         $query->where('access != ' . $access)
@@ -858,6 +858,10 @@ class plgProjectknifeProjects extends JPlugin
      */
     public function onProjectknifeAfterCopy($context, $pks, $options)
     {
+        if (!count($pks)) {
+            return true;
+        }
+
         switch ($context)
         {
             case 'com_pktasks.tasks':
@@ -1061,5 +1065,44 @@ class plgProjectknifeProjects extends JPlugin
 
         // Access filter
         $filters[] = '<input type="hidden" name="filter_access" id="filter_access" value="' . $state->get('filter.access')  . '"/>';
+    }
+
+
+    /**
+     * Adds dasboard buttons
+     *
+     * @param    array      $buttons
+     * @param    integer    $project_id
+     *
+     * @return   void
+     */
+    public function onProjectknifeDisplayDashboardButtons(&$buttons, $project_id = 0)
+    {
+        if (!PKUserHelper::authProject('core.create')) {
+            return;
+        }
+
+
+        $btn = new stdClass();
+        $btn->title = JText::_('COM_PKPROJECTS_ADD_PROJECT');
+        $btn->link  = 'index.php?option=com_pkprojects&task=';
+        $btn->icon  = JHtml::image('com_pkprojects/dashboard_button.png', '', null, true);
+
+        if (JFactory::getApplication()->isSite()) {
+            $itemid = PKRouteHelper::getMenuItemId('com_pkprojects', 'form');
+
+            $btn->link .= "form.add";
+
+            if ($itemid) {
+                $btn->link .= '&Itemid=' . $itemid;
+            }
+        }
+        else {
+            $btn->link .= "project.add";
+        }
+
+
+        $buttons[] = $btn;
+
     }
 }

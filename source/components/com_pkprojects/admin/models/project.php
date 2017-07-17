@@ -200,7 +200,7 @@ class PKprojectsModelProject extends PKModelAdmin
     protected function getReorderConditions($table)
     {
         $condition = array();
-        $condition[] = 'category_id = ' . (int) $table->catid;
+        $condition[] = 'category_id = ' . (int) $table->category_id;
 
         return $condition;
     }
@@ -217,7 +217,7 @@ class PKprojectsModelProject extends PKModelAdmin
     {
         // Reorder the item
         if (empty($table->id)) {
-            $table->reorder('category_id = ' . (int) $table->catid);
+            $table->reorder('category_id = ' . (int) $table->category_id);
         }
     }
 

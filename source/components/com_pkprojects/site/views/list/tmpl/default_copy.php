@@ -51,7 +51,7 @@ $including = (array) $dispatcher->trigger('onProjectknifeCopyOptions', array('co
                         <?php echo JText::_('JCATEGORY'); ?>
                     </div>
     				<div class="controls">
-    					<?php echo JHtml::_('select.genericlist', $categories, 'copy[catid]'); ?>
+    					<?php echo JHtml::_('select.genericlist', $categories, 'copy[category_id]'); ?>
     				</div>
     			</div>
                 <?php if(!$auto_access) : ?>

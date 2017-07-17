@@ -38,7 +38,7 @@ class PKTasksControllerTask extends JControllerLegacy
      * Prints out a json string of tasks.
      *
      */
-    public function searchDependency()
+    public function searchPredecessor()
     {
         $app   = JFactory::getApplication();
         $input = $app->input;

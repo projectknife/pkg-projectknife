@@ -36,6 +36,11 @@ class PKtasksTableTask extends JTable
      */
     public function check()
     {
+        if (intval($this->project_id) == 0) {
+            $this->setError(JText::_('COM_PKTASKS_ERROR_NO_PROJECT'));
+            return false;
+        }
+
         if (trim($this->title) == '') {
             $this->setError(JText::_('COM_PKTASKS_WARNING_PROVIDE_VALID_NAME'));
             return false;
@@ -88,9 +93,8 @@ class PKtasksTableTask extends JTable
         // Verify that the alias is unique
         $table = JTable::getInstance('Task', 'PKtasksTable', array('dbo', $this->getDbo()));
 
-        if ($table->load(array('alias' => $this->alias, 'project_id' => $table->project_id)) && ($table->id != $this->id || $this->id == 0)) {
+        if ($table->load(array('alias' => $this->alias, 'project_id' => $this->project_id)) && ($table->id != $this->id || $this->id == 0)) {
             $this->setError(JText::_('COM_PKTASKS_ERROR_PROJECT_UNIQUE_ALIAS'));
-
             return false;
         }
 

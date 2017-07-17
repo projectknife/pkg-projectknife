@@ -113,9 +113,20 @@ $desc_span       = $show_details ? '8' : '12';
                         }
 
                         if ($show_author) {
+                            $author_link = PKUserHelper::getProfileLink($item->created_by);
+
+                            if ($author_link) {
+                                $author_name = '<a href="' . $author_link . '">'
+                                             . $this->escape($item->author_name)
+                                             . '</a>';
+                            }
+                            else {
+                                $author_name = $this->escape($item->author_name);
+                            }
+
                             echo '<li class="pkdetail-created_by">'
                             . JText::_('PKGLOBAL_CREATED_BY_LABEL') . ': '
-                            . $this->escape($item->author_name)
+                            . $author_name
                             . '</li>';
                         }
 
@@ -173,6 +184,17 @@ $desc_span       = $show_details ? '8' : '12';
         </div>
     <?php endif; ?>
 
+    <!-- Begin Dashboard quick-buttons -->
+    <?php
+    if ($this->params->get('show_buttons', 1)) {
+        echo $this->loadTemplate('buttons');
+    }
+    ?>
+    <!-- End Dashboard quick-buttons -->
+
+    <div class="row-fluid">
+        <div class="row-12"></div>
+    </div>
     <!-- Begin Dashboard Modules -->
     <div class="row-fluid">
         <div class="span12">

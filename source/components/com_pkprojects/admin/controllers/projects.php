@@ -65,7 +65,6 @@ class PKProjectsControllerProjects extends JControllerAdmin
             return;
         }
 
-
         // Check access
         if (!PKUserHelper::isSuperAdmin()) {
             $count  = count($pks);
@@ -75,8 +74,8 @@ class PKProjectsControllerProjects extends JControllerAdmin
             $query  = $db->getQuery(true);
 
             // Set default options
-            if (!isset($options['catid'])) {
-                $options['catid'] = '';
+            if (!isset($options['category_id'])) {
+                $options['category_id'] = '';
             }
 
             if (!isset($options['access'])) {
@@ -92,13 +91,13 @@ class PKProjectsControllerProjects extends JControllerAdmin
             }
 
             // Check access to the target category
-            if (is_numeric($options['catid'])) {
-                $options['catid'] = (int) $options['catid'];
+            if (is_numeric($options['category_id'])) {
+                $options['category_id'] = (int) $options['category_id'];
 
                 $query->clear()
                       ->select('access')
                       ->from('#__categories')
-                      ->where('id = ' . $options['catid']);
+                      ->where('id = ' . $options['category_id']);
 
                 $db->setQuery($query);
                 $cat_access = (int) $db->loadResult();
@@ -110,13 +109,13 @@ class PKProjectsControllerProjects extends JControllerAdmin
                 }
 
                 // Check create project permission
-                if (!PKUserHelper::authCategory('core.create.project', $options['catid'])) {
+                if (!PKUserHelper::authCategory('core.create.project', $options['category_id'])) {
                     JLog::add(JText::_($this->text_prefix . '_CATEGORY_CREATE_PROJECT_DENIED'), JLog::WARNING, 'jerror');
                     return;
                 }
             }
 
-            $query->select('id, catid, access, created_by')
+            $query->select('id, title, category_id, access, created_by')
                   ->from('#__pk_projects')
                   ->where('id IN(' . implode(',', $pks) . ')');
 
@@ -127,32 +126,41 @@ class PKProjectsControllerProjects extends JControllerAdmin
 
             for($i = 0; $i != $count; $i++)
             {
-                $id  = $pks[$i];
-                $pid = $items[$id]->project_id;
+                $id  = intval($pks[$i]);
+                $pid = $id;
 
                 // Cache permissions
                 if (!isset($can[$pid])) {
-                    $can[$pid]             = array();
-                    $can[$pid]['edit']     = PKUserHelper::authProject('core.edit', $pid);
-                    $can[$pid]['edit_own'] = PKUserHelper::authProject('core.edit.own', $pid) && $items[$i]->created_by == $user->id;
+                    $can[$pid] = array(
+                        'edit'     => PKUserHelper::authProject('core.edit', $pid),
+                        'edit_own' => (PKUserHelper::authProject('core.edit.own', $pid) && $items[$id]->created_by == $user->id)
+                    );
                 }
 
-                if ((!$can[$pid]['edit'] && !$can[$pid]['edit_own']) || !in_array($items[$id]->access, $levels)) {
-                    // Check edit and viewing access
+                // Check edit and viewing access
+                if (!$can[$pid]['edit'] && !$can[$pid]['edit_own']) {
+                    JLog::add(JText::sprintf('PKGLOBAL_ERROR_COPY_ITEM_EDIT_NOT_ALLOWED', $items[$id]->title . ' ' . $pid), JLog::WARNING, 'jerror');
+                    unset($pks[$i]);
+                    continue;
+                }
+                elseif (!in_array($items[$id]->access, $levels)) {
+                    // If the user has no access, silently remove it from the list
                     unset($pks[$i]);
                     continue;
                 }
 
-                if (!is_numeric($options['catid'])) {
+                if (!is_numeric($options['category_id'])) {
                     // Check access to target category
-                    if (!PKUserHelper::authCategory('core.create.project', $items[$id]->catid)) {
+                    if ($items[$id]->category_id > 0 && !PKUserHelper::authCategory('core.create.project', $items[$id]->category_id)) {
                         unset($pks[$i]);
                     }
                 }
             }
 
+            $count = count($pks);
+
             if (!$count) {
-                JLog::add(JText::_('JGLOBAL_NO_ITEM_SELECTED'), JLog::WARNING, 'jerror');
+                JLog::add(JText::_('PKGLOBAL_NO_ITEMS_COPIED'), JLog::WARNING, 'jerror');
                 return;
             }
         }

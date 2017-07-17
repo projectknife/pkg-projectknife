@@ -3,12 +3,12 @@
     <!-- Extension info -->
     <name>com_pktasks</name>
     <author>Tobias Kuhn</author>
-    <creationDate>May 2017</creationDate>
+    <creationDate>July 2017</creationDate>
     <copyright>(C) 2015-2017 Tobias Kuhn. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later.</license>
     <authorEmail>support@projectknife.net</authorEmail>
     <authorUrl>http://projectknife.net</authorUrl>
-    <version>5.0.0.beta.4</version>
+    <version>5.0.0.beta.6</version>
     <description>COM_PKTASKS_XML_DESCRIPTION</description>
 
     <!-- Install script -->
@@ -44,6 +44,7 @@
     <!-- Media files -->
     <media folder="media" destination="com_pktasks">
         <folder>css</folder>
+        <folder>images</folder>
         <folder>js</folder>
     </media>
 

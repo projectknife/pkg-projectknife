@@ -32,7 +32,7 @@
         <field name="tags" type="tag" label="JTAG" description="JTAG_DESC" class="inputbox small" multiple="true"/>
     </fieldset>
     <fieldset name="publishing-middle-col">
-        <field name="predecessors" type="pktaskdependency" label="COM_PKTASKS_PREDECESSORS_LABEL" description="COM_PKTASKS_PREDECESSORS_DESC" multiple="true"/>
+        <field name="predecessors" type="pktaskpredecessor" label="COM_PKTASKS_PREDECESSORS_LABEL" description="COM_PKTASKS_PREDECESSORS_DESC" multiple="true"/>
         <field name="created" type="calendar" label="PKGLOBAL_CREATED_ON_LABEL" size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc" />
 		<field name="created_by" type="user" label="PKGLOBAL_CREATED_BY_LABEL" />
 		<field name="modified" type="hidden" readonly="true" format="%Y-%m-%d %H:%M:%S" filter="user_utc" class="readonly"/>

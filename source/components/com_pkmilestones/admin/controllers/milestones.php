@@ -119,7 +119,7 @@ class PKmilestonesControllerMilestones extends JControllerAdmin
             }
 
             // Load project, access and author from selected milestones
-            $query->select('a.id, a.project_id, a.access, a.created_by, p.access AS project_access')
+            $query->select('a.id, a.project_id, a.title, a.access, a.created_by, p.access AS project_access')
                   ->from('#__pk_milestones AS a')
                   ->leftJoin('#__pk_projects AS p ON p.id = a.project_id')
                   ->where('a.id IN(' . implode(',', $pks) . ')');
@@ -150,10 +150,17 @@ class PKmilestonesControllerMilestones extends JControllerAdmin
                 }
 
                 // Check edit, edit.own and viewing access
-                if ((!$can[$pid]['edit'] && !($can[$pid]['edit_own'] && $items[$i]->created_by == $user->id)) || !in_array($items[$id]->access, $levels)) {
+                if ((!$can[$pid]['edit'] && !($can[$pid]['edit_own'] && $items[$id]->created_by == $user->id))) {
+                    JLog::add(JText::sprintf('PKGLOBAL_ERROR_COPY_ITEM_EDIT_NOT_ALLOWED', $items[$id]->title . ' ' . $pid), JLog::WARNING, 'jerror');
+                    unset($pks[$i]);
+                }
+                elseif (!in_array($items[$id]->access, $levels)) {
+                    // If the user has no access, silently remove it from the list
                     unset($pks[$i]);
                 }
             }
+
+            $count = count($pks);
 
             if (!$count) {
                 JLog::add(JText::_('JGLOBAL_NO_ITEM_SELECTED'), JLog::WARNING, 'jerror');

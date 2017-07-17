@@ -51,4 +51,61 @@ class PKtasksControllerTask extends JControllerForm
 
         return parent::batch($model);
     }
+
+
+    /**
+	 * Method to save a record.
+	 *
+	 * @param   string  $key     The name of the primary key of the URL variable.
+	 * @param   string  $urlVar  The name of the URL variable if different from the primary key (sometimes required to avoid router collisions).
+	 *
+	 * @return  boolean          True if successful, false otherwise.
+	 */
+	public function save($key = null, $urlVar = null)
+	{
+	    $data = $this->input->post->get('jform', array(), 'array');
+        $id   = (isset($data['id']) ? intval($data['id']) : 0);
+
+        if ($id || !isset($data['progress']) || !isset($data['predecessors'])) {
+            return parent::save($key, $urlVar);
+        }
+
+
+        // Check on progress
+        $progress = (int) $data['progress'];
+
+        if (!$progress) {
+            return parent::save($key, $urlVar);
+        }
+
+        $predecessors = $data['predecessors'];
+        JArrayHelper::toInteger($predecessors);
+
+        if (!count($predecessors)) {
+            return parent::save($key, $urlVar);
+        }
+
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('title')
+              ->from('#__pk_tasks')
+              ->where('id IN(' . implode(', ', $predecessors) . ')')
+              ->where('progress < 100')
+              ->where('published > 0')
+              ->order('title ASC');
+
+        $db->setQuery($query);
+        $blocking  = $db->loadColumn();
+
+        if (count($blocking)) {
+            // Set out a message that the progress cannot be changed
+            $tasks = implode(', ', $blocking);
+            $app   = JFactory::getApplication();
+            $app->enqueueMessage(JText::sprintf('COM_PKTASKS_TASK_PROGRESS_BLOCKED_BY_PREDECESSORS', $tasks));
+            unset($data['progress']);
+        }
+
+        return parent::save($key, $urlVar);
+    }
 }
